@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/last_track_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/auth_provider.dart';

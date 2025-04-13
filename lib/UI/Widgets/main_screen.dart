@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:synqit/Provider/auth_provider.dart';
 import 'package:synqit/UI/Screens/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
 
@@ -76,12 +78,12 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
 }
 
 // Dummy pages (Replace with actual content)
-class WalletPage extends StatelessWidget {
+class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text("Wallet Page"));
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Center(child: TextButton(onPressed: () => ref.read(authProvider.notifier).signOut(), child: Text("Logout"),));
   }
 }
 
