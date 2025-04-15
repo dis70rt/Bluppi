@@ -1,17 +1,22 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 Widget profileBio(String name, String bio, String? profilePic) {
   return Column(
     children: [
-      profilePic != null
-          ? CircleAvatar(
-              radius: 45,
-              backgroundImage: NetworkImage(profilePic),
-            )
-          : const CircleAvatar(
-              radius: 45,
-              backgroundImage: AssetImage('assets/images/default_profile.jpg'),
-            ),
+      Hero(
+        tag: 'profilePic',
+        child: profilePic != null
+            ? CircleAvatar(
+                radius: 45,
+                backgroundImage: CachedNetworkImageProvider(profilePic),
+              )
+            : const CircleAvatar(
+                radius: 45,
+                backgroundImage:
+                    AssetImage('assets/images/default_profile.jpg'),
+              ),
+      ),
       const SizedBox(height: 20),
       Text(
         name,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:synqit/Provider/auth_provider.dart';
-import 'package:synqit/UI/Screens/home_screen.dart';
+import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
 
 class MainScreenWidget extends StatefulWidget {

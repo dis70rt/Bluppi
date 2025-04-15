@@ -146,7 +146,10 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         throw Exception("No audio-only streams found for this video.");
       }
 
-      final audioStreamInfo = audioStreams.last;
+      // final _random = math.Random();
+      // final audioStreamInfo = audioStreams[_random.nextInt(audioStreams.length)];
+
+      final audioStreamInfo = audioStreams.first;
       log(
           "Selected audio stream: ${audioStreamInfo.codec} / ${audioStreamInfo.bitrate}");
 

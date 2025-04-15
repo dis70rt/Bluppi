@@ -66,7 +66,7 @@ class AuthNotifier extends AsyncNotifier<Auth> {
         OAuthProvider.spotify,
         redirectTo: kIsWeb
             ? '${dotenv.env["SUPABASE_URL"]}/auth/v1/callback'
-            : 'synqit://auth',
+            : 'synqit://auth', // synqit.app/auth
         authScreenLaunchMode: LaunchMode.externalApplication,
         scopes: '''
           user-read-email
