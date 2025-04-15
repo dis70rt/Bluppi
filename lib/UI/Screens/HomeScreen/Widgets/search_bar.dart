@@ -1,12 +1,13 @@
-import 'dart:developer';
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Provider/lasfm_track_search_provider.dart';
-
-import 'package:synqit/Provider/lastfm_track_state.dart';
+import 'package:synqit/Provider/track_search_provider.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -18,24 +19,31 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
 
+  String _currentQuery = '';
+
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _searchController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
-
+    _debounce?.cancel();
     super.dispose();
-  }
-
-  void _performSearch(String query) {
-    final trimmedQuery = query.trim();
-
-    ref
-        .read(trackNotifierProvider.notifier)
-        .searchAndSuggestTracks(trimmedQuery);
   }
 
   @override
   Widget build(BuildContext context) {
-    final searchState = ref.watch(trackNotifierProvider);
+    final searchAsyncValue = ref.watch(trackSearchProvider(_currentQuery));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -59,73 +67,66 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       ),
       body: Column(
         children: [
-          searchBar(),
+          _buildSearchBar(),
           Expanded(
-            child: _buildBodyContent(searchState),
+            child: _buildBodyContent(searchAsyncValue),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBodyContent(TrackState searchState) {
-    if (searchState is TrackLoading) {
+  Widget _buildBodyContent(AsyncValue<List<Track>> searchAsyncValue) {
+    if (_currentQuery.isEmpty) {
       return const Center(
-          child: CircularProgressIndicator(color: Colors.white));
-    }
-
-    if (searchState is TrackError) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Error: ${searchState.message}',
-            style: const TextStyle(color: Colors.redAccent),
-            textAlign: TextAlign.center,
-          ),
+        child: Text(
+          "Enter a search term to begin",
+          style: TextStyle(color: Colors.white54),
         ),
       );
     }
 
-    if (searchState is TrackInitial) {
-      return const Center(
-        child: Text("Enter a search term to begin",
-            style: TextStyle(color: Colors.white54)),
-      );
-    }
-
-    if (searchState is TrackSuccess) {
-      if (searchState.searchResults.isEmpty) {
-        if (_searchController.text.trim().isNotEmpty) {
+    return searchAsyncValue.when(
+      loading: () => ListView.builder(
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return trackLoadingListItem(context);
+        }
+      ),
+      error: (error, stackTrace) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Error searching tracks: $error',
+            style: const TextStyle(color: Colors.redAccent),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+      data: (tracks) {
+        if (tracks.isEmpty) {
           return Center(
             child: Text(
-                "No results found for '${_searchController.text.trim()}'",
-                style: const TextStyle(color: Colors.white54)),
-          );
-        } else {
-          return const Center(
-            child: Text("Enter a search term to begin",
-                style: TextStyle(color: Colors.white54)),
+              "No results found for '$_currentQuery'",
+              style: const TextStyle(color: Colors.white54),
+              textAlign: TextAlign.center,
+            ),
           );
         }
-      }
 
-      return ListView.builder(
-        itemCount: searchState.searchResults.length,
-        itemBuilder: (context, index) {
-          final track = searchState.searchResults[index];
+        return ListView.builder(
+          itemCount: tracks.length,
+          itemBuilder: (context, index) {
+            final track = tracks[index];
 
-          return _buildTrackListItem(track);
-        },
-      );
-    }
-
-    return const Center(
-        child: Text("Something went wrong.",
-            style: TextStyle(color: Colors.orangeAccent)));
+            return trackListItem(context, track);
+          },
+        );
+      },
+    );
   }
 
-  Widget searchBar() {
+  Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: ClipRRect(
@@ -162,55 +163,43 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             color: Colors.white.withOpacity(0.8)),
                         onPressed: () {
                           _searchController.clear();
+                          _debounce?.cancel();
 
-                          _performSearch('');
+                          if (mounted) {
+                            setState(() {
+                              _currentQuery = '';
+                            });
+                          }
                         },
                       )
                     : null,
               ),
               onChanged: (value) {
-                setState(() {});
+                if (_debounce?.isActive ?? false) _debounce!.cancel();
+                _debounce = Timer(const Duration(milliseconds: 500), () {
+                  final trimmedValue = value.trim();
+
+                  if (_currentQuery != trimmedValue && mounted) {
+                    setState(() {
+                      _currentQuery = trimmedValue;
+                    });
+                  }
+                });
               },
               onSubmitted: (value) {
-                _performSearch(value);
+                _debounce?.cancel();
+                final trimmedValue = value.trim();
+                if (_currentQuery != trimmedValue && mounted) {
+                  setState(() {
+                    _currentQuery = trimmedValue;
+                  });
+                }
               },
               textInputAction: TextInputAction.search,
             ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildTrackListItem(Track track) {
-    final imageUrl = track.artworkUrl100;
-
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: Colors.white.withOpacity(0.2),
-        backgroundImage: (imageUrl != null && imageUrl.isNotEmpty)
-            ? NetworkImage(imageUrl)
-            : null,
-        child: (imageUrl == null || imageUrl.isEmpty)
-            ? Icon(Icons.music_note, color: Colors.white.withOpacity(0.6))
-            : null,
-      ),
-      title: Text(
-        track.trackName,
-        style:
-            const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      subtitle: Text(
-        track.artistName,
-        style: TextStyle(color: Colors.white.withOpacity(0.8)),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      onTap: () {
-        log("Tapped: ${track.trackName} by ${track.artistName}");
-      },
     );
   }
 }
