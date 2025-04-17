@@ -22,8 +22,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-    final spotifyService =
-        SpotifyService(ref.read(authProvider).value!.accessToken);
+    // final spotifyService =
+    //     SpotifyService(ref.read(authProvider).value!.accessToken);
     return user.when(
       data: (user) {
         if (user == null) return const Center(child: Text('No user logged in'));
@@ -75,103 +75,103 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           followingStats(
                               user.followers, user.following, user.following),
                           const SizedBox(height: 40),
-                          FutureBuilder(
-                            future: spotifyService.getLastPlayedSong(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                  child: Skeletonizer(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 24),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              const Text(
-                                                "Last Played",
-                                                textAlign: TextAlign.left,
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white54,
-                                                ),
-                                              ),
-                                              Text(
-                                                formatTrackPlayedAt(
-                                                        DateTime.now()
-                                                            .toIso8601String())
-                                                    .toString(),
-                                                textAlign: TextAlign.left,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Colors.white54,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        MiniMusicPlayer(
-                                            track: LastTrack.defaultTrack()),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }
-                              if (snapshot.hasError) {
-                                return const Center(
-                                  child:
-                                      Text('Error fetching last played song'),
-                                );
-                              }
-                              if (!snapshot.hasData) {
-                                return const Center(
-                                  child: Text('No last played song found'),
-                                );
-                              }
-                              final LastTrack track = snapshot.data!;
-                              return Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 24),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text(
-                                          "Last Played",
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white54,
-                                          ),
-                                        ),
-                                        Text(
-                                          formatTrackPlayedAt(track.playedAt)
-                                              .toString(),
-                                          textAlign: TextAlign.left,
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white54,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  MiniMusicPlayer(track: track),
-                                ],
-                              );
-                            },
-                          ),
+                          // FutureBuilder(
+                          //   future: spotifyService.getLastPlayedSong(),
+                          //   builder: (context, snapshot) {
+                          //     if (snapshot.connectionState ==
+                          //         ConnectionState.waiting) {
+                          //       return Center(
+                          //         child: Skeletonizer(
+                          //           child: Column(
+                          //             mainAxisSize: MainAxisSize.min,
+                          //             children: [
+                          //               Padding(
+                          //                 padding: const EdgeInsets.symmetric(
+                          //                     horizontal: 24),
+                          //                 child: Row(
+                          //                   mainAxisAlignment:
+                          //                       MainAxisAlignment.spaceBetween,
+                          //                   children: [
+                          //                     const Text(
+                          //                       "Last Played",
+                          //                       textAlign: TextAlign.left,
+                          //                       style: TextStyle(
+                          //                         fontSize: 12,
+                          //                         fontWeight: FontWeight.w600,
+                          //                         color: Colors.white54,
+                          //                       ),
+                          //                     ),
+                          //                     Text(
+                          //                       formatTrackPlayedAt(
+                          //                               DateTime.now()
+                          //                                   .toIso8601String())
+                          //                           .toString(),
+                          //                       textAlign: TextAlign.left,
+                          //                       style: const TextStyle(
+                          //                         fontSize: 12,
+                          //                         fontWeight: FontWeight.w600,
+                          //                         color: Colors.white54,
+                          //                       ),
+                          //                     ),
+                          //                   ],
+                          //                 ),
+                          //               ),
+                          //               MiniMusicPlayer(
+                          //                   track: LastTrack.defaultTrack()),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //       );
+                          //     }
+                          //     if (snapshot.hasError) {
+                          //       return const Center(
+                          //         child:
+                          //             Text('Error fetching last played song'),
+                          //       );
+                          //     }
+                          //     if (!snapshot.hasData) {
+                          //       return const Center(
+                          //         child: Text('No last played song found'),
+                          //       );
+                          //     }
+                          //     final LastTrack track = snapshot.data!;
+                          //     return Column(
+                          //       mainAxisSize: MainAxisSize.min,
+                          //       children: [
+                          //         Padding(
+                          //           padding: const EdgeInsets.symmetric(
+                          //               horizontal: 24),
+                          //           child: Row(
+                          //             mainAxisAlignment:
+                          //                 MainAxisAlignment.spaceBetween,
+                          //             children: [
+                          //               const Text(
+                          //                 "Last Played",
+                          //                 textAlign: TextAlign.left,
+                          //                 style: TextStyle(
+                          //                   fontSize: 12,
+                          //                   fontWeight: FontWeight.w600,
+                          //                   color: Colors.white54,
+                          //                 ),
+                          //               ),
+                          //               Text(
+                          //                 formatTrackPlayedAt(track.playedAt)
+                          //                     .toString(),
+                          //                 textAlign: TextAlign.left,
+                          //                 style: const TextStyle(
+                          //                   fontSize: 12,
+                          //                   fontWeight: FontWeight.w600,
+                          //                   color: Colors.white54,
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //         MiniMusicPlayer(track: track),
+                          //       ],
+                          //     );
+                          //   },
+                          // ),
                         ],
                       ),
                     ),

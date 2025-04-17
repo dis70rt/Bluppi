@@ -1,24 +1,13 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide OAuthProvider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:synqit/config.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Auth {
   final User? user;
-  final String accessToken;
-  final String refreshToken;
-  final DateTime expiryTime;
 
-  Auth({
-    required this.user,
-    required this.accessToken,
-    required this.refreshToken,
-    required this.expiryTime,
-  });
+  Auth({required this.user});
 }
 
 final authProvider = AsyncNotifierProvider<AuthNotifier, Auth>(
@@ -26,140 +15,55 @@ final authProvider = AsyncNotifierProvider<AuthNotifier, Auth>(
 );
 
 class AuthNotifier extends AsyncNotifier<Auth> {
-  final SupabaseClient supabase = Supabase.instance.client;
-  final Dio _dio = Dio(
-    BaseOptions(
-      baseUrl: AppConfig.apiURL,
-      headers: {'Content-Type': 'application/json'},
-    ),
-  );
-
-  Timer? _refreshTimer;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  StreamSubscription? _authStateSubscription;
 
   @override
   Future<Auth> build() async {
-    final sessionEvent = await supabase.auth.onAuthStateChange.first;
-    final user = sessionEvent.session?.user;
-    final token = sessionEvent.session?.providerToken ?? '';
-    final refresh = sessionEvent.session?.providerRefreshToken ?? '';
-    final expiresAt = sessionEvent.session?.expiresAt != null
-        ? DateTime.fromMillisecondsSinceEpoch(
-            sessionEvent.session!.expiresAt! * 1000)
-        : DateTime.now().add(const Duration(hours: 1));
+    _authStateSubscription?.cancel();
 
+    _authStateSubscription = _firebaseAuth.authStateChanges().listen((user) {
+      state = AsyncData(Auth(user: user));
+    });
 
-    final auth = Auth(
-      user: user,
-      accessToken: token,
-      refreshToken: refresh,
-      expiryTime: expiresAt,
-    );
+    ref.onDispose(() {
+      _authStateSubscription?.cancel();
+    });
 
-    scheduleTokenRefresh();
-    return auth;
+    return Auth(user: _firebaseAuth.currentUser);
   }
 
-  Future<void> signInWithSpotify() async {
+  Future<void> signInWithGoogle() async {
     state = const AsyncValue.loading();
     try {
-      await supabase.auth.signInWithOAuth(
-        OAuthProvider.spotify,
-        redirectTo: kIsWeb
-            ? '${dotenv.env["SUPABASE_URL"]}/auth/v1/callback'
-            : 'synqit://auth', // synqit.app/auth
-        authScreenLaunchMode: LaunchMode.externalApplication,
-        scopes: '''
-          user-read-email
-          user-read-private
-          user-read-playback-state
-          user-top-read
-          user-follow-read
-          playlist-read-private
-          user-read-recently-played
-        ''',
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        state = AsyncData(Auth(user: _firebaseAuth.currentUser));
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
-      final sessionEvent = await supabase.auth.onAuthStateChange.first;
-      final user = sessionEvent.session?.user;
-      final token = sessionEvent.session?.providerToken ?? '';
-      final refresh = sessionEvent.session?.providerRefreshToken ?? '';
-      final expiresAt = sessionEvent.session?.expiresAt != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              sessionEvent.session!.expiresAt! * 1000)
-          : DateTime.now().add(const Duration(hours: 1));
-
-      final auth = Auth(
-        user: user,
-        accessToken: token,
-        refreshToken: refresh,
-        expiryTime: expiresAt,
-      );
-
-      state = AsyncValue.data(auth);
-      scheduleTokenRefresh();
+      await _firebaseAuth.signInWithCredential(credential);
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
   }
 
-  Future<void> refresh() async {
-    final session = supabase.auth.currentSession;
-    if (session == null) return;
-
-    try {
-      final resp = await _dio.post(
-        '/token/refresh',
-        data: {
-          'user_id': session.user.id,
-          'refresh_token': session.providerRefreshToken,
-        },
-      );
-
-      final data = resp.data as Map<String, dynamic>;
-      final newAccess = data['access_token'] as String;
-      final newRefresh = data['refresh_token'] as String;
-      final expiresIn = data['expires_in'] as int;
-
-      final newExpiry = DateTime.now().add(Duration(seconds: expiresIn));
-
-      final auth = Auth(
-        user: session.user,
-        accessToken: newAccess,
-        refreshToken: newRefresh,
-        expiryTime: newExpiry,
-      );
-
-      state = AsyncValue.data(auth);
-      scheduleTokenRefresh();
-    } catch (e) {
-      debugPrint('Error refreshing token via API: $e');
-    }
-  }
-
   Future<void> signOut() async {
-    await supabase.auth.signOut();
-    _refreshTimer?.cancel();
-    state = AsyncValue.data(Auth(
-      user: null,
-      accessToken: '',
-      refreshToken: '',
-      expiryTime: DateTime.now(),
-    ));
-  }
-
-  void scheduleTokenRefresh() {
-    _refreshTimer?.cancel();
-    final auth = state.value;
-    if (auth == null) return;
-
-    const refreshWindow = Duration(minutes: 5);
-    final timeToRefresh =
-        auth.expiryTime.difference(DateTime.now()) - refreshWindow;
-
-    if (timeToRefresh <= Duration.zero) {
-      _refreshTimer = Timer(Duration.zero, () => refresh());
-    } else {
-      _refreshTimer = Timer(timeToRefresh, () => refresh());
+    try {
+      await _googleSignIn.signOut();
+      await _firebaseAuth.signOut();
+    } catch (e, stack) {
+      state = AsyncValue.error(e, stack);
     }
   }
 }
