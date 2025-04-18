@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Provider/auth_provider.dart';
+import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/UI/Screens/create_account_screen.dart';
 import 'package:synqit/UI/Screens/login_screen.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
 
@@ -12,18 +16,55 @@ class AuthWrapper extends ConsumerWidget {
     final authState = ref.watch(authProvider);
 
     return authState.when(
-      data: (auth) {
-        if (auth.user == null) {
+      data: (authResult) {
+        final firebaseUser = authResult.user;
+
+        if (firebaseUser == null) {
           return const LoginScreen();
         } else {
-          return const MainScreenWidget();
+          final userProfileAsyncValue = ref.watch(userProvider);
+          return userProfileAsyncValue.when(
+            loading: () => const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+            error: (error, stackTrace) {
+              if (error is UserProfileNotFoundException) {
+                return CreateAccountScreen(firebaseUser: firebaseUser);
+              } else {
+                return Scaffold(
+                  body: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Error loading user profile:"),
+                      Text(error.toString()),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                          onPressed: () {
+                            ref.read(authProvider.notifier).signOut();
+                          },
+                          child: const Text("Try Logging Out"))
+                    ],
+                  )),
+                );
+              }
+            },
+            data: (userModel) {
+              if (userModel != null) {
+                return const MainScreenWidget();
+              } else {
+                log("AuthWrapper: userModel is null despite userProvider succeeding.");
+                return CreateAccountScreen(firebaseUser: firebaseUser);
+              }
+            },
+          );
         }
       },
       loading: () => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, _) => Scaffold(
-        body: Center(child: Text("Error: $error")),
+        body: Center(child: Text("Authentication Error: $error")),
       ),
     );
   }

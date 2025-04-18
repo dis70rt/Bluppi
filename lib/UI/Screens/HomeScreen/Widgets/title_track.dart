@@ -1,10 +1,13 @@
 import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Provider/music_provider/music_player_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_preview_player.dart';
 
-Widget trackListItem(BuildContext context, Track track) {
+Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
+  final playerNotifier = ref.read(musicPlayerProvider.notifier);
   final imageUrl = track.imageUrl;
   final previewUrl = track.previewUrl;
   const double avatarSize = 50.0;
@@ -29,7 +32,8 @@ Widget trackListItem(BuildContext context, Track track) {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.0,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white54),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.white54),
                       ),
                     ),
                   ),
@@ -66,7 +70,7 @@ Widget trackListItem(BuildContext context, Track track) {
       previewUrl: previewUrl,
     ),
     onTap: () {
-      log("Tapped ListTile: ${track.trackName} by ${track.artistName}");
+      playerNotifier.loadTrack(track);
     },
   );
 }

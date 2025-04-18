@@ -3,11 +3,13 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Provider/track_search_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';
+import 'package:synqit/UI/Widgets/main_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -53,7 +55,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         leading: InkWell(
           borderRadius: BorderRadius.circular(30),
           child: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
-          onTap: () => Navigator.maybePop(context),
+          onTap: () => ref.read(mainScreenIndexProvider.notifier).state = 0,
         ),
         centerTitle: true,
         title: const Text(
@@ -119,7 +121,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           itemBuilder: (context, index) {
             final track = tracks[index];
 
-            return trackListItem(context, track);
+            return trackListItem(context, track, ref);
           },
         );
       },

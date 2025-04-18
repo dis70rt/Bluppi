@@ -1,89 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:synqit/Provider/auth_provider.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_bar.dart';
+
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
 
-class MainScreenWidget extends StatefulWidget {
+final mainScreenIndexProvider = StateProvider<int>((ref) => 0);
+
+class MainScreenWidget extends ConsumerWidget {
   const MainScreenWidget({super.key});
 
-  @override
-  State<MainScreenWidget> createState() => _MainScreenWidgetState();
-}
-
-class _MainScreenWidgetState extends State<MainScreenWidget> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _pages = [
-    const HomeScreen(),
-    const WalletPage(),
-    const ExchangePage(),
-    const MarketsPage(),
-    const ProfileScreen(),
+  final List<Widget> _pages = const [
+    HomeScreen(),
+    WalletPage(),
+    SearchScreen(),
+    MarketsPage(),
+    ProfileScreen(),
   ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedIndex = ref.watch(mainScreenIndexProvider);
+
     return Scaffold(
-      body: _pages[_selectedIndex],
+      extendBody: true,
+      body: Expanded(
+        child: IndexedStack(
+          index: selectedIndex,
+          children: _pages,
+        ),
+      ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-        ),
-        child: BottomNavigationBar(
-          // backgroundColor: Theme.of(context).primaryColor,
-          iconSize: 22,
-          items: const [
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.house),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.wallet),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.rightLeft),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.chartLine),
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.user),
-              label: '',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white38,
-          showUnselectedLabels: false,
-          showSelectedLabels: false,
-          type: BottomNavigationBarType.fixed,
-          onTap: _onItemTapped,
-          elevation: 0,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            canvasColor: Colors.transparent,
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              backgroundColor: Colors.black,
+              elevation: 0,
+            )),
+        child: Container(
+          
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: const [0.0, 0.75],
+              colors: [
+              Colors.black.withOpacity(0),
+              Colors.black.withOpacity(1),
+            ]),
+            
+            
+            // color: Colors.black,
+            // border: Border(
+            //   top: BorderSide(
+            //     color: Colors.white.withOpacity(0.1),
+            //     width: 0.5,
+            //   ),
+            // ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const FloatingMusicPlayer(),
+              BottomNavigationBar(
+                backgroundColor: Colors.transparent,
+                iconSize: 22,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.house),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.wallet),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.magnifyingGlass),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.chartLine),
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: FaIcon(FontAwesomeIcons.user),
+                    label: '',
+                  ),
+                ],
+                currentIndex: selectedIndex,
+                selectedItemColor: Colors.white,
+                unselectedItemColor: Colors.white38,
+                showUnselectedLabels: false,
+                showSelectedLabels: false,
+                type: BottomNavigationBarType.fixed,
+                onTap: (index) {
+                  ref.read(mainScreenIndexProvider.notifier).state = index;
+                },
+                elevation: 0,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// Dummy pages (Replace with actual content)
 class WalletPage extends ConsumerWidget {
   const WalletPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(child: TextButton(onPressed: () => ref.read(authProvider.notifier).signOut(), child: Text("Logout"),));
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          print("Logout button pressed - Implement actual sign out");
+        },
+        child: const Text("Logout", style: TextStyle(color: Colors.white)),
+      ),
+    );
   }
 }
 
@@ -92,7 +132,8 @@ class ExchangePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("Exchange Page"));
+    return const Center(
+        child: Text("Exchange Page", style: TextStyle(color: Colors.white)));
   }
 }
 
@@ -101,6 +142,7 @@ class MarketsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text("Markets Page"));
+    return const Center(
+        child: Text("Markets Page", style: TextStyle(color: Colors.white)));
   }
 }

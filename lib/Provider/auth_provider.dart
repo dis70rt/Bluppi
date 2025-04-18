@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart' hide OAuthProvider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -54,6 +55,7 @@ class AuthNotifier extends AsyncNotifier<Auth> {
 
       await _firebaseAuth.signInWithCredential(credential);
     } catch (e, stack) {
+      log('Error during Google sign-in: $e\n$stack');
       state = AsyncValue.error(e, stack);
     }
   }

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-Widget profileBio(String name, String bio, String? profilePic) {
+Widget profileBio(String name, String? bio, String? profilePic) {
   return Column(
     children: [
       Hero(
@@ -23,16 +23,18 @@ Widget profileBio(String name, String bio, String? profilePic) {
         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 10),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 50),
-        child: Text(
-          bio,
-          style: const TextStyle(
-            fontSize: 14,
+      if (bio != null && bio.isNotEmpty) ...[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+          child: Text(
+            bio,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-      )
+        )
+      ],
     ],
   );
 }

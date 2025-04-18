@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -87,6 +89,7 @@ class LoginScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 15),
         onPressed: () async {
           try {
+            log("Google Sign-In button pressed");
             await ref.read(authProvider.notifier).signInWithGoogle();
           } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

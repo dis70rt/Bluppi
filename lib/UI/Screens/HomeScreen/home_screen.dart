@@ -23,7 +23,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Scaffold(
           backgroundColor: Colors.black,
           appBar: homeAppBar(context, ref),
-          body: Column(
+          body: const Column(
 
           )
         );

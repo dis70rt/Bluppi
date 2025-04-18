@@ -28,5 +28,10 @@ final GoRouter router = GoRouter(
       path: '/search',
       builder: (context, state) => const SearchScreen(),
     ),
+    GoRoute(
+      name: '/main-screen',
+      path: '/main-screen',
+      builder: (context, state) => const MainScreenWidget(),
+    ),
   ],
 );

@@ -61,12 +61,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           profileBio(
                             user.name,
-                            "I'm not perfect, but every day I try to grow into someone I'm proud of.",
+                            user.bio,
                             user.profilePic,
                           ),
                           const SizedBox(height: 20),
