@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Data/Services/database_services.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:synqit/Data/Models/current_track_model.dart';
@@ -180,7 +181,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       log("[MusicPlayerNotifier] Stopping current playback if any...");
       await _audioPlayer.stop();
 
-      final query = "${track.artistName} - ${track.trackName} Official Audio";
+      final query = "${track.artistName} - ${track.trackName} Official";
       log("[MusicPlayerNotifier] Searching YouTube for: '$query'");
       final searchResults = await _ytExplode.search.search(query);
 
@@ -203,6 +204,10 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         thumbnailUrl: track.imageUrl,
       );
 
+      final db = Database();
+      final postTrack = track.copyWith(ytUrl: video.url);
+      await db.writeTrack(postTrack, video.duration?.inSeconds);
+
       if (!mounted) {
         log("[MusicPlayerNotifier] loadTrack aborted before updating provider with details: Notifier disposed.");
         return;
@@ -211,13 +216,21 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       log("[MusicPlayerNotifier] Updated currentTrackProvider with details: $definitiveTrackData");
 
       log("[MusicPlayerNotifier] Fetching audio stream manifest...");
-      final manifest =
-          await _ytExplode.videos.streamsClient.getManifest(video.id);
+      // final manifest =
+      //     await _ytExplode.videos.streamsClient.getManifest(video.id);
+
+      final manifest = await _ytExplode.videos.streamsClient.getManifest(VideoId(video.id.value));
 
       if (!mounted) {
         log("[MusicPlayerNotifier] loadTrack aborted after fetching manifest: Notifier disposed.");
         return;
       }
+
+      if (manifest.audioOnly.isEmpty) {
+        throw Exception("No audio streams available for video ${video.id.value}");
+      }
+
+      final bestAudio = manifest.audioOnly.withHighestBitrate();
 
       final audioStreamInfo = manifest.audioOnly
               .where((s) =>
@@ -234,7 +247,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       log("[MusicPlayerNotifier] Setting audio source...");
 
-      await _audioPlayer.setUrl(audioStreamInfo.url.toString(),
+      await _audioPlayer.setUrl(bestAudio.url.toString(),
           initialPosition: Duration.zero, preload: true);
 
       if (!mounted) {

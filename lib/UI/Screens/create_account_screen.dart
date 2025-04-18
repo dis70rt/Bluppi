@@ -7,7 +7,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/UI/Widgets/main_screen.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Provider/user_provider.dart';
 

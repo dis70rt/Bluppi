@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_bar.dart';
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';

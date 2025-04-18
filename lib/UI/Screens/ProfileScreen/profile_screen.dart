@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-import 'package:synqit/Data/Models/last_track_model.dart';
-import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/auth_provider.dart';
 import 'package:synqit/Provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/app_bar.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_row.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/following_stats.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/music_player.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/profile_bio.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {

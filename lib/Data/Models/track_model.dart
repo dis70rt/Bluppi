@@ -12,6 +12,7 @@ class Track extends Equatable {
   final int playcount;
   final String lastFmUrl;
   final int popularityScore;
+  final String? ytUrl;
 
   const Track({
     required this.trackId,
@@ -25,6 +26,7 @@ class Track extends Equatable {
     required this.playcount,
     required this.lastFmUrl,
     required this.popularityScore,
+    this.ytUrl,
   });
 
   factory Track.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class Track extends Equatable {
       playcount: json['playcount'] as int? ?? 0,
       lastFmUrl: json['lastFmUrl'] as String? ?? '',
       popularityScore: json['popularityScore'] as int? ?? 0,
+      ytUrl: json['ytUrl'] as String?,
     );
   }
 
@@ -60,7 +63,38 @@ class Track extends Equatable {
       'playcount': playcount,
       'lastFmUrl': lastFmUrl,
       'popularityScore': popularityScore,
+      'ytUrl': ytUrl,
     };
+  }
+
+  Track copyWith({
+    int? trackId,
+    String? artistName,
+    String? trackName,
+    String? albumName,
+    String? imageUrl,
+    String? previewUrl,
+    List<String>? genres,
+    int? listeners,
+    int? playcount,
+    String? lastFmUrl,
+    int? popularityScore,
+    String? ytUrl,
+  }) {
+    return Track(
+      trackId: trackId ?? this.trackId,
+      artistName: artistName ?? this.artistName,
+      trackName: trackName ?? this.trackName,
+      albumName: albumName ?? this.albumName,
+      imageUrl: imageUrl ?? this.imageUrl,
+      previewUrl: previewUrl ?? this.previewUrl,
+      genres: genres ?? this.genres,
+      listeners: listeners ?? this.listeners,
+      playcount: playcount ?? this.playcount,
+      lastFmUrl: lastFmUrl ?? this.lastFmUrl,
+      popularityScore: popularityScore ?? this.popularityScore,
+      ytUrl: ytUrl ?? this.ytUrl,
+    );
   }
 
   @override
@@ -76,6 +110,7 @@ class Track extends Equatable {
         playcount,
         lastFmUrl,
         popularityScore,
+        ytUrl,
       ];
 }
 
