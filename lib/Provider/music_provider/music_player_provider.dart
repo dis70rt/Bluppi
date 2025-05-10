@@ -4,19 +4,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
+import 'package:synqit/Data/Services/firebase_services.dart';
+import 'package:synqit/Data/Services/youtube_services.dart';
+// Removed: import 'package:synqit/s/database_services.dart'; // Assuming not needed elsewhere now
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+// import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:synqit/Data/Models/current_track_model.dart';
 import 'music_player_state.dart';
 
 final audioPlayer = AudioPlayer();
-final ytExplode = YoutubeExplode();
+final database = Database();
+final firebaseService = FirebaseServices();
+// final ytExplode = YoutubeExplode();
 
 final musicPlayerProvider =
     StateNotifierProvider.autoDispose<MusicPlayerNotifier, MusicPlayerState>(
         (ref) {
   log('[MusicPlayerProvider] Creating MusicPlayerNotifier instance.');
-  final notifier = MusicPlayerNotifier(ref, audioPlayer, ytExplode);
+  final notifier = MusicPlayerNotifier(ref, audioPlayer);
 
   ref.onDispose(() {
     log("[MusicPlayerProvider] Disposing provider scope for MusicPlayerNotifier.");
@@ -27,13 +32,13 @@ final musicPlayerProvider =
 class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   final Ref _ref;
   final AudioPlayer _audioPlayer;
-  final YoutubeExplode _ytExplode;
+  // final YoutubeExplode _ytExplode;
   StreamSubscription? _playerStateSubscription;
   StreamSubscription? _positionSubscription;
   StreamSubscription? _bufferedPositionSubscription;
   StreamSubscription? _durationSubscription;
 
-  MusicPlayerNotifier(this._ref, this._audioPlayer, this._ytExplode)
+  MusicPlayerNotifier(this._ref, this._audioPlayer)
       : super(const MusicPlayerState()) {
     _listenToPlayerState();
   }
@@ -135,15 +140,31 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   }
 
   Future<void> loadTrack(Track track) async {
-    log("[MusicPlayerNotifier] loadTrack called for: '${track.trackName}' by '${track.artistName}'");
-    final initialTrackData = CurrentTrack(
-        name: track.trackName,
-        artistName: track.trackName,
-        thumbnailUrl: track.imageUrl);
+    log("[MusicPlayerNotifier] loadTrack called for: '${track.trackName}' by '${track.artistName}' with provided URL/ID: ${track.videoId}");
 
+    state = state.copyWith(
+      status: PlayerStatus.loading,
+      position: Duration.zero,
+      bufferedPosition: Duration.zero,
+      clearDuration: true,
+      clearError: true,
+    );
+    
+    // Use ytUrl (assuming it contains the Video ID or full URL) for comparison
     final currentIntendedTrack = _ref.read(currentTrackProvider);
-    if (currentIntendedTrack == initialTrackData) {
-      log("[MusicPlayerNotifier] Track '${track.trackName}' is already the current/intended track.");
+    final potentialNewTrackData = CurrentTrack(
+      name: track.trackName,
+      artistName: track.artistName, // Corrected from trackName
+      thumbnailUrl: track.imageUrl,
+      youtubeVideoId: track.videoId // Store ID for comparison if available
+    );
+
+    if (currentIntendedTrack != null &&
+        currentIntendedTrack.name == potentialNewTrackData.name &&
+        currentIntendedTrack.artistName == potentialNewTrackData.artistName &&
+        currentIntendedTrack.youtubeVideoId == potentialNewTrackData.youtubeVideoId // Compare based on ID too
+       ) {
+      log("[MusicPlayerNotifier] Track '${track.trackName}' (ID: ${potentialNewTrackData.youtubeVideoId}) is already the current/intended track.");
       if (state.status == PlayerStatus.paused ||
           state.status == PlayerStatus.completed) {
         log("[MusicPlayerNotifier] Resuming playback for '${track.trackName}'.");
@@ -154,7 +175,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         log("[MusicPlayerNotifier] Already loading or playing '${track.trackName}'. Ignoring request.");
         return;
       }
-      if (state.status == PlayerStatus.error) {
+       if (state.status == PlayerStatus.error) {
         log("[MusicPlayerNotifier] Track '${track.trackName}' is in error state. Allowing reload attempt.");
       } else {
         log("[MusicPlayerNotifier] Track '${track.trackName}' matches but state is ${state.status}. Ignoring.");
@@ -167,87 +188,82 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       return;
     }
 
-    log("[MusicPlayerNotifier] Setting current track provider and player state to loading for '${track.trackName}'.");
-    _ref.read(currentTrackProvider.notifier).state = initialTrackData;
-    state = state.copyWith(
-      status: PlayerStatus.loading,
-      position: Duration.zero,
-      bufferedPosition: Duration.zero,
-      clearDuration: true,
-      clearError: true,
+    log("Track data: ${track.toJson()}");
+
+    // if (track.videoId == null || track.videoId!.isEmpty) {
+    //    log("[MusicPlayerNotifier] loadTrack Error: Track is missing YouTube URL/ID.");
+    //    state = state.copyWith(
+    //        status: PlayerStatus.error,
+    //        errorMessage: 'Track data is missing the required YouTube link.');
+    //    _ref.read(currentTrackProvider.notifier).state = null;
+    //    return;
+    // }
+
+    Map<String, dynamic> data;
+    if(track.videoId != null && track.videoId!.isNotEmpty) {
+      data = await getAudioStreamUrlByID(track.videoId!);
+    } else {
+      data = await getAudioStreamUrl("${track.trackName} - ${track.artistName}");
+    }
+    
+    final videoId = data['videoId'] ?? track.videoId;
+    final audioUrl = data['audioUrl'];
+    final _track = track.copyWith(videoId: videoId);
+    
+
+    // try {
+    //     if (videoId == null) {
+    //       throw Exception("Could not parse Video ID from '${track.videoId}'.");
+    //     }
+    // } catch (e) {
+    //      log("[MusicPlayerNotifier] loadTrack Error: Failed to parse Video ID - $e");
+    //      if (!mounted) return;
+    //      state = state.copyWith(
+    //          status: PlayerStatus.error,
+    //          errorMessage: "Invalid YouTube link provided: ${e.toString()}");
+    //      _ref.read(currentTrackProvider.notifier).state = null;
+    //      return;
+    // }
+
+    log("[MusicPlayerNotifier] Setting current track provider and player state to loading for '${track.trackName}' (ID: $videoId).");
+    final initialTrackData = CurrentTrack(
+      name: track.trackName,
+      artistName: track.artistName,
+      thumbnailUrl: track.imageUrl,
+      // youtubeVideoId: videoId,
     );
+     _ref.read(currentTrackProvider.notifier).state = initialTrackData;
+    
 
     try {
       log("[MusicPlayerNotifier] Stopping current playback if any...");
       await _audioPlayer.stop();
 
-      final query = "${track.artistName} - ${track.trackName} Official";
-      log("[MusicPlayerNotifier] Searching YouTube for: '$query'");
-      final searchResults = await _ytExplode.search.search(query);
-
-      if (!mounted) {
-        log("[MusicPlayerNotifier] loadTrack aborted after YT search: Notifier disposed.");
-        return;
-      }
-
-      if (searchResults.isEmpty) {
-        throw Exception("No YouTube results found for '$query'");
-      }
-
-      final video = searchResults.first;
-      log("[MusicPlayerNotifier] Found YouTube video: ${video.title} (ID: ${video.id})");
-
       final definitiveTrackData = CurrentTrack(
         name: track.trackName,
         artistName: track.artistName,
-        youtubeVideoId: video.id.value,
+        youtubeVideoId: videoId,
         thumbnailUrl: track.imageUrl,
       );
-
-      final db = Database();
-      final postTrack = track.copyWith(ytUrl: video.url);
-      await db.writeTrack(postTrack, video.duration?.inSeconds);
-
       if (!mounted) {
         log("[MusicPlayerNotifier] loadTrack aborted before updating provider with details: Notifier disposed.");
         return;
       }
       _ref.read(currentTrackProvider.notifier).state = definitiveTrackData;
       log("[MusicPlayerNotifier] Updated currentTrackProvider with details: $definitiveTrackData");
-
-      log("[MusicPlayerNotifier] Fetching audio stream manifest...");
-      // final manifest =
-      //     await _ytExplode.videos.streamsClient.getManifest(video.id);
-
-      final manifest = await _ytExplode.videos.streamsClient.getManifest(VideoId(video.id.value));
+      // final manifest = await _ytExplode.videos.streamsClient.getManifest(videoId);
 
       if (!mounted) {
         log("[MusicPlayerNotifier] loadTrack aborted after fetching manifest: Notifier disposed.");
         return;
       }
 
-      if (manifest.audioOnly.isEmpty) {
-        throw Exception("No audio streams available for video ${video.id.value}");
-      }
+      // final audioStreamInfo = manifest.audioOnly.withHighestBitrate();
+      // log("[MusicPlayerNotifier] Selected audio stream: Codec=${audioStreamInfo.codec}, Bitrate=${audioStreamInfo.bitrate}, Size=${audioStreamInfo.size}");
 
-      final bestAudio = manifest.audioOnly.withHighestBitrate();
 
-      final audioStreamInfo = manifest.audioOnly
-              .where((s) =>
-                  s.codec.mimeType == 'audio/mp4' ||
-                  s.codec.mimeType == 'audio/webm')
-              .sortByBitrate()
-              .lastOrNull ??
-          manifest.audioOnly.sortByBitrate().lastOrNull;
-
-      if (audioStreamInfo == null) {
-        throw Exception("No suitable audio-only streams found for this video.");
-      }
-      log("[MusicPlayerNotifier] Selected audio stream: Codec=${audioStreamInfo.codec}, Bitrate=${audioStreamInfo.bitrate}");
-
-      log("[MusicPlayerNotifier] Setting audio source...");
-
-      await _audioPlayer.setUrl(bestAudio.url.toString(),
+      // log("[MusicPlayerNotifier] Setting audio source URL: ${audioStreamInfo.url}");
+      await _audioPlayer.setUrl(audioUrl,
           initialPosition: Duration.zero, preload: true);
 
       if (!mounted) {
@@ -257,14 +273,20 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       log("[MusicPlayerNotifier] Audio source set. Initiating playback...");
       await play();
-    } on VideoUnplayableException catch (e) {
-      log("[MusicPlayerNotifier] loadTrack Error: Video is unplayable - $e");
-      if (!mounted) return;
-      state = state.copyWith(
-          status: PlayerStatus.error,
-          errorMessage: 'Video is unplayable/restricted.');
-      if (mounted) _ref.read(currentTrackProvider.notifier).state = null;
-    } catch (e, stackTrace) {
+      database.writeTrack(_track, state.duration?.inSeconds);
+      firebaseService.writeLastPlayedTrack(track.trackId);
+
+
+    }
+    // on VideoUnplayableException catch (e) {
+    //   log("[MusicPlayerNotifier] loadTrack Error: Video is unplayable - $e");
+    //   if (!mounted) return;
+    //   state = state.copyWith(
+    //       status: PlayerStatus.error,
+    //       errorMessage: 'Video is unplayable/restricted.');
+    //   if (mounted) _ref.read(currentTrackProvider.notifier).state = null;
+    // }
+    catch (e, stackTrace) {
       log("[MusicPlayerNotifier] loadTrack Error: Generic error - $e\n$stackTrace",
           error: e, stackTrace: stackTrace);
       if (!mounted) return;
@@ -283,11 +305,12 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
     if (state.status == PlayerStatus.paused ||
         state.status == PlayerStatus.completed ||
-        state.status == PlayerStatus.ready) {
+        state.status == PlayerStatus.ready) { // Added ready state check
       log("[MusicPlayerNotifier] Attempting to play audio...");
       try {
         await _audioPlayer.play();
         log("[MusicPlayerNotifier] Audio playback initiated via player.");
+        // State update will happen via _listenToPlayerState
       } catch (e, stackTrace) {
         log("[MusicPlayerNotifier] Error during _audioPlayer.play(): $e",
             error: e, stackTrace: stackTrace);
@@ -308,14 +331,16 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       return;
     }
 
-    if (state.isPlaying || state.status == PlayerStatus.loading) {
+    if (state.isPlaying || state.status == PlayerStatus.loading) { // Pause can be called during loading too
       log("[MusicPlayerNotifier] Attempting to pause audio...");
       try {
         await _audioPlayer.pause();
         log("[MusicPlayerNotifier] Audio pause initiated via player.");
+        // State update will happen via _listenToPlayerState
       } catch (e, stackTrace) {
         log("[MusicPlayerNotifier] Error during _audioPlayer.pause(): $e",
             error: e, stackTrace: stackTrace);
+        // Potentially set error state or just log, depends on desired behavior
       }
     } else {
       log("[MusicPlayerNotifier] Pause ignored: Status is ${state.status}");
@@ -333,22 +358,23 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         (state.status == PlayerStatus.playing ||
             state.status == PlayerStatus.paused ||
             state.status == PlayerStatus.completed ||
-            state.status == PlayerStatus.ready)) {
+             state.status == PlayerStatus.ready)) { // Added ready state
       final seekPosition = position.isNegative
           ? Duration.zero
           : (position > state.duration! ? state.duration! : position);
       log("[MusicPlayerNotifier] Seeking to: $seekPosition (Duration: ${state.duration})");
 
+      // Optimistically update position while seeking
       state = state.copyWith(isSeeking: true, position: seekPosition);
       try {
         await _audioPlayer.seek(seekPosition);
         log("[MusicPlayerNotifier] Seek initiated via player.");
-
+        // Position stream might update faster, isSeeking helps prevent jumps
         if (mounted) state = state.copyWith(isSeeking: false);
       } catch (e, stackTrace) {
         log("[MusicPlayerNotifier] Error during _audioPlayer.seek(): $e",
             error: e, stackTrace: stackTrace);
-        if (mounted) state = state.copyWith(isSeeking: false);
+        if (mounted) state = state.copyWith(isSeeking: false); // Ensure isSeeking is reset on error
       }
     } else {
       log("[MusicPlayerNotifier] Seek ignored: Status is ${state.status} or duration is invalid (${state.duration})");
@@ -364,24 +390,18 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     try {
       await _audioPlayer.stop();
       log("[MusicPlayerNotifier] Player stop initiated.");
+      // State update to initial should happen via _listenToPlayerState reacting to idle
+      // But we explicitly reset related state here for immediate feedback
       if (!mounted) return;
-      state = state.copyWith(
-        status: PlayerStatus.initial,
-        position: Duration.zero,
-        bufferedPosition: Duration.zero,
-        clearDuration: true,
-        clearError: true,
-      );
-      if (mounted) _ref.read(currentTrackProvider.notifier).state = null;
+       state = const MusicPlayerState(); // Reset to default initial state
+       if (mounted) _ref.read(currentTrackProvider.notifier).state = null;
+
     } catch (e, stackTrace) {
       log("[MusicPlayerNotifier] Error stopping player: $e",
           error: e, stackTrace: stackTrace);
-      if (mounted) {
-        state = state.copyWith(
-            status: PlayerStatus.initial,
-            position: Duration.zero,
-            clearError: true,
-            clearDuration: true);
+       if (mounted) {
+        // Reset state even on error during stop
+        state = const MusicPlayerState();
         _ref.read(currentTrackProvider.notifier).state = null;
       }
     }
@@ -403,7 +423,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   void dispose() {
     log('[MusicPlayerNotifier] Disposing instance.');
     _cancelSubscriptions();
-
+    // Don't dispose the globally injected audioPlayer here
+    // audioPlayer.dispose();
+    // ytExplode.close(); // Close if it's instance-specific, but it's global here
     super.dispose();
   }
 }

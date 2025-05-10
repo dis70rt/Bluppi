@@ -6,7 +6,14 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/config.dart';
 
 class Database {
-  final Dio dio = Dio();
+  final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: AppConfig.apiURL,
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      sendTimeout: const Duration(seconds: 10),
+    ),
+  );
   Future<void> writeTrack(Track track, int? duration) async {
     final postData = {
       'id': track.trackId,
@@ -20,14 +27,39 @@ class Database {
       'play_count': track.playcount,
       'duration': duration ?? 0,
       'popularity': track.popularityScore,
-      'youtube_url': track.ytUrl ?? '',
+      'video_id': track.videoId ?? '',
     };
 
-    log(postData.toString());
     final response = await dio.post(
-      '${AppConfig.apiURL}/write_track',
+      '/write-track',
       data: jsonEncode(postData),
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
     );
     log("[Response] ${response.statusCode}");
+  }
+
+  Future<Map<String, dynamic>> getTrack(String trackId) async {
+    final response = await dio.get(
+      '/track/$trackId',
+      // queryParameters: {'id': trackId},
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      log("[Response] ${response.data}");
+      return response.data;
+    } else {
+      throw Exception('Failed to load track');
+    }
   }
 }

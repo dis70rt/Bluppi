@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/firebase_options.dart';
-// import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:synqit/routes.dart';
 
 final String? apiURL = dotenv.env["API_URL"];

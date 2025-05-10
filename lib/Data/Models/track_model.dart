@@ -12,7 +12,7 @@ class Track extends Equatable {
   final int playcount;
   final String lastFmUrl;
   final int popularityScore;
-  final String? ytUrl;
+  final String? videoId;
 
   const Track({
     required this.trackId,
@@ -26,8 +26,25 @@ class Track extends Equatable {
     required this.playcount,
     required this.lastFmUrl,
     required this.popularityScore,
-    this.ytUrl,
+    this.videoId,
   });
+
+  factory Track.empty() {
+    return const Track(
+      trackId: 0,
+      artistName: 'Unknown Artist',
+      trackName: 'Unknown Track',
+      albumName: 'Unknown Album',
+      imageUrl: '',
+      previewUrl: '',
+      genres: <String>[],
+      listeners: 0,
+      playcount: 0,
+      lastFmUrl: '',
+      popularityScore: 0,
+      videoId: null,
+    );
+  }
 
   factory Track.fromJson(Map<String, dynamic> json) {
     final List<dynamic> genreListRaw = json['genres'] as List<dynamic>? ?? [];
@@ -46,7 +63,7 @@ class Track extends Equatable {
       playcount: json['playcount'] as int? ?? 0,
       lastFmUrl: json['lastFmUrl'] as String? ?? '',
       popularityScore: json['popularityScore'] as int? ?? 0,
-      ytUrl: json['ytUrl'] as String?,
+      videoId: json['videoId'] as String?,
     );
   }
 
@@ -63,7 +80,7 @@ class Track extends Equatable {
       'playcount': playcount,
       'lastFmUrl': lastFmUrl,
       'popularityScore': popularityScore,
-      'ytUrl': ytUrl,
+      'videoId': videoId,
     };
   }
 
@@ -79,7 +96,7 @@ class Track extends Equatable {
     int? playcount,
     String? lastFmUrl,
     int? popularityScore,
-    String? ytUrl,
+    String? videoId,
   }) {
     return Track(
       trackId: trackId ?? this.trackId,
@@ -93,7 +110,7 @@ class Track extends Equatable {
       playcount: playcount ?? this.playcount,
       lastFmUrl: lastFmUrl ?? this.lastFmUrl,
       popularityScore: popularityScore ?? this.popularityScore,
-      ytUrl: ytUrl ?? this.ytUrl,
+      videoId: videoId ?? this.videoId,
     );
   }
 
@@ -110,7 +127,7 @@ class Track extends Equatable {
         playcount,
         lastFmUrl,
         popularityScore,
-        ytUrl,
+        videoId,
       ];
 }
 

@@ -39,7 +39,6 @@ final userProvider = FutureProvider<UserModel?>((ref) async {
       final userData = docSnapshot.data();
       if (userData != null) {
         log("Firestore document found for user: ${authUser.uid}. Parsing data.");
-
         return UserModel.fromFirestore(userData, authUser.uid);
       } else {
         log('Error: Firestore document exists for user ${authUser.uid} but data is null.');

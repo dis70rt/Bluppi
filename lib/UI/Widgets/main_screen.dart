@@ -26,11 +26,9 @@ class MainScreenWidget extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true,
-      body: Expanded(
-        child: IndexedStack(
-          index: selectedIndex,
-          children: _pages,
-        ),
+      body: IndexedStack(
+        index: selectedIndex,
+        children: _pages,
       ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(

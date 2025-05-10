@@ -9,7 +9,7 @@ final dioProvider = Provider<Dio>((ref) {
   final options = BaseOptions(
     baseUrl: AppConfig.apiURL,
     connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 15),
   );
   return Dio(options);
 });
