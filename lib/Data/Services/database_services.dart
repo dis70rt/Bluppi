@@ -56,7 +56,6 @@ class Database {
     );
 
     if (response.statusCode == 200) {
-      log("[Response] ${response.data}");
       return response.data;
     } else {
       throw Exception('Failed to load track');

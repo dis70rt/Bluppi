@@ -25,7 +25,6 @@ class UserServices {
     final trackId = doc?['trackId'];
     if (trackId != null) {
       final data = await database.getTrack(trackId.toString());
-      // log("Track 111: $_track");
       if (data.isNotEmpty) {
         final track = Track.fromJson(data['track']);
         return {

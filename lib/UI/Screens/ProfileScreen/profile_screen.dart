@@ -139,7 +139,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 );
                               }
                               final Track track = snapshot.data!['track'];
-                              log("Track 111: $track");
                               final playedAt =
                                   snapshot.data!['lastPlayed'];
                               return Column(

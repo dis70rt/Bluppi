@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Data/Services/firebase_services.dart';
 import 'package:synqit/Provider/track_search_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';
@@ -18,7 +19,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-
+  final firebaseServices = FirebaseServices();
   String _currentQuery = '';
 
   Timer? _debounce;
@@ -78,11 +79,87 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildBodyContent(AsyncValue<List<Track>> searchAsyncValue) {
     if (_currentQuery.isEmpty) {
-      return const Center(
-        child: Text(
-          "Enter a search term to begin",
-          style: TextStyle(color: Colors.white54),
-        ),
+      // return const Center(
+      //   child: Text(
+      //     "Enter a search term to begin",
+      //     style: TextStyle(color: Colors.white54),
+      //   ),
+      // );
+      return FutureBuilder(
+        future: firebaseServices.getRecentlySearched(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Skeletonizer(
+                child: ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index) => const Skeletonizer(
+                    child: ListTile(
+                      // contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.history, color: Colors.white54),
+                      title: Text(
+                        "Recent Searches",
+                        style: TextStyle(color: Colors.white70, fontSize: 16),
+                      ),
+                      trailing: Icon(Icons.clear, color: Colors.white38),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }
+
+          final recents = snapshot.data ?? [];
+          if (recents.isEmpty) {
+            return const Center(
+              child: Text(
+                "What are you looking for?",
+                style: TextStyle(color: Colors.white54),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: recents.length,
+            itemBuilder: (context, index) {
+              final query = recents[index];
+
+              return ListTile(
+                contentPadding: const EdgeInsets.only(left: 16.0),
+                leading: const Icon(Icons.history, color: Colors.white54),
+                title: Text(
+                  query,
+                  style: const TextStyle(color: Colors.white70, fontSize: 16),
+                ),
+                trailing: IconButton(
+                  icon:
+                      const Icon(Icons.clear, color: Colors.white38, size: 20),
+                  onPressed: () async {
+                    await firebaseServices.deleteRecentlySearched(query);
+                    if (mounted) {
+                      setState(() {
+                        // Setting state forces the FutureBuilder to re-fetch the data.
+                      });
+                    }
+                  },
+                ),
+                onTap: () {
+                  _searchController.text = query;
+                  _debounce?.cancel();
+                  _searchController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: _searchController.text.length));
+
+                  if (mounted) {
+                    setState(() {
+                      _currentQuery = query;
+                    });
+                  }
+                  firebaseServices.recentlySearched(query);
+                },
+              );
+            },
+          );
+        },
       );
     }
 
@@ -159,7 +236,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     onPressed: () {
                       _searchController.clear();
                       _debounce?.cancel();
-            
+
                       if (mounted) {
                         setState(() {
                           _currentQuery = '';
@@ -173,7 +250,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             if (_debounce?.isActive ?? false) _debounce!.cancel();
             _debounce = Timer(const Duration(milliseconds: 500), () {
               final trimmedValue = value.trim();
-            
+
               if (_currentQuery != trimmedValue && mounted) {
                 setState(() {
                   _currentQuery = trimmedValue;
@@ -182,13 +259,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             });
           },
           onSubmitted: (value) {
-            _debounce?.cancel();
             final trimmedValue = value.trim();
             if (_currentQuery != trimmedValue && mounted) {
               setState(() {
                 _currentQuery = trimmedValue;
               });
             }
+            firebaseServices.recentlySearched(trimmedValue);
+            _debounce?.cancel();
           },
           textInputAction: TextInputAction.search,
         ),
