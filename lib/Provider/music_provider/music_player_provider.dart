@@ -5,16 +5,16 @@ import 'package:just_audio/just_audio.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
 import 'package:synqit/Data/Services/firebase_services.dart';
+import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Data/Services/youtube_services.dart';
 // Removed: import 'package:synqit/s/database_services.dart'; // Assuming not needed elsewhere now
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 // import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:synqit/Data/Models/current_track_model.dart';
+import 'package:synqit/Provider/music_provider/queue_provider.dart';
 import 'music_player_state.dart';
 
 final audioPlayer = AudioPlayer();
-final database = Database();
-final firebaseService = FirebaseServices();
 // final ytExplode = YoutubeExplode();
 
 final musicPlayerProvider =
@@ -30,6 +30,11 @@ final musicPlayerProvider =
 });
 
 class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
+  final database = Database();
+  final firebaseService = FirebaseServices();
+  final apiServices = ApiServices();
+  bool isHandlingCompletion = false;
+
   final Ref _ref;
   final AudioPlayer _audioPlayer;
   // final YoutubeExplode _ytExplode;
@@ -46,7 +51,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   void _listenToPlayerState() {
     log('[MusicPlayerNotifier] Subscribing to player streams.');
     _playerStateSubscription =
-        _audioPlayer.playerStateStream.listen((playerState) {
+        _audioPlayer.playerStateStream.listen((playerState) async {
       if (!mounted) return;
 
       final isPlaying = playerState.playing;
@@ -92,10 +97,35 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         case ProcessingState.completed:
           newStatus = PlayerStatus.completed;
           if (currentStatus != newStatus) {
-            if (!mounted) return;
-
             final endPosition = state.duration ?? Duration.zero;
             state = state.copyWith(status: newStatus, position: endPosition);
+
+            if (!isHandlingCompletion) {
+              isHandlingCompletion = true;
+              try {
+                await skipToNext();
+              } catch (e) {
+                log("[MusicPlayerNotifier] Error during skipToNext: $e");
+              } finally {
+                isHandlingCompletion = false;
+              }
+            }
+
+            // final queue = _ref.read(queueProvider);
+            // if (queue.next != null) {
+            //   await skipToNext();
+            // } else {
+            //   final recs = await apiServices.getNextRecommendatedTrack(queue.current!);
+            //   log("[MusicPlayerNotifier] Next recommended track: $recs");
+            //   if (recs != null) {
+            //     await loadTrack(recs);
+            //     _ref.read(queueProvider.notifier).add(recs);
+            //   } else {
+            //     log("[MusicPlayerNotifier] No next track available.");
+            //   }
+            // }
+
+            if (!mounted) return;
           }
           break;
       }
@@ -149,21 +179,22 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       clearDuration: true,
       clearError: true,
     );
-    
-    // Use ytUrl (assuming it contains the Video ID or full URL) for comparison
+
     final currentIntendedTrack = _ref.read(currentTrackProvider);
     final potentialNewTrackData = CurrentTrack(
-      name: track.trackName,
-      artistName: track.artistName, // Corrected from trackName
-      thumbnailUrl: track.imageUrl,
-      youtubeVideoId: track.videoId // Store ID for comparison if available
-    );
+        name: track.trackName,
+        artistName: track.artistName, // Corrected from trackName
+        thumbnailUrl: track.imageUrl,
+        youtubeVideoId: track.videoId // Store ID for comparison if available
+        );
 
     if (currentIntendedTrack != null &&
-        currentIntendedTrack.name == potentialNewTrackData.name &&
-        currentIntendedTrack.artistName == potentialNewTrackData.artistName &&
-        currentIntendedTrack.youtubeVideoId == potentialNewTrackData.youtubeVideoId // Compare based on ID too
-       ) {
+            currentIntendedTrack.name == potentialNewTrackData.name &&
+            currentIntendedTrack.artistName ==
+                potentialNewTrackData.artistName &&
+            currentIntendedTrack.youtubeVideoId ==
+                potentialNewTrackData.youtubeVideoId // Compare based on ID too
+        ) {
       log("[MusicPlayerNotifier] Track '${track.trackName}' (ID: ${potentialNewTrackData.youtubeVideoId}) is already the current/intended track.");
       if (state.status == PlayerStatus.paused ||
           state.status == PlayerStatus.completed) {
@@ -175,7 +206,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         log("[MusicPlayerNotifier] Already loading or playing '${track.trackName}'. Ignoring request.");
         return;
       }
-       if (state.status == PlayerStatus.error) {
+      if (state.status == PlayerStatus.error) {
         log("[MusicPlayerNotifier] Track '${track.trackName}' is in error state. Allowing reload attempt.");
       } else {
         log("[MusicPlayerNotifier] Track '${track.trackName}' matches but state is ${state.status}. Ignoring.");
@@ -200,16 +231,16 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     // }
 
     Map<String, dynamic> data;
-    if(track.videoId != null && track.videoId!.isNotEmpty) {
+    if (track.videoId != null && track.videoId!.isNotEmpty) {
       data = await getAudioStreamUrlByID(track.videoId!);
     } else {
-      data = await getAudioStreamUrl("${track.trackName} - ${track.artistName}");
+      data =
+          await getAudioStreamUrl("${track.trackName} - ${track.artistName}");
     }
-    
+
     final videoId = data['videoId'] ?? track.videoId;
     final audioUrl = data['audioUrl'];
-    final _track = track.copyWith(videoId: videoId);
-    
+    final trackToQueue = track.copyWith(videoId: videoId);
 
     // try {
     //     if (videoId == null) {
@@ -232,12 +263,13 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       thumbnailUrl: track.imageUrl,
       // youtubeVideoId: videoId,
     );
-     _ref.read(currentTrackProvider.notifier).state = initialTrackData;
-    
+    _ref.read(currentTrackProvider.notifier).state = initialTrackData;
 
     try {
       log("[MusicPlayerNotifier] Stopping current playback if any...");
       await _audioPlayer.stop();
+
+      _ref.read(queueProvider.notifier).playTrack(trackToQueue);
 
       final definitiveTrackData = CurrentTrack(
         name: track.trackName,
@@ -261,7 +293,6 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       // final audioStreamInfo = manifest.audioOnly.withHighestBitrate();
       // log("[MusicPlayerNotifier] Selected audio stream: Codec=${audioStreamInfo.codec}, Bitrate=${audioStreamInfo.bitrate}, Size=${audioStreamInfo.size}");
 
-
       // log("[MusicPlayerNotifier] Setting audio source URL: ${audioStreamInfo.url}");
       await _audioPlayer.setUrl(audioUrl,
           initialPosition: Duration.zero, preload: true);
@@ -273,10 +304,10 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       log("[MusicPlayerNotifier] Audio source set. Initiating playback...");
       await play();
-      database.writeTrack(_track, state.duration?.inSeconds);
+      database.writeTrack(trackToQueue, state.duration?.inSeconds);
       firebaseService.writeLastPlayedTrack(track.trackId);
-
-
+      firebaseService.historyTrack(track.trackId);
+      // _ref.read(queueProvider.notifier).add(track);
     }
     // on VideoUnplayableException catch (e) {
     //   log("[MusicPlayerNotifier] loadTrack Error: Video is unplayable - $e");
@@ -305,12 +336,12 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
     if (state.status == PlayerStatus.paused ||
         state.status == PlayerStatus.completed ||
-        state.status == PlayerStatus.ready) { // Added ready state check
+        state.status == PlayerStatus.ready) {
+      // Added ready state check
       log("[MusicPlayerNotifier] Attempting to play audio...");
       try {
         await _audioPlayer.play();
         log("[MusicPlayerNotifier] Audio playback initiated via player.");
-        // State update will happen via _listenToPlayerState
       } catch (e, stackTrace) {
         log("[MusicPlayerNotifier] Error during _audioPlayer.play(): $e",
             error: e, stackTrace: stackTrace);
@@ -331,16 +362,14 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       return;
     }
 
-    if (state.isPlaying || state.status == PlayerStatus.loading) { // Pause can be called during loading too
+    if (state.isPlaying || state.status == PlayerStatus.loading) {
       log("[MusicPlayerNotifier] Attempting to pause audio...");
       try {
         await _audioPlayer.pause();
         log("[MusicPlayerNotifier] Audio pause initiated via player.");
-        // State update will happen via _listenToPlayerState
       } catch (e, stackTrace) {
         log("[MusicPlayerNotifier] Error during _audioPlayer.pause(): $e",
             error: e, stackTrace: stackTrace);
-        // Potentially set error state or just log, depends on desired behavior
       }
     } else {
       log("[MusicPlayerNotifier] Pause ignored: Status is ${state.status}");
@@ -358,7 +387,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         (state.status == PlayerStatus.playing ||
             state.status == PlayerStatus.paused ||
             state.status == PlayerStatus.completed ||
-             state.status == PlayerStatus.ready)) { // Added ready state
+            state.status == PlayerStatus.ready)) {
+      // Added ready state
       final seekPosition = position.isNegative
           ? Duration.zero
           : (position > state.duration! ? state.duration! : position);
@@ -374,7 +404,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       } catch (e, stackTrace) {
         log("[MusicPlayerNotifier] Error during _audioPlayer.seek(): $e",
             error: e, stackTrace: stackTrace);
-        if (mounted) state = state.copyWith(isSeeking: false); // Ensure isSeeking is reset on error
+        if (mounted)
+          state = state.copyWith(
+              isSeeking: false); // Ensure isSeeking is reset on error
       }
     } else {
       log("[MusicPlayerNotifier] Seek ignored: Status is ${state.status} or duration is invalid (${state.duration})");
@@ -390,20 +422,100 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     try {
       await _audioPlayer.stop();
       log("[MusicPlayerNotifier] Player stop initiated.");
-      // State update to initial should happen via _listenToPlayerState reacting to idle
-      // But we explicitly reset related state here for immediate feedback
-      if (!mounted) return;
-       state = const MusicPlayerState(); // Reset to default initial state
-       if (mounted) _ref.read(currentTrackProvider.notifier).state = null;
 
+      if (!mounted) return;
+      state = const MusicPlayerState();
+      if (mounted) _ref.read(currentTrackProvider.notifier).state = null;
     } catch (e, stackTrace) {
       log("[MusicPlayerNotifier] Error stopping player: $e",
           error: e, stackTrace: stackTrace);
-       if (mounted) {
-        // Reset state even on error during stop
+      if (mounted) {
         state = const MusicPlayerState();
         _ref.read(currentTrackProvider.notifier).state = null;
       }
+    }
+  }
+
+  // Future<void> skipToNext() async {
+  //   final queue = _ref.read(queueProvider);
+  //   log("Is Current Track: ${queue.current?.trackName}");
+  //   if (queue.next == null) {
+  //     final recs = await apiServices.getNextRecommendedTrack(queue.current!.artistName, queue.current!.trackName);
+  //     if (recs == null) {
+  //       log("[MusicPlayerNotifier] No next recommended track available.");
+  //       return;
+  //     }
+  //     await loadTrack(recs);
+  //     _ref.read(queueProvider.notifier).add(recs);
+  //     log("[MusicPlayerNotifier] Next recommended track: $recs");
+  //     return;
+  //   }
+  //   final nextTrack = _ref.read(queueProvider.notifier).next();
+  //   if (nextTrack != null) {
+  //     log("[MusicPlayerNotifier] Skipping to next track: ${nextTrack.trackName}");
+  //     await loadTrack(nextTrack);
+  //   }
+  // }
+
+  Future<void> skipToNext() async {
+    if (isHandlingCompletion && !mounted) return;
+    isHandlingCompletion = true;
+
+    try {
+      final queueState = _ref.read(queueProvider);
+      final current = queueState.current;
+      log("Is Current Track: ${current?.trackName}");
+      if (current == null) {
+        log("[MusicPlayerNotifier] No current track to skip from.");
+
+        if (state.status == PlayerStatus.completed) {
+          await stop();
+        }
+        return;
+      }
+
+      final upcoming = queueState.next;
+      if (upcoming != null) {
+        log("[MusicPlayerNotifier] Skipping to next queued track: ${upcoming.trackName}");
+        _ref.read(queueProvider.notifier).next();
+        await loadTrack(upcoming);
+        return;
+      }
+
+      log("[MusicPlayerNotifier] No next track in queue, fetching recommendation for ${current.trackName}");
+      final rec = await apiServices.getNextRecommendedTrack(
+        current.artistName,
+        current.trackName,
+      );
+
+      if (rec == null) {
+        log("[MusicPlayerNotifier] No next recommended track available. Stopping.");
+        if (!mounted) return;
+        await stop();
+        return;
+      }
+
+      log("[MusicPlayerNotifier] Next recommended track found: ${rec.trackName}");
+
+      _ref.read(queueProvider.notifier).playTrack(rec);
+      await loadTrack(rec);
+    } catch (e, stackTrace) {
+      log("[MusicPlayerNotifier] Error during skipToNext: $e",
+          error: e, stackTrace: stackTrace);
+
+      if (!mounted) return;
+      state = state.copyWith(
+          status: PlayerStatus.error,
+          errorMessage: "Failed to skip track: ${e.toString()}");
+    } finally {
+      isHandlingCompletion = false;
+    }
+  }
+
+  Future<void> skipToPrevious() async {
+    final prevTrack = _ref.read(queueProvider.notifier).previous();
+    if (prevTrack != null) {
+      await loadTrack(prevTrack);
     }
   }
 

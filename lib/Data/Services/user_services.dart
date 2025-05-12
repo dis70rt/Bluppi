@@ -1,43 +1,77 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:synqit/Data/Models/last_track_model.dart';
 import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Services/database_services.dart';
-import 'package:synqit/Data/Services/firebase_services.dart';
 import 'package:synqit/config.dart';
 
-class UserServices {
-  final database = Database();
-  final firebaseServices = FirebaseServices();
+class ApiServices {
   final Dio dio = Dio(
     BaseOptions(
-      baseUrl: AppConfig.apiURL, // Replace with your API URL
+      baseUrl: AppConfig.apiURL,
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       sendTimeout: const Duration(seconds: 10),
     ),
   );
 
-  Future<Map<String, dynamic>?> getLastPlayedSong() async {
-    final doc = await firebaseServices.getLastPlayedTrack();
-    final trackId = doc?['trackId'];
-    if (trackId != null) {
-      final data = await database.getTrack(trackId.toString());
-      if (data.isNotEmpty) {
-        final track = Track.fromJson(data['track']);
-        return {
-          "track": track,
-          "lastPlayed": doc!['lastPlayed'],
-        };
+  Future<Track?> getNextRecommendedTrack(String artist, String track) async {
+    try {
+      final encodedArtist = Uri.encodeComponent(artist);
+      final encodedTrack = Uri.encodeComponent(track);
+      final response = await dio.get(
+        '/recommendations?artist=$encodedArtist&track=$encodedTrack',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      log("[Response] ${response.data['recommendation']}");
+
+      if (response.statusCode == 200) {
+        return Track.fromJson(response.data['recommendation']);
       } else {
-        log("No track found with ID: $trackId");
+        log("Error: ${response.statusCode}");
         return null;
       }
-    } else {
-      log("No last played track found.");
+    } catch (e) {
+      log("Error fetching next recommended track: $e");
       return null;
     }
   }
+
+  // Future<Track?> getNextRecommendatedTrack(Track track) async {
+  //   final recommeded = await getNextRecommended(track.artistName, track.trackName);
+  //   try {
+  //     final encodedQuery = Uri.encodeComponent("${recommeded!['artist']} - ${recommeded['track']}");
+  //     final response = await dio.get(
+  //       '/search?query=$encodedQuery&limit=1',
+  //       options: Options(
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Accept': 'application/json',
+  //         },
+  //       ),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = response.data['results'][0];
+  //       if (data != null) {
+  //         final track = Track.fromJson(data);
+  //         return track;
+  //       } else {
+  //         log("No recommended track found.");
+  //         return null;
+  //       }
+  //     } else {
+  //       log("Error: ${response.statusCode}");
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     log("Error fetching next recommended track: $e");
+  //     return null;
+  //   }
+  // } 
 }

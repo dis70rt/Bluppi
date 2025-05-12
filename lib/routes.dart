@@ -32,5 +32,10 @@ final GoRouter router = GoRouter(
       path: '/main-screen',
       builder: (context, state) => const MainScreenWidget(),
     ),
+    // GoRoute(
+    //   name: '/history',
+    //   path: '/history',
+    //   builder: (context, state) => const HistoryScreen(),
+    // ),
   ],
 );

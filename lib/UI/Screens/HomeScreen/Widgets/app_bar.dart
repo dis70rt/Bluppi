@@ -1,11 +1,64 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Data/Services/database_services.dart';
+import 'package:synqit/Data/Services/firebase_services.dart';
 
 import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/history_widget.dart';
+import 'package:synqit/UI/Widgets/main_screen.dart';
+
+final firebaseServices = FirebaseServices();
+final database = Database();
+
+Future<List<HistoryTrack>> getHistoryTracks() async {
+  try {
+    final historyEntries = await firebaseServices.getHistoryTracks();
+    if (historyEntries.isEmpty) {
+      return [];
+    }
+
+    final List<Future<HistoryTrack?>> historyTrackFutures = historyEntries.map((historyEntry) {
+      final trackId = historyEntry['trackId'];
+      final playedAt = historyEntry['playedAt'];
+
+      return Future<HistoryTrack?>(() async {
+        final trackJson = await database.getTrack(trackId.toString());
+        final track = Track.fromJson(trackJson['track']);
+        // log("Tracks: $trackJson");
+        return HistoryTrack(track: track, playedAt: playedAt);
+      });
+    }).toList();
+
+    final List<HistoryTrack?> results = await Future.wait(historyTrackFutures);
+    final List<HistoryTrack> validHistoryTracks = results.whereType<HistoryTrack>().toList();
+
+    return validHistoryTracks;
+
+    // final List<HistoryTrack?> historyTracks = [];
+    // for(var historyEntry in historyEntries) {
+    //   final trackId = historyEntry['trackId'];
+    //   final playedAt = historyEntry['playedAt'];
+
+    //   final _track = await database.getTrack(trackId);
+    //   final track = Track.fromJson(_track);
+    //   historyTracks.add(HistoryTrack(track: track, playedAt: playedAt));
+    // }
+
+    // return historyTracks;
+
+  } catch (e, stackTrace) {
+    log('Error fetching history tracks: $e');
+    debugPrint('StackTrace: $stackTrace');
+    return [];
+  }
+}
 
 Widget iconButton(
     {required void Function() onPressed,
@@ -35,6 +88,26 @@ Widget iconButton(
   );
 }
 
+OverlayEntry? _currentOverlayEntry;
+void showHistoryOverlay(BuildContext context, List<HistoryTrack> historyItems) {
+  _currentOverlayEntry?.remove();
+  _currentOverlayEntry = null;
+  
+  _currentOverlayEntry = OverlayEntry(
+    builder: (context) => HistoryOverlay(
+      historyItems: historyItems,
+      onDismiss: () {
+        _currentOverlayEntry?.remove();
+        _currentOverlayEntry = null;
+      },
+    ),
+  );
+
+  Overlay.of(context).insert(_currentOverlayEntry!);
+}
+
+
+
 PreferredSizeWidget homeAppBar(BuildContext context, WidgetRef ref) {
   final userAsync = ref.watch(userProvider);
 
@@ -54,6 +127,8 @@ PreferredSizeWidget homeAppBar(BuildContext context, WidgetRef ref) {
             title: const Text("Welcome!"),
           );
         }
+
+        
 
         return AppBar(
           toolbarHeight: appBarHeight,
@@ -105,9 +180,7 @@ PreferredSizeWidget homeAppBar(BuildContext context, WidgetRef ref) {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: iconButton(
-                onPressed: () async {
-                  context.pushNamed("/search");
-                } ,
+                onPressed: () => ref.read(mainScreenIndexProvider.notifier).state = 2,
                 icon: Icons.search,
               ),
             ),
@@ -115,8 +188,9 @@ PreferredSizeWidget homeAppBar(BuildContext context, WidgetRef ref) {
               padding: const EdgeInsets.only(
                   right: horizontalPadding - 4.0, left: 4.0),
               child: iconButton(
-                onPressed: () {
-                  print("History tapped");
+                onPressed: () async {
+                  final historyTracks = await getHistoryTracks();
+                  showHistoryOverlay(context, historyTracks);
                 },
                 icon: Icons.history,
               ),

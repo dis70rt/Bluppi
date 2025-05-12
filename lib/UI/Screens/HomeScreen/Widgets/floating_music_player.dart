@@ -8,6 +8,8 @@ import 'dart:ui';
 
 import 'package:synqit/Provider/music_provider/music_player_state.dart';
 
+final _isExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
+
 class FloatingMusicPlayer extends ConsumerWidget {
   const FloatingMusicPlayer({super.key});
 
@@ -23,6 +25,8 @@ class FloatingMusicPlayer extends ConsumerWidget {
     final playerState = ref.watch(musicPlayerProvider);
     final currentTrack = ref.watch(currentTrackProvider);
     final playerNotifier = ref.read(musicPlayerProvider.notifier);
+    final isExpanded = ref.watch(_isExpandedProvider);
+    final expansionNotifier = ref.read(_isExpandedProvider.notifier);
 
     if (currentTrack == null) {
       return const SizedBox.shrink();
@@ -30,7 +34,7 @@ class FloatingMusicPlayer extends ConsumerWidget {
 
     final position = playerState.position;
     final duration = playerState.duration;
-    final bufferedPosition = playerState.bufferedPosition;
+    // final bufferedPosition = playerState.bufferedPosition;
     final bool hasDuration = duration != null && duration.inMilliseconds > 0;
 
     double progress =
@@ -44,10 +48,10 @@ class FloatingMusicPlayer extends ConsumerWidget {
         : progress;
     sliderValue = sliderValue.clamp(0.0, 1.0);
 
-    double bufferedProgress = hasDuration
-        ? (bufferedPosition.inMilliseconds / duration.inMilliseconds)
-        : 0.0;
-    bufferedProgress = bufferedProgress.clamp(0.0, 1.0);
+    // double bufferedProgress = hasDuration
+    //     ? (bufferedPosition.inMilliseconds / duration.inMilliseconds)
+    //     : 0.0;
+    // bufferedProgress = bufferedProgress.clamp(0.0, 1.0);
 
     return Material(
       color: Colors.transparent,
@@ -60,22 +64,29 @@ class FloatingMusicPlayer extends ConsumerWidget {
             child: Material(
               color: Colors.black.withOpacity(0.5),
               elevation: 0,
-              child: Container(
-                height: 70,
-                // padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    border: Border.all(
-
-                        color: Colors.white.withOpacity(0.1), width: 1
-                    )),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: InkWell(
+                onTap: () {
+                  expansionNotifier.update((state) => !state);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  height: isExpanded ? 150.0 : 70.0,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: isExpanded ? 12.0 : 0.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12.0),
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.1), width: 1)),
+                  child: Column(
+                    mainAxisAlignment: isExpanded
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(4.0),
@@ -127,7 +138,8 @@ class FloatingMusicPlayer extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            if (hasDuration)
+                            if (hasDuration &&
+                                !isExpanded) // Show time only when minimized
                               Text(
                                 '${_formatDuration(position)} / ${_formatDuration(duration)}',
                                 style: TextStyle(
@@ -135,53 +147,107 @@ class FloatingMusicPlayer extends ConsumerWidget {
                                     fontSize: 11),
                               ),
                             const SizedBox(width: 8),
+                            if(!isExpanded)
                             _buildPlayPauseButton(context, playerState,
                                 playerNotifier, currentTrack != null),
+                            if (isExpanded)
+                              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
                           ],
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 1,
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          
-                          trackHeight: 2,
-                          thumbShape: const RoundSliderThumbShape(
-                              enabledThumbRadius: 0.0, elevation: 1.0),
-                          overlayShape:
-                              const RoundSliderOverlayShape(overlayRadius: 10.0),
-                          thumbColor: Colors.white,
-                          activeTrackColor: Colors.white.withOpacity(0.8),
-                          inactiveTrackColor: Colors.white.withOpacity(0.3),
-                          overlayColor: Colors.white.withAlpha(0x29),
-                          trackShape: const RectangularSliderTrackShape(),
-                          activeTickMarkColor: Colors.transparent,
-                          inactiveTickMarkColor: Colors.transparent,
+                      
+                      // if (hasDuration)
+                        SizedBox(
+                          height: isExpanded ? 14 : 1,
+                          child: SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              trackHeight: isExpanded ? 4.0 : 2.0,
+                              thumbShape: isExpanded
+                                  ? const RoundSliderThumbShape(
+                                      enabledThumbRadius: 5.0, elevation: 3.0)
+                                  : const RoundSliderThumbShape(
+                                      enabledThumbRadius: 0.0, elevation: 1.0),
+                              overlayShape: isExpanded
+                                  ? const RoundSliderOverlayShape(
+                                      overlayRadius: 15.0)
+                                  : const RoundSliderOverlayShape(
+                                      overlayRadius: 10.0),
+                              thumbColor: Colors.white,
+                              activeTrackColor: Colors.white.withOpacity(0.8),
+                              inactiveTrackColor: Colors.white.withOpacity(0.3),
+                              overlayColor: Colors.white.withAlpha(0x29),
+                              trackShape: const RectangularSliderTrackShape(),
+                              activeTickMarkColor: Colors.transparent,
+                              inactiveTickMarkColor: Colors.transparent,
+                            ),
+                            child: Slider(
+                              value: sliderValue,
+                              min: 0.0,
+                              max: 1.0,
+                              onChanged: isExpanded &&
+                                      hasDuration &&
+                                      playerState.status != PlayerStatus.error
+                                  ? (value) {}
+                                  : null,
+                              onChangeStart: isExpanded &&
+                                      hasDuration &&
+                                      playerState.status != PlayerStatus.error
+                                  ? (_) {}
+                                  : null,
+                              onChangeEnd: isExpanded &&
+                                      hasDuration &&
+                                      playerState.status != PlayerStatus.error
+                                  ? (value) {
+                                      final seekPosition = duration * value;
+                                      playerNotifier.seek(seekPosition);
+                                    }
+                                  : null,
+                            ),
+                          ),
                         ),
-                        child: Slider(
-                          value: sliderValue,
-                          min: 0.0,
-                          max: 1.0,
-                          onChanged: hasDuration &&
-                                  playerState.status != PlayerStatus.error
-                              ? (value) {}
-                              : null,
-                          onChangeStart: hasDuration &&
-                                  playerState.status != PlayerStatus.error
-                              ? (_) {}
-                              : null,
-                          onChangeEnd: hasDuration &&
-                                  playerState.status != PlayerStatus.error
-                              ? (value) {
-                                  final seekPosition = duration * value;
-                                  playerNotifier.seek(seekPosition);
-                                }
-                              : null,
+                      if (isExpanded)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6.0, bottom: 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _formatDuration(position),
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.6),
+                                    fontSize: 12),
+                              ),
+                              IconButton(
+                              icon: const Icon(Icons.skip_previous,
+                                  color: Colors.white),
+                              iconSize: 40.0,
+                              padding: EdgeInsets.zero,
+                              tooltip: 'Previous',
+                              onPressed: () => ref.read(musicPlayerProvider.notifier).skipToPrevious(),
+                            ),
+                            const SizedBox(width: 8),
+                            _buildPlayPauseButton(context, playerState,
+                                  playerNotifier, currentTrack != null),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const Icon(Icons.skip_next,
+                                  color: Colors.white),
+                              iconSize: 40.0,
+                              padding: EdgeInsets.zero,
+                              tooltip: 'Next',
+                              onPressed: () => ref.read(musicPlayerProvider.notifier).skipToNext(),
+                            ),
+                              Text(
+                                _formatDuration(duration),
+                                style: TextStyle(
+                                    color: Colors.white.withOpacity(0.6),
+                                    fontSize: 12),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

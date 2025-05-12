@@ -1,17 +1,16 @@
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Services/user_services.dart';
+import 'package:synqit/Data/Services/firebase_services.dart';
 import 'package:synqit/Provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/app_bar.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_row.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/following_stats.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/profile_bio.dart';
+import 'package:synqit/Utils/datetime.dart';
 
 import 'Widgets/music_player.dart';
 
@@ -25,7 +24,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
-    final userServices = UserServices();
+    final firebaseServices = FirebaseServices();
     // final spotifyService =
     //     SpotifyService(ref.read(authProvider).value!.accessToken);
     return user.when(
@@ -81,7 +80,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               user.followers, user.following, user.following),
                           const SizedBox(height: 40),
                           FutureBuilder(
-                            future: userServices.getLastPlayedSong(),
+                            future: firebaseServices.getLastPlayedSong(),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -197,19 +196,4 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Future<void> refresh() async {
     final refresh = ref.refresh(userProvider);
   }
-
-  String formatTrackPlayedAt(Timestamp playedAt) {
-  final dateTime = playedAt.toDate();
-  final now = DateTime.now();
-
-  final isToday = dateTime.year == now.year &&
-      dateTime.month == now.month &&
-      dateTime.day == now.day;
-
-  if (isToday) {
-    return DateFormat.jm().format(dateTime);
-  } else {
-    return DateFormat('d MMMM yyyy').format(dateTime);
-  }
-}
 }

@@ -1,9 +1,33 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Data/Services/database_services.dart';
 
 class FirebaseServices {
   final auth = FirebaseAuth.instance;
+  final database = Database();
+
+  Future<Map<String, dynamic>?> getLastPlayedSong() async {
+    final doc = await getLastPlayedTrack();
+    final trackId = doc?['trackId'];
+    if (trackId != null) {
+      final data = await database.getTrack(trackId.toString());
+      if (data.isNotEmpty) {
+        final track = Track.fromJson(data['track']);
+        return {
+          "track": track,
+          "lastPlayed": doc!['lastPlayed'],
+        };
+      } else {
+        log("No track found with ID: $trackId");
+        return null;
+      }
+    } else {
+      log("No last played track found.");
+      return null;
+    }
+  }
 
   void writeLastPlayedTrack(int trackId) async {
     try {
@@ -108,6 +132,70 @@ class FirebaseServices {
       log("Successfully deleted recently searched query: $query");
     } catch (e) {
       log("Error deleting recently searched query: $e");
+    }
+  }
+
+  Future<void> historyTrack(int trackId) async {
+    try {
+      final user = auth.currentUser;
+      final docRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('historyTracks')
+          .doc(trackId.toString());
+
+      await docRef.set({
+        'trackId': trackId,
+        'playedAt': FieldValue.serverTimestamp(),
+      });
+
+      log("Successfully wrote history track.");
+    } catch (e) {
+      log("Error writing history track: $e");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getHistoryTracks() async {
+    try {
+      final user = auth.currentUser;
+      final collectionRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('historyTracks');
+
+      final querySnapshot = await collectionRef
+          .orderBy('playedAt', descending: true)
+          .limit(10)
+          .get();
+
+      final List<Map<String, dynamic>> tracks = [];
+      for (var doc in querySnapshot.docs) {
+        tracks.add(doc.data());
+      }
+
+      return tracks;
+    } catch (e) {
+      log("Error fetching history tracks: $e");
+      return [];
+    }
+  }
+  Future<void> deleteAllHistoryTracks() async {
+    try {
+      final user = auth.currentUser;
+      final collectionRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .collection('historyTracks');
+
+      final querySnapshot = await collectionRef.get();
+
+      for (var doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      log("Successfully deleted all history tracks.");
+    } catch (e) {
+      log("Error deleting all history tracks: $e");
     }
   }
 }
