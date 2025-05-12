@@ -219,8 +219,6 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       return;
     }
 
-    log("Track data: ${track.toJson()}");
-
     // if (track.videoId == null || track.videoId!.isEmpty) {
     //    log("[MusicPlayerNotifier] loadTrack Error: Track is missing YouTube URL/ID.");
     //    state = state.copyWith(
