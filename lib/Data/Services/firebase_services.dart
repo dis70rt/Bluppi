@@ -1,11 +1,14 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
 
 class FirebaseServices {
   final auth = FirebaseAuth.instance;
+  final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   final database = Database();
 
   Future<Map<String, dynamic>?> getLastPlayedSong() async {
@@ -179,6 +182,7 @@ class FirebaseServices {
       return [];
     }
   }
+
   Future<void> deleteAllHistoryTracks() async {
     try {
       final user = auth.currentUser;
@@ -199,5 +203,52 @@ class FirebaseServices {
     }
   }
 
-  
+  Future<String?> uploadFile(File file, String storagePath,
+      {bool isProfilePic = false}) async {
+    log("Attempting to upload file to storagePath: $storagePath");
+    final user = auth.currentUser;
+    if (user == null) {
+      log("Upload failed: User not authenticated.");
+      throw Exception("User not authenticated.");
+    }
+
+    if (storagePath.isEmpty ||
+        storagePath.startsWith('/') ||
+        storagePath.endsWith('/')) {
+      log("Upload failed: Invalid storagePath provided: '$storagePath'");
+      throw ArgumentError(
+          "Invalid storagePath: Must not be empty or start/end with '/'. Example: 'profile_pictures'.");
+    }
+
+    try {
+      final parts = file.path.split('.');
+      final extension = parts.isNotEmpty && parts.length > 1 ? parts.last : '';
+
+      String fileName = '';
+      if (isProfilePic) {
+        fileName = '${user.uid}${extension.isNotEmpty ? ".$extension" : ""}';
+      } else {
+        fileName = '$fileName${extension.isNotEmpty ? ".$extension" : ""}';
+      }
+
+      final storageRef = firebaseStorage
+          .ref()
+          .child('users')
+          .child(user.uid)
+          .child(storagePath)
+          .child(fileName);
+
+      log("Starting upload to: gs://${storageRef.bucket}/${storageRef.fullPath}");
+      final uploadTask = storageRef.putFile(file);
+      final snapshot = await uploadTask.whenComplete(() {
+         log("Upload task completed for path: ${storageRef.fullPath}");
+      });
+
+      return await snapshot.ref.getDownloadURL();
+
+    } catch (e) {
+      log("Error uploading file: $e");
+      return null;
+    }
+  }
 }

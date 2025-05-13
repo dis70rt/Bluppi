@@ -1,16 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Constants/data.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/app_bar.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/username_dialog.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Widgets/edit_profile_widgets.dart';
 import 'package:synqit/Utils/datetime.dart';
+import 'package:synqit/Utils/image_upload.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -26,7 +31,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late TextEditingController _bioController;
 
   String? _selectedCountry;
+  bool isPickingImage = false;
+  bool isUploading = false;
 
+  File? _selectedProfilePic;
   UserModel? _initialUserData;
 
   @override
@@ -59,7 +67,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
   }
 
-  void _saveProfile() {
+  void _saveProfile() async {
+    if (isUploading) return;
+
+    setState(() {
+      isUploading = true;
+    });
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -68,11 +82,40 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ? _selectedCountry
               : null;
 
+      String? newProfilPicUrl;
+      if (_selectedProfilePic != null) {
+        newProfilPicUrl = await firebaseServices.uploadFile(_selectedProfilePic!, "profile_picture", isProfilePic: true);
+        if (newProfilPicUrl == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.black,
+              content: Row(
+                children: [
+                  Icon(Icons.error, color: Colors.redAccent),
+                  SizedBox(width: 8),
+                  Text('Error uploading image',
+                      style: TextStyle(color: Colors.white)),
+                ],
+              ),
+              behavior: SnackBarBehavior.floating,
+              margin: EdgeInsets.all(16.0),
+              duration: Duration(seconds: 3),
+            ),
+          );
+          return;
+        }
+      }
+
       final updatedUserData = _initialUserData?.copyWith(
         name: _nameController.text,
         bio: _bioController.text.isEmpty ? null : _bioController.text,
         country: countryToSave,
+        profilePic: newProfilPicUrl
       );
+
+      setState(() {
+        isUploading = false;
+      });
 
       if (updatedUserData != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -163,6 +206,48 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     }
   }
 
+  void _changeProfilePic() async {
+    if (isPickingImage) return;
+
+    final XFile? pickedImage = await ImageHandler().pickImage(context);
+    if (pickedImage == null) return;
+
+    setState(() {
+      isPickingImage = true;
+    });
+
+    final File? imageToUpload = await ImageHandler().compress(pickedImage.path);
+    if (imageToUpload == null) {
+      setState(() {
+        isPickingImage = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.black,
+            content: Row(
+              children: [
+                Icon(Icons.warning_rounded, color: Colors.orangeAccent),
+                SizedBox(width: 8),
+                Text('Image compression failed',
+                    style: TextStyle(color: Colors.white)),
+              ],
+            ),
+            behavior: SnackBarBehavior.floating,
+            margin: EdgeInsets.all(16.0),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    } else {
+      setState(() {
+        _selectedProfilePic = imageToUpload;
+        isPickingImage = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userAsyncValue = ref.watch(userProvider);
@@ -227,17 +312,54 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     children: [
                       const SizedBox(height: 80),
                       Center(
-                        child: CircleAvatar(
-                          radius: 60,
-                          backgroundImage: user.profilePic != null &&
-                                  user.profilePic!.isNotEmpty
-                              ? NetworkImage(user.profilePic!)
-                              : null,
-                          child: user.profilePic == null ||
-                                  user.profilePic!.isEmpty
-                              ? const Icon(Icons.person,
-                                  size: 60, color: Colors.white70)
-                              : null,
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 60,
+                              backgroundImage: _selectedProfilePic != null
+                                  ? FileImage(_selectedProfilePic!)
+                                      as ImageProvider<Object>?
+                                  : user.profilePic != null &&
+                                          user.profilePic!.isNotEmpty
+                                      ? NetworkImage(user.profilePic!)
+                                      : null,
+                              child: user.profilePic == null ||
+                                      user.profilePic!.isEmpty
+                                  ? const Icon(Icons.person,
+                                      size: 60, color: Colors.white70)
+                                  : null,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: isPickingImage ? null : _changeProfilePic,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppColors.primary,
+                                    border: Border.all(
+                                        color: AppColors.background, width: 2),
+                                  ),
+                                  child: isPickingImage
+                                      ? const SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.camera_alt,
+                                          color: AppColors.textPrimary,
+                                          size: 20,
+                                        ),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -308,19 +430,34 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: _saveProfile,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
+                      SizedBox(
+                        height: 55,
+                        // width: ,
+                        child: ElevatedButton(
+                          onPressed: _saveProfile,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                            ),
+                            backgroundColor: AppColors.primaryAltDeep,
+                            foregroundColor: AppColors.textPrimary,
                           ),
-                          backgroundColor: AppColors.primaryAltDeep,
-                          foregroundColor: AppColors.textPrimary,
-                        ),
-                        child: const Text(
-                          'Save Profile',
-                          style: TextStyle(fontSize: 18),
+                          child: isUploading ?
+                              const SizedBox(
+                                width: 25,
+                                height: 25,
+                                child: CircularProgressIndicator(
+                                  strokeCap: StrokeCap.round,
+                                  strokeWidth: 3,
+                                  color: AppColors.textPrimary,
+                                ),
+                              )
+                            : 
+                           const Text(
+                            'Save Profile',
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
