@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:synqit/Provider/auth_provider.dart';
 import 'package:synqit/Provider/user_provider.dart';
 
@@ -56,7 +57,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   leading:
                       const Icon(Icons.person_outline, color: Colors.white),
-                  onTap: () {},
+                  onTap: () => context.push('/edit-profile'),
                 ),
                 ListTile(
                   title: const Text(

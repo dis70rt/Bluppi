@@ -5,7 +5,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
 import 'package:synqit/Data/Services/firebase_services.dart';
-import 'package:synqit/Data/Services/user_services.dart';
+import 'package:synqit/Data/Services/api_services.dart';
 import 'package:synqit/Data/Services/youtube_services.dart';
 // Removed: import 'package:synqit/s/database_services.dart'; // Assuming not needed elsewhere now
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';

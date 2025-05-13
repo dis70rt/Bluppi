@@ -1,10 +1,12 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:synqit/UI/Screens/ProfileSettingScreen/profile_settings_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:synqit/UI/Widgets/main_screen.dart';
 
-Widget profileAppBar(String? profilePic, BuildContext context) {
+Widget profileAppBar(String? profilePic, BuildContext context, WidgetRef ref) {
   return Positioned(
     top: 0,
     left: 0,
@@ -37,18 +39,12 @@ Widget profileAppBar(String? profilePic, BuildContext context) {
             children: [
               IconButton(
                 icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+                onPressed: () => ref.read(mainScreenIndexProvider.notifier).state = 0,
               ),
               IconButton(
                 icon:
                     const Icon(FontAwesomeIcons.ellipsis, color: Colors.white),
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsScreen(),
-                  ),
-                ),
+                onPressed: () => context.push('/settings'),
               ),
             ],
           ),

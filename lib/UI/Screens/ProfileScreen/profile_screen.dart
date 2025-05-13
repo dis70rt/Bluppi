@@ -1,4 +1,6 @@
+import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,8 +27,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
     final firebaseServices = FirebaseServices();
-    // final spotifyService =
-    //     SpotifyService(ref.read(authProvider).value!.accessToken);
     return user.when(
       data: (user) {
         if (user == null) return const Center(child: Text('No user logged in'));
@@ -34,7 +34,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           backgroundColor: const Color(0XFF181818),
           body: Stack(
             children: [
-              profileAppBar(user.profilePic, context),
+              profileAppBar(user.profilePic, context, ref),
               Positioned(
                 top: 100,
                 left: 0,
@@ -53,7 +53,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
               ),
               Positioned(
-                bottom: 150,
+                bottom: 225,
                 left: 0,
                 right: 0,
                 child: Padding(
@@ -119,8 +119,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                             ],
                                           ),
                                         ),
-                                        MiniMusicPlayer(
-                                            track: Track.empty()),
+                                        miniPlayerLoading()
+                                        // MiniMusicPlayer(
+                                        //     track: Track.empty()),
                                       ],
                                     ),
                                   ),
@@ -138,8 +139,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 );
                               }
                               final Track track = snapshot.data!['track'];
-                              final playedAt =
-                                  snapshot.data!['lastPlayed'];
+                              final playedAt = snapshot.data!['lastPlayed'];
                               return Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -194,6 +194,89 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> refresh() async {
+    // ignore: unused_local_variable
     final refresh = ref.refresh(userProvider);
+  }
+
+  Widget miniPlayerLoading() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(
+                  color: Colors.black.withOpacity(0.3),
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            color: Colors.grey.shade700,
+                            width: 50,
+                            height: 50,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Unknown Track",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "Unknown Artist",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(Icons.play_arrow, size: 40)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

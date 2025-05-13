@@ -79,6 +79,36 @@ class UserModel extends ChangeNotifier {
     };
   }
 
+  UserModel copyWith({
+    String? id,
+    String? username,
+    String? name,
+    String? email,
+    int? phone,
+    String? country,
+    String? profilePic,
+    DateTime? createdAt,
+    int? followers,
+    int? following,
+    List<String>? favoriteGenres,
+    String? bio,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      country: country ?? this.country,
+      profilePic: profilePic ?? this.profilePic,
+      createdAt: createdAt ?? this.createdAt,
+      followers: followers ?? this.followers,
+      following: following ?? this.following,
+      favoriteGenres: favoriteGenres ?? this.favoriteGenres,
+      bio: bio ?? this.bio,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -121,5 +151,56 @@ class UserModel extends ChangeNotifier {
   @override
   String toString() {
     return 'UserModel(id: $id, username: $username, name: $name, email: $email)';
+  }
+
+  void updateData(Map<String, dynamic> newData) {
+    if (newData.containsKey('username')) {
+      username = newData['username'] as String? ?? '';
+    }
+    if (newData.containsKey('name')) {
+      name = newData['name'] as String? ?? 'No Name Provided';
+    }
+    if (newData.containsKey('email')) {
+      email = newData['email'] as String? ?? '';
+    }
+    if (newData.containsKey('phone')) {
+      phone = newData['phone'] as int?;
+    }
+    if (newData.containsKey('country')) {
+      country = newData['country'] as String?;
+    }
+    if (newData.containsKey('profilePic')) {
+      profilePic = newData['profilePic'] as String?;
+    }
+
+    // if (newData.containsKey('followers')) {
+    //   followers = newData['followers'] as int? ?? 0;
+    // }
+    // if (newData.containsKey('following')) {
+    //   following = newData['following'] as int? ?? 0;
+    // }
+    if (newData.containsKey('favoriteGenres')) {
+      favoriteGenres = (newData['favoriteGenres'] as List<dynamic>?)
+          ?.map((e) => e?.toString() ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
+    if (newData.containsKey('bio')) {
+      bio = newData['bio'] as String?;
+    }
+
+    notifyListeners();
+  }
+
+  void incrementFollowing() {
+    following++;
+    notifyListeners();
+  }
+
+  void decrementFollowing() {
+    if (following > 0) {
+      following--;
+      notifyListeners();
+    }
   }
 }

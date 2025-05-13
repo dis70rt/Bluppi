@@ -14,7 +14,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    final userAsync = ref.read(userProvider);
+    final userAsync = ref.watch(userProvider);
     return userAsync.when(
       data: (user) {
         if (user == null) {

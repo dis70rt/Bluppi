@@ -6,8 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/firebase_options.dart';
 import 'package:synqit/routes.dart';
 
-final String? apiURL = dotenv.env["API_URL"];
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");

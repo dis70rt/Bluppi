@@ -20,15 +20,12 @@ String formatTimeAgo(Timestamp timestamp) {
     final days = difference.inDays;
     return '$days ${days == 1 ? 'day' : 'days'} ago';
   } else if (difference.inDays < 30) {
-    // Approximate weeks
     final weeks = difference.inDays ~/ 7;
     return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
   } else if (difference.inDays < 365) {
-    // Approximate months
     final months = difference.inDays ~/ 30;
     return '$months ${months == 1 ? 'month' : 'months'} ago';
   } else {
-    // 365 days or more
     final years = difference.inDays ~/ 365;
     return '$years ${years == 1 ? 'year' : 'years'} ago';
   }
@@ -47,4 +44,38 @@ String formatTrackPlayedAt(Timestamp playedAt) {
   } else {
     return DateFormat('d MMMM yyyy').format(dateTime);
   }
+}
+
+String formatDate(DateTime date) {
+  final day = date.day;
+  final month = date.month;
+  final year = date.year;
+
+  String daySuffix = 'th';
+  if (day == 1 || day == 21 || day == 31) {
+    daySuffix = 'st';
+  } else if (day == 2 || day == 22) {
+    daySuffix = 'nd';
+  } else if (day == 3 || day == 23) {
+    daySuffix = 'rd';
+  }
+
+  const monthNames = [
+    '',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+  final monthName = monthNames[month];
+
+  return '$day$daySuffix $monthName $year';
 }
