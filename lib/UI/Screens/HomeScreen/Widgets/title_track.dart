@@ -2,8 +2,10 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:synqit/Provider/music_provider/music_player_provider.dart';
 import 'package:synqit/Provider/music_provider/queue_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_preview_player.dart';
@@ -13,6 +15,8 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
   final imageUrl = track.imageUrl;
   final previewUrl = track.previewUrl;
   const double avatarSize = 50.0;
+  final currentTrack = ref.watch(currentTrackProvider);
+  bool isCurrent = currentTrack != null && track.trackId == currentTrack.trackId;
 
   return Dismissible(
     key: Key(track.trackId.toString()),
@@ -98,11 +102,20 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
           ),
         ),
       ),
-      title: Text(
-        track.trackName,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if(isCurrent)
+          Lottie.asset('assets/animations/music_playing.json', height: 20),
+          Flexible(
+            child: Text(
+              track.trackName,
+              style: TextStyle(color: isCurrent ? AppColors.accent : AppColors.textPrimaryStandard, fontWeight: FontWeight.w600),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
       subtitle: Text(
         track.artistName,

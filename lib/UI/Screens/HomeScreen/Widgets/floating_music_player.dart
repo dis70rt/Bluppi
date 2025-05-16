@@ -7,6 +7,7 @@ import 'package:synqit/Provider/music_provider/music_player_provider.dart';
 import 'dart:ui';
 
 import 'package:synqit/Provider/music_provider/music_player_state.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/queue_bottomsheet.dart';
 
 final _isExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
 
@@ -93,7 +94,7 @@ class FloatingMusicPlayer extends ConsumerWidget {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(4.0),
                                 child: CachedNetworkImage(
-                                  imageUrl: currentTrack.thumbnailUrl ?? '',
+                                  imageUrl: currentTrack.imageUrl,
                                   placeholder: (context, url) => Container(
                                     width: 45,
                                     height: 45,
@@ -121,7 +122,7 @@ class FloatingMusicPlayer extends ConsumerWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      currentTrack.name,
+                                      currentTrack.trackName,
                                       style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -156,35 +157,45 @@ class FloatingMusicPlayer extends ConsumerWidget {
                                     playerNotifier, currentTrack != null),
                               if (isExpanded)
                                 IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          backgroundColor: Colors.transparent,
+                                          sheetAnimationStyle: AnimationStyle(
+                                            curve: Curves.easeInOut,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                          ),
+
+                                          builder: (context) {
+                                            return queueBottomSheet();
+                                          });
+                                    },
                                     icon: const Icon(Icons.more_vert))
                             ],
                           ),
                         ),
                       ),
                       if (isExpanded) const SizedBox(height: 10),
-                      // if (hasDuration)
                       AnimatedCrossFade(
                         duration: const Duration(milliseconds: 100),
-                        crossFadeState: isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                        crossFadeState: isExpanded
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
                         firstChild: SizedBox(
-                          height: 1, // Thin line height
+                          height: 1,
                           child: SliderTheme(
                             data: SliderTheme.of(context).copyWith(
                               trackHeight: 1.0,
                               thumbShape: const RoundSliderThumbShape(
-                                  enabledThumbRadius: 0.0,
-                                  elevation: 0.0), // Hide thumb
+                                  enabledThumbRadius: 0.0, elevation: 0.0),
                               overlayShape: const RoundSliderOverlayShape(
-                                  overlayRadius: 0.0), // Hide overlay
+                                  overlayRadius: 0.0),
                               activeTrackColor: Colors.white.withOpacity(0.8),
                               inactiveTrackColor: Colors.white.withOpacity(0.3),
-                              thumbColor:
-                                  Colors.transparent, // Hide thumb color
-                              overlayColor:
-                                  Colors.transparent, // Hide overlay color
-                              trackShape:
-                                  const RoundedRectSliderTrackShape(), // Use the track shape
+                              thumbColor: Colors.transparent,
+                              overlayColor: Colors.transparent,
+                              trackShape: const RoundedRectSliderTrackShape(),
                             ),
                             child: Slider(
                               value: sliderValue,
@@ -198,44 +209,37 @@ class FloatingMusicPlayer extends ConsumerWidget {
                         ),
 
                         secondChild: SizedBox(
-                          height: 14, // Standard slider height space
+                          height: 14,
                           child: SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                              trackHeight: 4.0, // Thicker track
+                              trackHeight: 4.0,
                               thumbShape: const RoundSliderThumbShape(
-                                  enabledThumbRadius: 5.0,
-                                  elevation: 3.0), // Visible thumb
+                                  enabledThumbRadius: 5.0, elevation: 3.0),
                               overlayShape: const RoundSliderOverlayShape(
-                                  overlayRadius: 15.0), // Visible overlay
+                                  overlayRadius: 15.0),
                               thumbColor: Colors.white,
                               activeTrackColor: Colors.white.withOpacity(0.8),
                               inactiveTrackColor: Colors.white.withOpacity(0.3),
                               overlayColor: Colors.white.withAlpha(0x29),
-                              trackShape:
-                                  const RoundedRectSliderTrackShape(), // Use the track shape
+                              trackShape: const RoundedRectSliderTrackShape(),
                             ),
                             child: Slider(
                               value: sliderValue,
                               min: 0.0,
                               max: 1.0,
-                              // Re-enable interaction callbacks
                               onChanged: isExpanded &&
                                       hasDuration &&
                                       playerState.status != PlayerStatus.error
-                                  ? (value) {
-                                      // Optional: local state update for smoother dragging feedback
-                                    }
+                                  ? (value) {}
                                   : null,
                               onChangeStart: isExpanded &&
                                       hasDuration &&
                                       playerState.status != PlayerStatus.error
-                                  ? (_) {/* start seeking */}
+                                  ? (_) {}
                                   : null,
                               onChangeEnd: isExpanded &&
                                       hasDuration &&
-                                      playerState.status !=
-                                          PlayerStatus.error &&
-                                      duration != null // Add null check
+                                      playerState.status != PlayerStatus.error
                                   ? (value) {
                                       final seekPosition = duration * value;
                                       playerNotifier.seek(seekPosition);

@@ -19,6 +19,16 @@ class QueueState {
 
   Track? get previous =>
       (currentIndex - 1 >= 0) ? items[currentIndex - 1] : null;
+
+  QueueState copyWith({
+    List<Track>? items,
+    int? currentIndex,
+  }) {
+    return QueueState(
+      items: items ?? this.items,
+      currentIndex: currentIndex ?? this.currentIndex,
+    );
+  }
 }
 
 class QueueNotifier extends StateNotifier<QueueState> {
@@ -41,7 +51,7 @@ class QueueNotifier extends StateNotifier<QueueState> {
       return state.current;
     } else {
       if (state.currentIndex != index) {
-          state = QueueState(items: state.items, currentIndex: index);
+        state = QueueState(items: state.items, currentIndex: index);
       }
       return state.current;
     }
@@ -54,12 +64,26 @@ class QueueNotifier extends StateNotifier<QueueState> {
     return state.current;
   }
 
+  // void next() {
+  //   if (state.currentIndex + 1 >= state.items.length) return;
+  //   final idx = state.currentIndex + 1;
+  //   state = state.copyWith(currentIndex: idx);
+  // }
+
   Track? previous() {
     if (state.currentIndex - 1 < 0) return null;
     final idx = state.currentIndex - 1;
     state = QueueState(items: state.items, currentIndex: idx);
     return state.current;
   }
+
+  // void previous() {
+  //   if (state.currentIndex - 1 >= state.items.length) return;
+  //   final idx = state.currentIndex - 1;
+  //   state = state.copyWith(currentIndex: idx);
+  // }
+
+  void clear() => state = const QueueState();
 }
 
 final queueProvider =

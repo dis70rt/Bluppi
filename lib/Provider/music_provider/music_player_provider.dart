@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:synqit/Data/Models/track_model.dart';
@@ -183,17 +184,16 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     final currentIntendedTrack = _ref.read(currentTrackProvider);
     final potentialNewTrackData = CurrentTrack(
         name: track.trackName,
-        artistName: track.artistName, // Corrected from trackName
+        artistName: track.artistName,
         thumbnailUrl: track.imageUrl,
-        youtubeVideoId: track.videoId // Store ID for comparison if available
-        );
+        youtubeVideoId: track.videoId);
 
     if (currentIntendedTrack != null &&
-            currentIntendedTrack.name == potentialNewTrackData.name &&
+            currentIntendedTrack.trackName == potentialNewTrackData.name &&
             currentIntendedTrack.artistName ==
                 potentialNewTrackData.artistName &&
-            currentIntendedTrack.youtubeVideoId ==
-                potentialNewTrackData.youtubeVideoId // Compare based on ID too
+            currentIntendedTrack.videoId ==
+                potentialNewTrackData.youtubeVideoId
         ) {
       log("[MusicPlayerNotifier] Track '${track.trackName}' (ID: ${potentialNewTrackData.youtubeVideoId}) is already the current/intended track.");
       if (state.status == PlayerStatus.paused ||
@@ -255,13 +255,13 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     // }
 
     log("[MusicPlayerNotifier] Setting current track provider and player state to loading for '${track.trackName}' (ID: $videoId).");
-    final initialTrackData = CurrentTrack(
-      name: track.trackName,
-      artistName: track.artistName,
-      thumbnailUrl: track.imageUrl,
-      // youtubeVideoId: videoId,
-    );
-    _ref.read(currentTrackProvider.notifier).state = initialTrackData;
+    // final initialTrackData = CurrentTrack(
+    //   name: track.trackName,
+    //   artistName: track.artistName,
+    //   thumbnailUrl: track.imageUrl,
+    //   // youtubeVideoId: videoId,
+    // );
+    _ref.read(currentTrackProvider.notifier).state = track;
 
     try {
       log("[MusicPlayerNotifier] Stopping current playback if any...");
@@ -269,18 +269,34 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       _ref.read(queueProvider.notifier).playTrack(trackToQueue);
 
-      final definitiveTrackData = CurrentTrack(
-        name: track.trackName,
-        artistName: track.artistName,
-        youtubeVideoId: videoId,
-        thumbnailUrl: track.imageUrl,
+      final mediaItem = MediaItem(
+        id: videoId ?? track.trackId ?? DateTime.now().millisecondsSinceEpoch.toString(), // Unique ID (videoId is good)
+        title: track.trackName,
+        artist: track.artistName,
+        artUri: Uri.parse(track.imageUrl),
+        album: track.albumName,
+        duration: state.duration,
+        // You can add other details like album, genre, etc. here if available
+        // duration: ... // just_audio often discovers this automatically
       );
+
+      final audioSource = AudioSource.uri(
+        Uri.parse(audioUrl), 
+        tag: mediaItem,      
+      );
+
+      // final definitiveTrackData = CurrentTrack(
+      //   name: track.trackName,
+      //   artistName: track.artistName,
+      //   youtubeVideoId: videoId,
+      //   thumbnailUrl: track.imageUrl,
+      // );
       if (!mounted) {
         log("[MusicPlayerNotifier] loadTrack aborted before updating provider with details: Notifier disposed.");
         return;
       }
-      _ref.read(currentTrackProvider.notifier).state = definitiveTrackData;
-      log("[MusicPlayerNotifier] Updated currentTrackProvider with details: $definitiveTrackData");
+      _ref.read(currentTrackProvider.notifier).state = track;
+      // log("[MusicPlayerNotifier] Updated currentTrackProvider with details: $definitiveTrackData");
       // final manifest = await _ytExplode.videos.streamsClient.getManifest(videoId);
 
       if (!mounted) {
@@ -292,8 +308,15 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       // log("[MusicPlayerNotifier] Selected audio stream: Codec=${audioStreamInfo.codec}, Bitrate=${audioStreamInfo.bitrate}, Size=${audioStreamInfo.size}");
 
       // log("[MusicPlayerNotifier] Setting audio source URL: ${audioStreamInfo.url}");
-      await _audioPlayer.setUrl(audioUrl,
-          initialPosition: Duration.zero, preload: true);
+
+      // await _audioPlayer.setUrl(audioUrl,
+      //     initialPosition: Duration.zero, preload: true);
+
+      await _audioPlayer.setAudioSource(
+        audioSource,
+        initialPosition: Duration.zero,
+        preload: true,
+      );
 
       if (!mounted) {
         log("[MusicPlayerNotifier] loadTrack aborted after setting source: Notifier disposed.");
@@ -335,7 +358,6 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     if (state.status == PlayerStatus.paused ||
         state.status == PlayerStatus.completed ||
         state.status == PlayerStatus.ready) {
-      // Added ready state check
       log("[MusicPlayerNotifier] Attempting to play audio...");
       try {
         await _audioPlayer.play();
@@ -402,9 +424,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       } catch (e, stackTrace) {
         log("[MusicPlayerNotifier] Error during _audioPlayer.seek(): $e",
             error: e, stackTrace: stackTrace);
-        if (mounted)
-          state = state.copyWith(
-              isSeeking: false); // Ensure isSeeking is reset on error
+        if (mounted) {
+          state = state.copyWith(isSeeking: false);
+        }
       }
     } else {
       log("[MusicPlayerNotifier] Seek ignored: Status is ${state.status} or duration is invalid (${state.duration})");
@@ -456,7 +478,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   // }
 
   Future<void> skipToNext() async {
-    if (isHandlingCompletion && !mounted) return;
+    if (!mounted) return;
+    if (isHandlingCompletion) return;
     isHandlingCompletion = true;
 
     try {
@@ -532,10 +555,13 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   @override
   void dispose() {
     log('[MusicPlayerNotifier] Disposing instance.');
+    _playerStateSubscription?.cancel();
+    _positionSubscription?.cancel();
+    _bufferedPositionSubscription?.cancel();
+    _durationSubscription?.cancel();
     _cancelSubscriptions();
-    // Don't dispose the globally injected audioPlayer here
     // audioPlayer.dispose();
-    // ytExplode.close(); // Close if it's instance-specific, but it's global here
+    // ytExplode.close();
     super.dispose();
   }
 }
