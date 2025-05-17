@@ -204,7 +204,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     });
   }
 
-  void _listenToPlayerIndex() {
+    void _listenToPlayerIndex() {
     log('[MusicPlayerNotifier] Subscribing to player index stream.');
     _playerIndexSubscription =
         _audioPlayer.currentIndexStream.listen((index) async {
@@ -215,19 +215,23 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       final queueNotifier = _ref.read(queueProvider.notifier);
       final queueState = queueNotifier.state;
 
-      queueNotifier.syncIndex(index!);
+      if (index != null) {
+        queueNotifier.syncIndex(index);
 
-      if (index >= 0 && index < queueState.items.length) {
-        final track = queueState.items[index];
-        _ref.read(currentTrackProvider.notifier).state = track;
-        log("[MusicPlayerNotifier] Synced current track provider to: ${track.trackName} at index $index.");
+        if (index >= 0 && index < queueState.items.length) {
+          final track = queueState.items[index];
+          _ref.read(currentTrackProvider.notifier).state = track;
+          log("[MusicPlayerNotifier] Synced current track provider to: ${track.trackName} at index $index.");
 
-        _database.writeTrack(track, state.duration?.inSeconds);
-        _firebaseService.writeLastPlayedTrack(track.trackId);
-        _firebaseService.historyTrack(track.trackId);
+          _database.writeTrack(track, state.duration?.inSeconds);
+          _firebaseService.writeLastPlayedTrack(track.trackId);
+          _firebaseService.historyTrack(track.trackId);
+        } else {
+          _ref.read(currentTrackProvider.notifier).state = null;
+          log("[MusicPlayerNotifier] Player index indicates no current track.");
+        }
       } else {
-        _ref.read(currentTrackProvider.notifier).state = null;
-        log("[MusicPlayerNotifier] Player index indicates no current track.");
+        log("[MusicPlayerNotifier] Received null index from currentIndexStream, skipping sync.");
       }
     });
   }
@@ -624,10 +628,6 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       } catch (e, st) {
         log("[MusicPlayerNotifier] Error seeking to next player item: $e",
             error: e, stackTrace: st);
-        if (!mounted) return;
-        state = state.copyWith(
-            status: PlayerStatus.error,
-            errorMessage: "Failed to skip next: ${e.toString()}");
       }
     } else {
       log("[MusicPlayerNotifier] No next item in player source. Checking recommendations.");
@@ -645,6 +645,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         log("[MusicPlayerNotifier] End of queue reached (or source ended), fetching recommendation for ${currentTrack.trackName}");
 
         try {
+          state = state.copyWith(status: PlayerStatus.loading);
+
           final rec = await _apiServices.getNextRecommendedTrack(
             currentTrack.artistName,
             currentTrack.trackName,
@@ -655,31 +657,31 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
           if (rec != null) {
             log("[MusicPlayerNotifier] Recommendation found: ${rec.trackName}. Adding to queue and playing.");
 
+            _ref.read(currentTrackProvider.notifier).state = rec;
+
             _ref.read(queueProvider.notifier).playTrack(rec);
           } else {
             log("[MusicPlayerNotifier] No next recommended track available. Stopping playback.");
             await stop();
           }
-        } catch (e, st) {
-          log("[MusicPlayerNotifier] Error fetching recommendation: $e",
-              error: e, stackTrace: st);
-          if (!mounted) return;
-          state = state.copyWith(
-              status: PlayerStatus.error,
-              errorMessage:
-                  "Failed to get next recommendation: ${e.toString()}");
-          await stop();
+        } catch (e) {
+          log("[MusicPlayerNotifier] Error fetching next recommended track: $e",
+              error: e);
         } finally {
           _isFetchingRecommendation = false;
         }
-      } else {
-        log("[MusicPlayerNotifier] Cannot skip next. Queue is empty or current track is null.");
-        if (_audioPlayer.processingState != ProcessingState.idle) {
-          await stop();
-        }
-        _isFetchingRecommendation = false;
-      }
+      } else {}
     }
+  }
+
+  Future<void> prepareTrackForDisplay(Track track) async {
+    if (!mounted) return;
+
+    log("[MusicPlayerNotifier] Preparing track for immediate display: ${track.trackName}");
+
+    _ref.read(currentTrackProvider.notifier).state = track;
+
+    state = state.copyWith(status: PlayerStatus.loading);
   }
 
   Future<void> skipToPrevious() async {

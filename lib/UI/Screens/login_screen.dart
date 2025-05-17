@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,115 +10,225 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final size = MediaQuery.of(context).size;
+    final authState = ref.watch(authProvider);
+    final isLoading = authState is AsyncLoading;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Spotify.primary.withOpacity(0.8),
-              Colors.black87,
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.music_note,
-                        size: screenWidth * 0.25,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'SynqIt',
-                        style: TextStyle(
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Your Music, Your Vibe.',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white.withOpacity(0.8),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                _buildGoogleLoginButton(context, ref),
-                const SizedBox(height: 10),
-                Text(
-                  'By continuing, you agree to our Terms & Conditions.',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.white.withOpacity(0.6),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primaryAlt,
+                  AppColors.backgroundDark,
+                  AppColors.surfaceDark
+                ],
+              ),
             ),
           ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Spacer(flex: 2),
+                  _buildLogo(size),
+                  const Spacer(flex: 1),
+                  _buildTagline(),
+                  const Spacer(flex: 2),
+                  _buildGoogleLoginButton(context, ref, isLoading),
+                  const SizedBox(height: 16),
+                  _buildTermsText(),
+                  const Spacer(flex: 1),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogo(Size size) {
+    return Column(
+      children: [
+        Container(
+          width: size.width * 0.4,
+          height: size.width * 0.4,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                AppColors.primary.withOpacity(0.6),
+                AppColors.primaryDark.withOpacity(0.2),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.7, 1.0],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.5),
+                blurRadius: 30,
+                spreadRadius: 10,
+              ),
+            ],
+          ),
+          child: Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                'assets/images/launcher.png',
+                fit: BoxFit.contain,
+                width: size.width * 0.25,
+                height: size.width * 0.25,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildTagline() {
+    return Column(
+      children: [
+        const Text(
+          "Sync. Amplify. Connect.",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+            letterSpacing: 1.2,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "Experience music like never before.",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white.withOpacity(0.8),
+            height: 1.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGoogleLoginButton(
+      BuildContext context, WidgetRef ref, bool isLoading) {
+    return Container(
+      width: double.infinity,
+      height: 55,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryDark.withOpacity(0.3),
+            blurRadius: 12,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: isLoading
+            ? null
+            : () async {
+                try {
+                  await ref.read(authProvider.notifier).signInWithGoogle();
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Sign-In Failed: ${e.toString()}'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                }
+              },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white.withOpacity(0.9),
+          foregroundColor: Colors.black87,
+          disabledBackgroundColor: Colors.grey.withOpacity(0.3),
+          disabledForegroundColor: Colors.white70,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          elevation: 0,
+        ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: const FaIcon(
+                        FontAwesomeIcons.google,
+                        color: Colors.redAccent,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      "Continue with Google",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );
   }
 
-  Widget _buildGoogleLoginButton(BuildContext context, WidgetRef ref) {
-    return SizedBox(
-      width: double.infinity,
-      child: MaterialButton(
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        onPressed: () async {
-          try {
-            log("Google Sign-In button pressed");
-            await ref.read(authProvider.notifier).signInWithGoogle();
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Google Sign-In Failed: ${e.toString()}')));
-          }
-        },
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
+  Widget _buildTermsText() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Text(
+        'By continuing, you agree to our Terms of Service and Privacy Policy',
+        style: TextStyle(
+          fontSize: 12,
+          color: Colors.white.withOpacity(0.6),
+          height: 1.5,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const FaIcon(
-              FontAwesomeIcons.google,
-              color: Colors.redAccent,
-              size: 18,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              "Continue with Google",
-              style: TextStyle(
-                color: Colors.grey[800],
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

@@ -4,6 +4,9 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart' hide OAuthProvider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:synqit/Provider/music_provider/current_track_provider.dart';
+import 'package:synqit/Provider/music_provider/music_player_provider.dart';
+import 'package:synqit/Provider/music_provider/queue_provider.dart';
 
 class Auth {
   final User? user;
@@ -62,9 +65,24 @@ class AuthNotifier extends AsyncNotifier<Auth> {
 
   Future<void> signOut() async {
     try {
+      state = const AsyncValue.loading();
+
+      final musicPlayerNotifier = ref.read(musicPlayerProvider.notifier);
+      if (musicPlayerNotifier.mounted) {
+        await musicPlayerNotifier.stop();
+      }
+
+      ref.read(currentTrackProvider.notifier).state = null;
+      ref.read(queueProvider.notifier).clear();
+
       await _googleSignIn.signOut();
       await _firebaseAuth.signOut();
+
+      state = AsyncData(Auth(user: null));
+
+      log("User signed out successfully");
     } catch (e, stack) {
+      log("Error during sign out: $e");
       state = AsyncValue.error(e, stack);
     }
   }
