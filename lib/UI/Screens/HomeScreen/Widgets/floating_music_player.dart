@@ -230,12 +230,17 @@ class FloatingMusicPlayer extends ConsumerWidget {
                               onChanged: isExpanded &&
                                       hasDuration &&
                                       playerState.status != PlayerStatus.error
-                                  ? (value) {}
+                                  ? (value) {
+                                      final seekPosition = duration * value;
+                                      playerNotifier.updateSeekPosition(seekPosition);
+                                    }
                                   : null,
                               onChangeStart: isExpanded &&
                                       hasDuration &&
                                       playerState.status != PlayerStatus.error
-                                  ? (_) {}
+                                  ? (_) {
+                                      playerNotifier.startSeeking();
+                                    }
                                   : null,
                               onChangeEnd: isExpanded &&
                                       hasDuration &&
@@ -243,6 +248,7 @@ class FloatingMusicPlayer extends ConsumerWidget {
                                   ? (value) {
                                       final seekPosition = duration * value;
                                       playerNotifier.seek(seekPosition);
+                                      playerNotifier.endSeeking();
                                     }
                                   : null,
                             ),

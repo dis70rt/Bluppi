@@ -160,7 +160,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           ),
                                         ),
                                         Text(
-                                          formatTrackPlayedAt(playedAt ?? DateTime.now().millisecondsSinceEpoch)
+                                          formatTrackPlayedAt(playedAt ?? Timestamp.now())
                                               .toString(),
                                           textAlign: TextAlign.left,
                                           style: const TextStyle(
