@@ -9,8 +9,8 @@ Widget trackLoadingListItem(BuildContext context) {
   return Skeletonizer(
     enabled: true,
     effect: ShimmerEffect(
-      baseColor: Colors.grey.shade700.withOpacity(0.5),
-      highlightColor: Colors.grey.shade600.withOpacity(0.6),
+      baseColor: Colors.grey.shade700.withValues(alpha: 0.5),
+      highlightColor: Colors.grey.shade600.withValues(alpha: 0.6),
       duration: const Duration(milliseconds: 1200),
     ),
     ignoreContainers: true,
@@ -46,6 +46,50 @@ Widget trackLoadingListItem(BuildContext context) {
       trailing: const CircleAvatar(
         radius: trailingIconSize / 2,
         backgroundColor: Colors.white,
+      ),
+    ),
+  );
+}
+
+Widget userLoadingListItem(BuildContext context) {
+  const double avatarRadius = 30.0;
+
+  return Skeletonizer(
+    enabled: true,
+    effect: ShimmerEffect(
+      baseColor: Colors.grey.shade700.withValues(alpha: 0.5),
+      highlightColor: Colors.grey.shade600.withValues(alpha: 0.6),
+      duration: const Duration(milliseconds: 1200),
+    ),
+    ignoreContainers: true,
+    child: Container(
+      width: 80,
+      margin: const EdgeInsets.only(right: 16.0),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: avatarRadius,
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/default_profile.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "username",
+            style: TextStyle(fontSize: 8),
+            maxLines: 1,
+            overflow: TextOverflow.clip,
+          ),
+          const Text(
+            "full name",
+            style: TextStyle(fontSize: 12),
+            maxLines: 1,
+            overflow: TextOverflow.clip,
+          ),
+        ],
       ),
     ),
   );

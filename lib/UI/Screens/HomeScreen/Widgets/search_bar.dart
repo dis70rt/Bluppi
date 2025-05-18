@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/firebase_services.dart';
 import 'package:synqit/Provider/track_search_provider.dart';
+import 'package:synqit/Provider/user_search_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
@@ -45,6 +47,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     final searchAsyncValue = ref.watch(trackSearchProvider(_currentQuery));
+    final userSearchAsyncValue = ref.watch(userSearchProvider(_currentQuery));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -54,37 +57,23 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        // leading:
         centerTitle: true,
-
         title: _buildSearchBar(),
-        // const Text(
-        //   "Search",
-        //   style: TextStyle(
-        //     color: Colors.white,
-        //     fontSize: 20,
-        //     fontWeight: FontWeight.w600,
-        //   ),
-        // ),
+        surfaceTintColor: Colors.transparent,
       ),
       body: Column(
         children: [
           Expanded(
-            child: _buildBodyContent(searchAsyncValue),
+            child: _buildBodyContent(searchAsyncValue, userSearchAsyncValue),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBodyContent(AsyncValue<List<Track>> searchAsyncValue) {
+  Widget _buildBodyContent(AsyncValue<List<Track>> searchAsyncValue,
+      AsyncValue<UserSearchResult> userSearchAsyncValue) {
     if (_currentQuery.isEmpty) {
-      // return const Center(
-      //   child: Text(
-      //     "Enter a search term to begin",
-      //     style: TextStyle(color: Colors.white54),
-      //   ),
-      // );
       return FutureBuilder(
         future: firebaseServices.getRecentlySearched(),
         builder: (context, snapshot) {
@@ -95,7 +84,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   itemCount: 5,
                   itemBuilder: (context, index) => const Skeletonizer(
                     child: ListTile(
-                      // contentPadding: EdgeInsets.zero,
                       leading: Icon(Icons.history, color: Colors.white54),
                       title: Text(
                         "Recent Searches",
@@ -137,9 +125,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   onPressed: () async {
                     await firebaseServices.deleteRecentlySearched(query);
                     if (mounted) {
-                      setState(() {
-                        // Setting state forces the FutureBuilder to re-fetch the data.
-                      });
+                      setState(() {});
                     }
                   },
                 ),
@@ -163,54 +149,193 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
 
-    return searchAsyncValue.when(
-      loading: () => ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context, index) {
-            return trackLoadingListItem(context);
-          }),
-      error: (error, stackTrace) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Error searching tracks: $error',
-            style: const TextStyle(color: Colors.redAccent),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      data: (tracks) {
-        if (tracks.isEmpty) {
-          return Center(
-            child: Text(
-              "No results found for '$_currentQuery'",
-              style: const TextStyle(color: Colors.white54),
-              textAlign: TextAlign.center,
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          userSearchAsyncValue.when(
+            loading: () => SizedBox(
+              height: 150,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Skeletonizer(
+                    enabled: true,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: Text(
+                        "Loading...",
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 6,
+                      itemBuilder: (context, index) =>
+                          userLoadingListItem(context),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-        }
+            error: (error, stackTrace) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Error searching users: $error',
+                style: const TextStyle(color: Colors.redAccent),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            data: (usersResult) {
+              if (usersResult.count == 0) {
+                return const SizedBox.shrink();
+              }
 
-        return ListView.builder(
-          itemCount: tracks.length,
-          itemBuilder: (context, index) {
-            final track = tracks[index];
+              final users = usersResult.users;
 
-            return trackListItem(context, track, ref);
-          },
-        );
-      },
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text(
+                      "Accounts",
+                      style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: users.length,
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        itemBuilder: (context, index) {
+                          final user = users[index];
+                          return Container(
+                            margin: const EdgeInsets.only(right: 16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: Colors.primaries[
+                                      index % Colors.primaries.length],
+                                  child: user["avatar_url"] != null
+                                      ? ClipOval(
+                                          child: Image.network(
+                                            user["avatar_url"]!,
+                                            fit: BoxFit.cover,
+                                            width: 60,
+                                            height: 60,
+                                          ),
+                                        )
+                                      : Icon(
+                                          Icons.person,
+                                          color: Colors.white
+                                              .withValues(alpha: 0.6),
+                                          size: 30,
+                                        ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "@${user["username"]}",
+                                  style: const TextStyle(
+                                      color: AppColors.textSecondary,
+                                      fontSize: 10),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  user["name"]!,
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              );
+            },
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Text(
+              "Popular Tracks",
+              style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
+          ),
+          searchAsyncValue.when(
+            loading: () => ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return trackLoadingListItem(context);
+                }),
+            error: (error, stackTrace) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Error searching tracks: $error',
+                style: const TextStyle(color: Colors.redAccent),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            data: (tracks) {
+              if (tracks.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "No results found for '$_currentQuery'",
+                    style: const TextStyle(color: Colors.white54),
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: tracks.length,
+                itemBuilder: (context, index) {
+                  final track = tracks[index];
+                  return trackListItem(context, track, ref);
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildSearchBar() {
     return Container(
-      // margin: const EdgeInsets.symmetric(horizontal: 20),
       height: 60,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        // borderRadius: BorderRadius.circular(15.0),
-        border:
-            Border(bottom: BorderSide(color: Colors.white.withOpacity(0.2))),
+        color: Colors.white.withValues(alpha: 0.1),
+        // border: Border(
+        //     bottom: BorderSide(color: Colors.white.withValues(alpha: 0.2))),
       ),
       child: Center(
         child: TextField(
@@ -219,11 +344,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           cursorColor: Colors.white70,
           decoration: InputDecoration(
             border: InputBorder.none,
-            // isDense: true,
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 14.0, horizontal: 0),
-            hintText: "Search tracks or artists...",
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+            hintText: "Search tracks or people...",
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
             prefixIcon: InkWell(
               borderRadius: BorderRadius.circular(30),
               child: const Icon(Icons.arrow_back, color: Colors.white),
@@ -231,8 +355,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
-                    icon:
-                        Icon(Icons.clear, color: Colors.white.withOpacity(0.8)),
+                    icon: Icon(Icons.clear,
+                        color: Colors.white.withValues(alpha: 0.8)),
                     onPressed: () {
                       _searchController.clear();
                       _debounce?.cancel();

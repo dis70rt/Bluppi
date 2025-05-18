@@ -63,7 +63,6 @@ final trackSearchProvider = FutureProvider.family<List<Track>, String>(
     }
 
     final repository = ref.watch(trackRepositoryProvider);
-
     return repository.searchTracks(query);
   },
   name: 'trackSearchProvider',

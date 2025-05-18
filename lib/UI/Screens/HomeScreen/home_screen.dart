@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Provider/user_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/app_bar.dart';
@@ -17,9 +18,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final userAsync = ref.watch(userProvider);
     return userAsync.when(
       data: (user) {
-        if (user == null) {
-          return const Center(child: Text('No user logged in'));
-        }
+        
+        if (user == null) context.pushReplacement('/auth');
         return Scaffold(
           backgroundColor: Colors.black,
           appBar: homeAppBar(context, ref),

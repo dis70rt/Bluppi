@@ -41,14 +41,14 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
       ref.read(queueProvider.notifier).add(track);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.black.withOpacity(1),
+          backgroundColor: Colors.black,
           dismissDirection: DismissDirection.down,
           behavior: SnackBarBehavior.floating,
           content: Row(
             children: [
               const Icon(Icons.queue_music_outlined, color: Spotify.primary),
               const SizedBox(width: 8),
-              Text("${track.trackName} added to Queue", style: const TextStyle(color: Colors.white70),)
+              Flexible(child: Text("${track.trackName} added to Queue", style: const TextStyle(color: Colors.white70)))
             ],
           ),
           duration: const Duration(seconds: 5),
@@ -67,7 +67,7 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             child: imageUrl.isNotEmpty
                 ? CachedNetworkImage(
                     imageUrl: imageUrl,
@@ -89,14 +89,14 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
                       log("Failed to load image: $imageUrl, Error: $error");
                       return Icon(
                         Icons.music_note,
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         size: avatarSize * 0.6,
                       );
                     },
                   )
                 : Icon(
                     Icons.music_note,
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     size: avatarSize * 0.6,
                   ),
           ),
@@ -119,7 +119,7 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
       ),
       subtitle: Text(
         track.artistName,
-        style: TextStyle(color: Colors.white.withOpacity(0.8)),
+        style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Provider/auth_provider.dart';
+import 'package:synqit/Utils/snackbar.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
@@ -34,7 +35,7 @@ class LoginScreen extends ConsumerWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Container(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
               ),
             ),
           ),
@@ -72,15 +73,15 @@ class LoginScreen extends ConsumerWidget {
             shape: BoxShape.circle,
             gradient: RadialGradient(
               colors: [
-                AppColors.primary.withOpacity(0.6),
-                AppColors.primaryDark.withOpacity(0.2),
+                AppColors.primary.withValues(alpha: 0.6),
+                AppColors.primaryDark.withValues(alpha: 0.2),
                 Colors.transparent,
               ],
               stops: const [0.0, 0.7, 1.0],
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.5),
+                color: AppColors.primary.withValues(alpha: 0.5),
                 blurRadius: 30,
                 spreadRadius: 10,
               ),
@@ -121,7 +122,7 @@ class LoginScreen extends ConsumerWidget {
           "Experience music like never before.",
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
             height: 1.5,
           ),
           textAlign: TextAlign.center,
@@ -139,7 +140,7 @@ class LoginScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryDark.withOpacity(0.3),
+            color: AppColors.primaryDark.withValues(alpha: 0.3),
             blurRadius: 12,
             spreadRadius: 0,
             offset: const Offset(0, 4),
@@ -154,19 +155,21 @@ class LoginScreen extends ConsumerWidget {
                   await ref.read(authProvider.notifier).signInWithGoogle();
                 } catch (e) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Sign-In Failed: ${e.toString()}'),
-                        behavior: SnackBarBehavior.floating,
+                    showSnackBar(
+                      context: context,
+                      message: "Error signing in. Please try again.",
+                      icon: const FaIcon(
+                        FontAwesomeIcons.circleExclamation,
+                        color: Colors.redAccent,
                       ),
                     );
                   }
                 }
               },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withOpacity(0.9),
+          backgroundColor: Colors.white.withValues(alpha: 0.9),
           foregroundColor: Colors.black87,
-          disabledBackgroundColor: Colors.grey.withOpacity(0.3),
+          disabledBackgroundColor: Colors.grey.withValues(alpha: 0.3),
           disabledForegroundColor: Colors.white70,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
@@ -225,7 +228,7 @@ class LoginScreen extends ConsumerWidget {
         'By continuing, you agree to our Terms of Service and Privacy Policy',
         style: TextStyle(
           fontSize: 12,
-          color: Colors.white.withOpacity(0.6),
+          color: Colors.white.withValues(alpha: 0.6),
           height: 1.5,
         ),
         textAlign: TextAlign.center,

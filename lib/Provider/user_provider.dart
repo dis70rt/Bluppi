@@ -90,7 +90,7 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       await userDocRef.update(newData);
       log("Firestore update successful for user: ${authUser.uid}");
 
-      final updatedUserModel = currentUserModel.copyWith(
+      currentUserModel.copyWith(
         username: newData['username'] as String? ?? currentUserModel.username,
         name: newData['name'] as String? ?? currentUserModel.name,
         email: newData['email'] as String? ?? currentUserModel.email,

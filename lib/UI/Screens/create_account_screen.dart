@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Utils/snackbar.dart';
 
 class CreateAccountScreen extends ConsumerStatefulWidget {
   final User firebaseUser;
@@ -98,11 +100,13 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       log("Error checking username uniqueness: $e");
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Error checking username. Please try again. ${e.toString()}'),
-              backgroundColor: Colors.red),
+        showSnackBar(
+          context: context,
+          message: 'Error checking username. Please try again.',
+          icon: const Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
         );
       }
       return false;
@@ -164,25 +168,30 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       log("User profile created successfully for UID: ${widget.firebaseUser.uid}");
 
       if (mounted) {
-        context.pushReplacementNamed(r'\main-screen');
+        showSnackBar(
+          context: context,
+          message: 'Profile created successfully!',
+          icon: const Icon(Icons.check_circle, color: Colors.green),
+        );
+        
+        context.pushReplacement('/main-screen');
       }
     } on FirebaseException catch (e) {
       log("Firestore Error creating profile: ${e.code} - ${e.message}");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Failed to create profile: ${e.message ?? 'Firestore error'}'),
-              backgroundColor: Colors.red),
+        showSnackBar(
+          context: context,
+          message: 'Failed to create profile: ${e.message}',
+          icon: const Icon(Icons.error, color: Colors.red),
         );
       }
     } catch (e) {
       log("Error creating profile: $e");
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('An unexpected error occurred: ${e.toString()}'),
-              backgroundColor: Colors.red),
+        showSnackBar(
+          context: context,
+          message: 'Failed to create profile. Please try again.',
+          icon: const Icon(Icons.error, color: Colors.red),
         );
       }
     } finally {
@@ -198,14 +207,15 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Spotify.primary.withOpacity(0.8),
-              Colors.black87,
+              AppColors.primaryDark,
+              AppColors.backgroundDark,
             ],
+            stops: [0.2, 0.9],
           ),
         ),
         child: SafeArea(
@@ -238,32 +248,74 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: widget.firebaseUser.photoURL != null
-              ? NetworkImage(widget.firebaseUser.photoURL!)
-              : null,
-          backgroundColor: Colors.white24,
-          child: widget.firebaseUser.photoURL == null
-              ? const Icon(Icons.person, size: 40, color: Colors.white70)
-              : null,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24.0),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        child: Container(
+          padding: const EdgeInsets.all(24.0),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(24.0),
+            border: Border.all(
+              color: AppColors.textPrimary.withValues(alpha: 0.1),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.accent.withValues(alpha: 0.8),
+                      AppColors.primary.withValues(alpha: 0.4),
+                    ],
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: widget.firebaseUser.photoURL != null
+                      ? NetworkImage(widget.firebaseUser.photoURL!)
+                      : null,
+                  backgroundColor: AppColors.surfaceDark.withValues(alpha: 0.7),
+                  child: widget.firebaseUser.photoURL == null
+                      ? const Icon(Icons.person,
+                          size: 50, color: AppColors.textPrimary)
+                      : null,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Almost There!',
+                style: TextStyle(
+                  fontSize: 28,
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 10,
+                      color: AppColors.primary.withValues(alpha: 0.5),
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Complete your profile to join the vibe.',
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 15),
-        const Text(
-          'Almost There!',
-          style: TextStyle(
-              fontSize: 28, color: Colors.white, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-        Text(
-          'Complete your profile to join the vibe.',
-          style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.8)),
-          textAlign: TextAlign.center,
-        ),
-      ],
+      ),
     );
   }
 
@@ -325,71 +377,127 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   }
 
   Widget _buildSubmitButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: MaterialButton(
-        onPressed: _isLoading ? null : _createProfile,
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        color: Colors.white,
-        disabledColor: Colors.white.withOpacity(0.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Spotify.primary),
-                ),
-              )
-            : Text(
-                'Complete Profile',
-                style: TextStyle(
-                    color: Colors.grey[900],
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(30.0),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30.0),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: _isLoading
+                  ? [
+                      AppColors.primaryAlt.withOpacity(0.5),
+                      AppColors.accent.withOpacity(0.5),
+                    ]
+                  : [
+                      AppColors.primaryAlt,
+                      AppColors.accent,
+                    ],
+            ),
+            border: Border.all(
+              color: AppColors.textPrimary.withOpacity(0.1),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 15,
+                spreadRadius: 1,
               ),
+            ],
+          ),
+          child: MaterialButton(
+            onPressed: _isLoading ? null : _createProfile,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            color: Colors.transparent,
+            disabledColor: Colors.transparent,
+            elevation: 0,
+            highlightElevation: 0,
+            focusElevation: 0,
+            hoverElevation: 0,
+            child: _isLoading
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Text(
+                    'Complete Profile',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+          ),
+        ),
       ),
     );
   }
 
-  InputDecoration _inputDecoration(
-      {required String labelText,
-      required String hintText,
-      required IconData prefixIcon,
-      String? errorText}) {
+  InputDecoration _inputDecoration({
+    required String labelText,
+    required String hintText,
+    required IconData prefixIcon,
+    String? errorText,
+  }) {
     return InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        labelStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-        prefixIcon: Icon(prefixIcon, color: Colors.white.withOpacity(0.7)),
-        filled: true,
-        fillColor: Colors.white.withOpacity(0.1),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide.none,
+      labelText: labelText,
+      hintText: hintText,
+      labelStyle: TextStyle(
+        color: AppColors.textPrimary.withOpacity(0.8),
+        fontWeight: FontWeight.w500,
+      ),
+      hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.6)),
+      prefixIcon: Icon(prefixIcon, color: AppColors.accent.withOpacity(0.8)),
+      filled: true,
+      fillColor: AppColors.surface.withOpacity(0.2),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: BorderSide(
+          color: AppColors.textPrimary.withOpacity(0.1),
+          width: 1.0,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: BorderSide(
+          color: AppColors.textPrimary.withOpacity(0.1),
+          width: 1.0,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(color: Colors.white, width: 1.5),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: BorderSide(
+          color: AppColors.accent.withOpacity(0.8),
+          width: 1.5,
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
-        ),
-        errorStyle: const TextStyle(
-            color: Colors.redAccent, fontWeight: FontWeight.w500),
-        errorText: errorText);
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20.0),
+        borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+      ),
+      errorStyle: const TextStyle(
+        color: AppColors.error,
+        fontWeight: FontWeight.w500,
+      ),
+      errorText: errorText,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 20.0,
+        vertical: 16.0,
+      ),
+    );
   }
 }
