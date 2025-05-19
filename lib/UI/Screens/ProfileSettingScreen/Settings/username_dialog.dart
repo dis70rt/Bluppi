@@ -51,9 +51,9 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
           child: Container(
             padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1), // Translucent background
+              color: Colors.white.withValues(alpha: 0.1), // Translucent background
               borderRadius: BorderRadius.circular(20.0),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: Form(
               key: _formKey,
@@ -66,7 +66,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -77,21 +77,21 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                     decoration: InputDecoration(
                       labelText: 'New Username',
                       labelStyle:
-                          TextStyle(color: Colors.white.withOpacity(0.7)),
+                          TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                       hintText: 'Enter new username',
                       hintStyle:
-                          TextStyle(color: Colors.white.withOpacity(0.4)),
+                          TextStyle(color: Colors.white.withValues(alpha: 0.4)),
                       enabledBorder: OutlineInputBorder(
                         // Border when not focused
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            BorderSide(color: Colors.white.withOpacity(0.2)),
+                            BorderSide(color: Colors.white.withValues(alpha: 0.2)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         // Border when focused
                         borderRadius: BorderRadius.circular(10),
                         borderSide:
-                            BorderSide(color: Colors.white.withOpacity(0.6)),
+                            BorderSide(color: Colors.white.withValues(alpha: 0.6)),
                       ),
                       errorBorder: OutlineInputBorder(
                         // Border on error
@@ -105,7 +105,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                       ),
                       filled: true,
                       fillColor: Colors.white
-                          .withOpacity(0.05), // Slight fill for input area
+                          .withValues(alpha: 0.05), // Slight fill for input area
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                     ),
@@ -134,7 +134,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                         onPressed: _save,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.purple
-                              .withOpacity(0.6), // Translucent save button
+                              .withValues(alpha: 0.6), // Translucent save button
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

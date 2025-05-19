@@ -4,16 +4,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
 
 class FirebaseServices {
   final auth = FirebaseAuth.instance;
   final FirebaseStorage firebaseStorage = FirebaseStorage.instance;
   final database = Database();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<Map<String, dynamic>?> getLastPlayedSong() async {
-    final doc = await getLastPlayedTrack();
+  Future<Map<String, dynamic>?> getLastPlayedSong({required String uid}) async {
+    final doc = await getLastPlayedTrack(uid: uid);
     final trackId = doc?['trackId'];
+
     if (trackId != null) {
       final data = await database.getTrack(trackId.toString());
       if (data.isNotEmpty) {
@@ -35,7 +38,7 @@ class FirebaseServices {
   void writeLastPlayedTrack(int trackId) async {
     try {
       final user = auth.currentUser;
-      final docRef = FirebaseFirestore.instance
+      final docRef = _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('userTracks')
@@ -52,16 +55,18 @@ class FirebaseServices {
     }
   }
 
-  Future<Map<String, dynamic>?> getLastPlayedTrack() async {
+  Future<Map<String, dynamic>?> getLastPlayedTrack(
+      {required String uid}) async {
     try {
-      final user = auth.currentUser;
-      final docRef = FirebaseFirestore.instance
+      log("Fetching last played track for user: $uid");
+      final docRef = _firestore
           .collection('users')
-          .doc(user!.uid)
+          .doc(uid)
           .collection('userTracks')
           .doc('lastPlayedTrack');
 
       final docSnapshot = await docRef.get();
+      log("Last played track document snapshot: ${docSnapshot.data()}");
 
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
@@ -80,7 +85,7 @@ class FirebaseServices {
     log("Writing recently searched query: $query");
     try {
       final user = auth.currentUser;
-      final docRef = FirebaseFirestore.instance
+      final docRef = _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('recentSearches')
@@ -100,7 +105,7 @@ class FirebaseServices {
   Future<List<String>> getRecentlySearched() async {
     try {
       final user = auth.currentUser;
-      final collectionRef = FirebaseFirestore.instance
+      final collectionRef = _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('recentSearches');
@@ -125,7 +130,7 @@ class FirebaseServices {
   Future<void> deleteRecentlySearched(String query) async {
     try {
       final user = auth.currentUser;
-      final docRef = FirebaseFirestore.instance
+      final docRef = _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('recentSearches')
@@ -141,7 +146,7 @@ class FirebaseServices {
   Future<void> historyTrack(int trackId) async {
     try {
       final user = auth.currentUser;
-      final docRef = FirebaseFirestore.instance
+      final docRef = _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('historyTracks')
@@ -161,7 +166,7 @@ class FirebaseServices {
   Future<List<Map<String, dynamic>>> getHistoryTracks() async {
     try {
       final user = auth.currentUser;
-      final collectionRef = FirebaseFirestore.instance
+      final collectionRef = _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('historyTracks');
@@ -186,7 +191,7 @@ class FirebaseServices {
   Future<void> deleteAllHistoryTracks() async {
     try {
       final user = auth.currentUser;
-      final collectionRef = FirebaseFirestore.instance
+      final collectionRef = _firestore
           .collection('users')
           .doc(user!.uid)
           .collection('historyTracks');
@@ -241,14 +246,43 @@ class FirebaseServices {
       log("Starting upload to: gs://${storageRef.bucket}/${storageRef.fullPath}");
       final uploadTask = storageRef.putFile(file);
       final snapshot = await uploadTask.whenComplete(() {
-         log("Upload task completed for path: ${storageRef.fullPath}");
+        log("Upload task completed for path: ${storageRef.fullPath}");
       });
 
       return await snapshot.ref.getDownloadURL();
-
     } catch (e) {
       log("Error uploading file: $e");
       return null;
     }
+  }
+
+  Future<UserModel> getUserByID(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+
+      if (doc.exists) {
+        return UserModel.fromMap(doc.data()!);
+      } else {
+        log("No user found with UID: $uid");
+        throw Exception("User not found");
+      }
+    } catch (e) {
+      log("Error fetching user: $e");
+      rethrow;
+    }
+  }
+
+  Future<UserModel?> getUserByUsername(String username) async {
+    final userDoc = await _firestore
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+
+    if (userDoc.docs.isEmpty) {
+      throw Exception('User not found');
+    }
+    final doc = userDoc.docs.first;
+    return UserModel.fromMap({"id": doc.id, ...doc.data()});
   }
 }

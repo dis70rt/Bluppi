@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:app_links/app_links.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +11,7 @@ import 'package:synqit/routes.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // await Supabase.initialize(
   //   url: dotenv.env["SUPABASE_URL"]!,
@@ -21,13 +21,11 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() =>
-      _MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
@@ -40,9 +38,25 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleIncomingDeepLinks() async {
+    final initialUri = await _appLinks.getInitialLink();
+    if (initialUri != null) {
+      _handleDeepLink(initialUri);
+    }
+
     _appLinks.uriLinkStream.listen((Uri? uri) {
-      // Supabase.instance.client.auth.;
+      if (uri != null) {
+        _handleDeepLink(uri);
+      }
     });
+  }
+
+  void _handleDeepLink(Uri uri) {
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.isNotEmpty) {
+      final username = pathSegments[0];
+      log("Deep link received: $username");
+      router.go('/$username');
+    }
   }
 
   @override

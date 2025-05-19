@@ -1,6 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_bar.dart';
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
+import 'package:synqit/UI/Screens/ProfileScreen/other_profile_screen.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/edit_profile_screen.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/profile_settings_screen.dart';
 import 'package:synqit/UI/Widgets/auth_wrapper.dart';
@@ -43,6 +45,24 @@ final GoRouter router = GoRouter(
       name: '/settings',
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      name: 'user-profile',
+      path: '/:username',
+      pageBuilder: (context, state) {
+        final username = state.pathParameters['username']!;
+
+        return CustomTransitionPage(
+          key: ValueKey('user-$username'),
+          child: OtherProfileScreen(
+            username: username,
+            onBack: () => context.pushReplacement("/main"),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        );
+      },
     ),
   ],
 );

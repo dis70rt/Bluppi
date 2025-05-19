@@ -16,9 +16,9 @@ Widget buildTextField({
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(15.0),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: TextFormField(
             controller: controller,
@@ -29,8 +29,8 @@ Widget buildTextField({
             decoration: InputDecoration(
               labelText: labelText,
               hintText: hintText,
-              labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
             ),
@@ -54,19 +54,19 @@ Widget buildTextField({
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
+            color: Colors.white.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(15.0),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: DropdownButtonFormField<String>(
             value: selectedValue,
             decoration: InputDecoration(
               labelText: labelText,
-              labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+              labelStyle: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
             ),
-            dropdownColor: Colors.black.withOpacity(0.7),
+            dropdownColor: Colors.black.withValues(alpha: 0.7),
             style: const TextStyle(color: Colors.white),
             icon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
             items: items.map((String item) {
@@ -100,7 +100,7 @@ Widget buildTextField({
         Text(
           label,
           style: TextStyle(
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             fontSize: 12,
           ),
         ),
@@ -123,9 +123,9 @@ Widget buildTextField({
         child: Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(15.0),
-            border: Border.all(color: Colors.white.withOpacity(0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: onTap != null
               ? InkWell(

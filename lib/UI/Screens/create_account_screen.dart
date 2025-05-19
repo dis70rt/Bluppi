@@ -390,8 +390,8 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
               end: Alignment.bottomRight,
               colors: _isLoading
                   ? [
-                      AppColors.primaryAlt.withOpacity(0.5),
-                      AppColors.accent.withOpacity(0.5),
+                      AppColors.primaryAlt.withValues(alpha: 0.5),
+                      AppColors.accent.withValues(alpha: 0.5),
                     ]
                   : [
                       AppColors.primaryAlt,
@@ -399,12 +399,12 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                     ],
             ),
             border: Border.all(
-              color: AppColors.textPrimary.withOpacity(0.1),
+              color: AppColors.textPrimary.withValues(alpha: 0.1),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 15,
                 spreadRadius: 1,
               ),
@@ -453,31 +453,31 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
       labelText: labelText,
       hintText: hintText,
       labelStyle: TextStyle(
-        color: AppColors.textPrimary.withOpacity(0.8),
+        color: AppColors.textPrimary.withValues(alpha: 0.8),
         fontWeight: FontWeight.w500,
       ),
-      hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.6)),
-      prefixIcon: Icon(prefixIcon, color: AppColors.accent.withOpacity(0.8)),
+      hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.6)),
+      prefixIcon: Icon(prefixIcon, color: AppColors.accent.withValues(alpha: 0.8)),
       filled: true,
-      fillColor: AppColors.surface.withOpacity(0.2),
+      fillColor: AppColors.surface.withValues(alpha: 0.2),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20.0),
         borderSide: BorderSide(
-          color: AppColors.textPrimary.withOpacity(0.1),
+          color: AppColors.textPrimary.withValues(alpha: 0.1),
           width: 1.0,
         ),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20.0),
         borderSide: BorderSide(
-          color: AppColors.textPrimary.withOpacity(0.1),
+          color: AppColors.textPrimary.withValues(alpha: 0.1),
           width: 1.0,
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20.0),
         borderSide: BorderSide(
-          color: AppColors.accent.withOpacity(0.8),
+          color: AppColors.accent.withValues(alpha: 0.8),
           width: 1.5,
         ),
       ),

@@ -61,4 +61,22 @@ class Database {
       throw Exception('Failed to load track');
     }
   }
+
+  Future<String> getUserId(String username) async {
+    final response = await dio.get(
+      '/user/$username',
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return response.data['id'];
+    } else {
+      throw Exception('Failed to load user ID');
+    }
+  }
 }

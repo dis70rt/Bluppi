@@ -8,6 +8,7 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/firebase_services.dart';
 import 'package:synqit/Provider/track_search_provider.dart';
 import 'package:synqit/Provider/user_search_provider.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_navigation_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
@@ -167,7 +168,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: Text(
-                        "Loading...",
+                        "Loading",
                       ),
                     ),
                   ),
@@ -194,8 +195,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               if (usersResult.count == 0) {
                 return const SizedBox.shrink();
               }
-
-              final users = usersResult.users;
+              //TODO: Remove Client Side Filtering
+              final users = usersResult.users.where((user) {
+                return user["id"] != firebaseServices.auth.currentUser!.uid;
+              }).toList();
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,29 +225,34 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         itemBuilder: (context, index) {
                           final user = users[index];
                           return Container(
-                            margin: const EdgeInsets.only(right: 16.0),
+                            margin: const EdgeInsets.only(right: 25.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.primaries[
-                                      index % Colors.primaries.length],
-                                  child: user["avatar_url"] != null
-                                      ? ClipOval(
-                                          child: Image.network(
-                                            user["avatar_url"]!,
-                                            fit: BoxFit.cover,
-                                            width: 60,
-                                            height: 60,
+                                InkWell(
+                                  onTap: () => ref
+                                      .read(searchNavigationProvider.notifier)
+                                      .goToUserProfile(user["username"]),
+                                  child: CircleAvatar(
+                                    radius: 30,
+                                    backgroundColor: Colors.primaries[
+                                        index % Colors.primaries.length],
+                                    child: user["avatar_url"] != null
+                                        ? ClipOval(
+                                            child: Image.network(
+                                              user["avatar_url"]!,
+                                              fit: BoxFit.cover,
+                                              width: 60,
+                                              height: 60,
+                                            ),
+                                          )
+                                        : Icon(
+                                            Icons.person,
+                                            color: Colors.white
+                                                .withValues(alpha: 0.6),
+                                            size: 30,
                                           ),
-                                        )
-                                      : Icon(
-                                          Icons.person,
-                                          color: Colors.white
-                                              .withValues(alpha: 0.6),
-                                          size: 30,
-                                        ),
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -358,8 +360,7 @@ class FloatingMusicPlayer extends ConsumerWidget {
       case PlayerStatus.ready:
       case PlayerStatus.initial:
       case PlayerStatus.error:
-      default:
-        return IconButton(
+      return IconButton(
           icon:
               const Icon(Icons.play_circle_filled_rounded, color: Colors.white),
           iconSize: 40.0,

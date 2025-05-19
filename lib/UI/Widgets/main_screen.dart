@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_bar.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_navigation_screen.dart';
 
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
@@ -15,7 +15,7 @@ class MainScreenWidget extends ConsumerWidget {
   final List<Widget> _pages = const [
     HomeScreen(),
     WalletPage(),
-    SearchScreen(),
+    SearchNavigationScreen(),
     MarketsPage(),
     ProfileScreen(),
   ];
@@ -47,15 +47,15 @@ class MainScreenWidget extends ConsumerWidget {
               end: Alignment.bottomCenter,
               stops: const [0.0, 0.75],
               colors: [
-              Colors.black.withOpacity(0),
-              Colors.black.withOpacity(1),
+              Colors.black.withValues(alpha: 0),
+              Colors.black.withValues(alpha: 1),
             ]),
             
             
             // color: Colors.black,
             // border: Border(
             //   top: BorderSide(
-            //     color: Colors.white.withOpacity(0.1),
+            //     color: Colors.white.withValues(alpha: 0.1),
             //     width: 0.5,
             //   ),
             // ),

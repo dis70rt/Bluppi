@@ -51,6 +51,6 @@ class AppColors {
 
   static const Color info = Color(0xFF4FC3F7);
 
-  static Color overlay = textPrimary.withOpacity(0.08);
-  static Color selectedOverlay = primary.withOpacity(0.25);
+  static Color overlay = textPrimary.withValues(alpha: 0.08);
+  static Color selectedOverlay = primary.withValues(alpha: 0.25);
 }

@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
 
-Widget profileAppBar(String? profilePic, BuildContext context, WidgetRef ref) {
+Widget profileAppBar(String? profilePic, BuildContext context, WidgetRef ref, bool isOwnProfile) {
   return Positioned(
     top: 0,
     left: 0,
@@ -24,12 +24,14 @@ Widget profileAppBar(String? profilePic, BuildContext context, WidgetRef ref) {
         BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Container(
-            color: Colors.black.withOpacity(0),
+            color: Colors.black.withValues(alpha: 0),
           ),
         ),
         Container(
-          color: Colors.black.withOpacity(0.6),
+          color: Colors.black.withValues(alpha: 0.6),
         ),
+        
+        if(isOwnProfile)
         Positioned(
           top: MediaQuery.of(context).padding.top + 0,
           left: 8,

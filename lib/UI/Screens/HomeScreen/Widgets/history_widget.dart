@@ -53,7 +53,7 @@ class _HistoryOverlayState extends ConsumerState<HistoryOverlay> {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               child: Material(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 elevation: 0,
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
@@ -62,7 +62,7 @@ class _HistoryOverlayState extends ConsumerState<HistoryOverlay> {
                     maxHeight: MediaQuery.of(context).size.height * (widget.historyItems.isEmpty ? 0.2 : 0.5),
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: widget.historyItems.isEmpty

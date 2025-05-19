@@ -42,18 +42,18 @@ class GrassmorphicTrackTile extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
           child: Container(
             decoration: BoxDecoration(
-              color: tileBaseColor.withOpacity(opacity),
+              color: tileBaseColor.withValues(alpha: opacity),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
-                  color: AppColors.divider.withOpacity(0.4), width: 0.8),
+                  color: AppColors.divider.withValues(alpha: 0.4), width: 0.8),
             ),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: onTap,
                 splashColor: isCurrent
-                    ? AppColors.accent.withOpacity(0.3)
-                    : AppColors.primary.withOpacity(0.3),
+                    ? AppColors.accent.withValues(alpha: 0.3)
+                    : AppColors.primary.withValues(alpha: 0.3),
                 highlightColor: Colors.transparent,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -142,7 +142,7 @@ Widget queueBottomSheet() {
       return ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         child: Container(
-          color: AppColors.darkSurfaceBlack.withOpacity(0.85),
+          color: AppColors.darkSurfaceBlack.withValues(alpha: 0.85),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: Column(
@@ -155,7 +155,7 @@ Widget queueBottomSheet() {
                     height: 5,
                     width: 48,
                     decoration: BoxDecoration(
-                      color: AppColors.divider.withOpacity(0.7),
+                      color: AppColors.divider.withValues(alpha: 0.7),
                       borderRadius: BorderRadius.circular(2.5),
                     ),
                   ),

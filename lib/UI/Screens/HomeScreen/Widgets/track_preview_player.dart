@@ -26,7 +26,7 @@ class TrackPreviewPlayer extends ConsumerWidget {
     if (!canPlay) {
       displayWidget = Icon(
         Icons.play_disabled_outlined,
-        color: Colors.white.withOpacity(0.3),
+        color: Colors.white.withValues(alpha: 0.3),
         size: size * 0.8,
       );
     } else if (isCurrentTrack &&
@@ -37,20 +37,20 @@ class TrackPreviewPlayer extends ConsumerWidget {
         child: CircularProgressIndicator(
           strokeWidth: 2.0,
           valueColor:
-              AlwaysStoppedAnimation<Color>(Colors.white.withOpacity(0.8)),
+              AlwaysStoppedAnimation<Color>(Colors.white.withValues(alpha: 0.8)),
         ),
       );
     } else if (isCurrentTrack &&
         playerState.playbackState == AudioPlaybackState.playing) {
       displayWidget = Icon(
         Icons.pause_circle_filled_rounded,
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         size: size,
       );
     } else {
       displayWidget = Icon(
         Icons.play_circle_filled_rounded,
-        color: Colors.white.withOpacity(0.8),
+        color: Colors.white.withValues(alpha: 0.8),
         size: size,
       );
     }
