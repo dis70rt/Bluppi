@@ -29,7 +29,7 @@ class AuthWrapper extends ConsumerWidget {
             ),
             error: (error, stackTrace) {
               if (error is UserProfileNotFoundException) {
-                return CreateAccountScreen(firebaseUser: firebaseUser);
+                return CreateAccountScreen(user: firebaseUser);
               } else {
                 return Scaffold(
                   body: Center(
@@ -54,7 +54,7 @@ class AuthWrapper extends ConsumerWidget {
                 return const MainScreenWidget();
               } else {
                 log("AuthWrapper: userModel is null despite userProvider succeeding.");
-                return CreateAccountScreen(firebaseUser: firebaseUser);
+                return CreateAccountScreen(user: firebaseUser);
               }
             },
           );

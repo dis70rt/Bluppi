@@ -11,11 +11,20 @@ import 'dart:ui';
 import 'package:synqit/Provider/music_provider/music_player_state.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/queue_bottomsheet.dart';
 
-final _isExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
+// final _isExpandedProvider = StateProvider<bool>((ref) => false);
 
-class FloatingMusicPlayer extends ConsumerWidget {
-  const FloatingMusicPlayer({super.key});
+class FloatingMusicPlayer extends ConsumerStatefulWidget {
+  final VoidCallback? onDispose;
+  const FloatingMusicPlayer({super.key, this.onDispose});
 
+  @override
+  ConsumerState<FloatingMusicPlayer> createState() => _FloatingMusicPlayerState();
+
+}
+
+class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
+  bool isExpanded = false;
+  
   String _formatDuration(Duration? d) {
     if (d == null || d.inMilliseconds <= 0) return '00:00';
     final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
@@ -24,12 +33,12 @@ class FloatingMusicPlayer extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final playerState = ref.watch(musicPlayerProvider);
     final currentTrack = ref.watch(currentTrackProvider);
     final playerNotifier = ref.read(musicPlayerProvider.notifier);
-    final isExpanded = ref.watch(_isExpandedProvider);
-    final expansionNotifier = ref.read(_isExpandedProvider.notifier);
+    // final isExpanded = ref.watch(_isExpandedProvider);
+    // final expansionNotifier = ref.read(_isExpandedProvider.notifier);
 
     if (currentTrack == null) {
       return const SizedBox.shrink();
@@ -64,7 +73,9 @@ class FloatingMusicPlayer extends ConsumerWidget {
                 elevation: 0,
                 child: InkWell(
                   onTap: () {
-                    expansionNotifier.update((state) => !state);
+                    setState(() {
+                      isExpanded = !isExpanded;
+                    });
                   },
                   child: Container(
                     decoration: BoxDecoration(

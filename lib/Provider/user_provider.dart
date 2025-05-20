@@ -1,9 +1,20 @@
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:synqit/config.dart';
 import 'auth_provider.dart';
+
+final dioProvider = Provider<Dio>((ref) {
+  final dio = Dio();
+  dio.options.baseUrl = AppConfig.apiURL;
+  dio.options.connectTimeout = const Duration(seconds: 10);
+  dio.options.receiveTimeout = const Duration(seconds: 10);
+  dio.options.validateStatus = (status) => status! < 500;
+  return dio;
+});
 
 final userProvider =
     StateNotifierProvider<UserStateNotifier, AsyncValue<UserModel?>>((ref) {
@@ -12,18 +23,16 @@ final userProvider =
 
 class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   final Ref _ref;
-  late final FirebaseFirestore _firestore;
-  late final FirebaseAuth _auth;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final Dio _dio;
 
   UserStateNotifier(this._ref) : super(const AsyncValue.loading()) {
-    _firestore = FirebaseFirestore.instance;
-    _auth = FirebaseAuth.instance;
+    _dio = _ref.read(dioProvider);
     _initialize();
   }
 
   Future<void> _initialize() async {
     final authState = _ref.watch(authProvider);
-
     final User? authUser = authState.value?.user;
 
     if (authUser == null) {
@@ -32,37 +41,68 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       return;
     }
 
-    final userDocRef = _firestore.collection('users').doc(authUser.uid);
-
     try {
-      log("Attempting to fetch Firestore document for user: ${authUser.uid}");
-      final docSnapshot = await userDocRef.get();
-
-      if (docSnapshot.exists) {
-        final userData = docSnapshot.data();
-        if (userData != null) {
-          final userModel = UserModel.fromFirestore(userData, authUser.uid);
-          state = AsyncValue.data(userModel);
-          log("Firestore document found and parsed for user: ${authUser.uid}");
-        } else {
-          log('Error: Firestore document exists for user ${authUser.uid} but data is null.');
-
-          state = AsyncValue.error(
-            Exception(
-                'Firestore document exists but data is null for user ${authUser.uid}'),
-            StackTrace.current,
-          );
-        }
-      } else {
-        log('Firestore document NOT found for authenticated user: ${authUser.uid}. Setting userState to null.');
-
-        state = const AsyncValue.data(null);
+      final userData = await _getCachedUserData(authUser.uid);
+      if (userData != null) {
+        state = AsyncValue.data(userData);
+        log("Loaded user data from cache for user: ${authUser.uid}");
+        log("Check UserData: ${userData}");
+        _refreshUserData(authUser.uid);
+        return;
       }
-    } on FirebaseException catch (e, stackTrace) {
-      log('Firebase Error fetching user data from Firestore: $e\n$stackTrace');
+
+      log("Attempting to fetch user data for user: ${authUser.uid}");
+      await _refreshUserData(authUser.uid);
+    } catch (e, stackTrace) {
+      log('Error during user data retrieval for user ${authUser.uid}: $e\n$stackTrace');
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  Future<UserModel?> _getCachedUserData(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedUserData = prefs.getString('user_data_$userId');
+      if (cachedUserData != null) {
+        return UserModel.fromJson(cachedUserData);
+      }
+      return null;
+    } catch (e) {
+      log("Error loading user data from cache: $e");
+      return null;
+    }
+  }
+
+  Future<void> _cacheUserData(UserModel user) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_data_${user.id}', user.toJson());
+      log("User data cached for user: ${user.id}");
+    } catch (e) {
+      log("Error caching user data: $e");
+    }
+  }
+
+  Future<void> _refreshUserData(String userId) async {
+    try {
+      final response = await _dio.get('user/$userId');
+      if (response.statusCode == 200) {
+        final userModel = UserModel.fromMap(response.data);
+        state = AsyncValue.data(userModel);
+        await _cacheUserData(userModel);
+        log("User data refreshed from API for user: $userId");
+      } else {
+        log('API Error: User not found for ID: $userId');
+        state = AsyncValue.error(
+          UserProfileNotFoundException(userId),
+          StackTrace.current,
+        );
+      }
+    } on DioException catch (e, stackTrace) {
+      log('Network Error fetching user data: ${e.message}');
       state = AsyncValue.error(e, stackTrace);
     } catch (e, stackTrace) {
-      log('Error during user data retrieval/parsing for user ${authUser.uid}: $e\n$stackTrace');
+      log('Error during user data refresh for user $userId: $e');
       state = AsyncValue.error(e, stackTrace);
     }
   }
@@ -71,137 +111,147 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     final currentUserModel = state.value;
     if (currentUserModel == null) {
       log("Attempted to update profile, but no user model is currently loaded.");
-
       throw Exception("Cannot update profile: No user data loaded.");
     }
 
     final authUser = _auth.currentUser;
     if (authUser == null) {
       log("Attempted to update profile, but user is no longer authenticated.");
-
       throw Exception("Cannot update profile: User not authenticated.");
     }
 
-    final userDocRef = _firestore.collection('users').doc(authUser.uid);
-
     try {
-      log("Attempting to update Firestore document for user: ${authUser.uid} with data: $newData");
+      log("Attempting to update user data for user: ${authUser.uid} with data: $newData");
 
-      await userDocRef.update(newData);
-      log("Firestore update successful for user: ${authUser.uid}");
-
-      currentUserModel.copyWith(
-        username: newData['username'] as String? ?? currentUserModel.username,
-        name: newData['name'] as String? ?? currentUserModel.name,
-        email: newData['email'] as String? ?? currentUserModel.email,
-        phone: newData['phone'] as int? ?? currentUserModel.phone,
-        country: newData['country'] as String? ?? currentUserModel.country,
-        profilePic:
-            newData['profilePic'] as String? ?? currentUserModel.profilePic,
+      final response = await _dio.patch(
+        '/user/${authUser.uid}',
+        data: newData,
       );
 
-      UserModel tempModel = currentUserModel;
-      if (newData.containsKey('username')) {
-        tempModel = tempModel.copyWith(username: newData['username']);
-      }
-      if (newData.containsKey('name')) {
-        tempModel = tempModel.copyWith(name: newData['name']);
-      }
-      if (newData.containsKey('email')) {
-        tempModel = tempModel.copyWith(email: newData['email']);
-      }
-      if (newData.containsKey('phone')) {
-        tempModel = tempModel.copyWith(phone: newData['phone']);
-      }
-      if (newData.containsKey('country')) {
-        tempModel = tempModel.copyWith(country: newData['country']);
-      }
-      if (newData.containsKey('profilePic')) {
-        tempModel = tempModel.copyWith(profilePic: newData['profilePic']);
-      }
+      if (response.statusCode == 200) {
+        final updatedUser = UserModel.fromMap(response.data);
+        state = AsyncValue.data(updatedUser);
 
-      if (newData.containsKey('favoriteGenres')) {
-        final dynamic genresData = newData['favoriteGenres'];
-        if (genresData is List?) {
-          tempModel = tempModel.copyWith(
-              favoriteGenres: genresData
-                  ?.map((e) => e?.toString() ?? '')
-                  .where((s) => s.isNotEmpty)
-                  .toList());
-        }
+        await _cacheUserData(updatedUser);
+        log("User data updated successfully for user: ${authUser.uid}");
+      } else {
+        log("Failed to update user data. Status: ${response.statusCode}, Message: ${response.data}");
+        throw Exception("Failed to update user data: ${response.data}");
       }
-      if (newData.containsKey('bio')) {
-        tempModel = tempModel.copyWith(bio: newData['bio']);
-      }
-
-      state = AsyncValue.data(tempModel);
-      log("Local userState updated successfully.");
-    } on FirebaseException catch (e, stackTrace) {
-      log('Firebase Error updating user data in Firestore: $e\n$stackTrace');
-
+    } on DioException catch (e, stackTrace) {
+      log('Network Error updating user data: ${e.message}\n$stackTrace');
       rethrow;
     } catch (e, stackTrace) {
-      log('Error during user data update/parsing: $e\n$stackTrace');
-
+      log('Error during user data update: $e\n$stackTrace');
       rethrow;
     }
   }
 
-  Future<void> incrementFollowing() async {
-    final currentUserModel = state.value;
-    if (currentUserModel == null) return;
-
+  Future<void> incrementFollowing(String followeeId) async {
     final authUser = _auth.currentUser;
     if (authUser == null) return;
 
-    final userDocRef = _firestore.collection('users').doc(authUser.uid);
-
     try {
-      final updatedModel =
-          currentUserModel.copyWith(following: currentUserModel.following + 1);
-      state = AsyncValue.data(updatedModel);
-      log("Incremented local following count");
+      final response = await _dio.post(
+        '/user/${authUser.uid}/follow/$followeeId',
+      );
 
-      await userDocRef.update({'following': FieldValue.increment(1)});
-      log("Incremented following count in Firestore");
-    } on FirebaseException catch (e, stackTrace) {
-      log('Firebase Error incrementing following count: $e\n$stackTrace');
+      if (response.statusCode != 201) {
+        log("Failed to increment following count. Status: ${response.statusCode}, Message: ${response.data}");
+        throw Exception(
+            "Failed to increment following count: ${response.data}");
+      }
 
-      state = AsyncValue.data(currentUserModel);
+      log("Incremented following count via API");
+    } on DioException catch (e, stackTrace) {
+      log('Network Error incrementing following count: ${e.message}\n$stackTrace');
+
       rethrow;
     } catch (e, stackTrace) {
       log('Error incrementing following count: $e\n$stackTrace');
-      state = AsyncValue.data(currentUserModel);
+
       rethrow;
     }
   }
 
-  Future<void> decrementFollowing() async {
-    final currentUserModel = state.value;
-    if (currentUserModel == null) return;
-
+  Future<void> decrementFollowing(String followeeId) async {
     final authUser = _auth.currentUser;
     if (authUser == null) return;
 
-    final userDocRef = _firestore.collection('users').doc(authUser.uid);
-
     try {
-      final updatedModel =
-          currentUserModel.copyWith(following: currentUserModel.following - 1);
-      state = AsyncValue.data(updatedModel);
       log("Decremented local following count");
 
-      await userDocRef.update({'following': FieldValue.increment(-1)});
-      log("Decremented following count in Firestore");
-    } on FirebaseException catch (e, stackTrace) {
-      log('Firebase Error decrementing following count: $e\n$stackTrace');
+      final response = await _dio.delete(
+        '/user/${authUser.uid}/unfollow/$followeeId',
+      );
 
-      state = AsyncValue.data(currentUserModel);
+      if (response.statusCode != 200) {
+        log("Failed to decrement following count. Status: ${response.statusCode}, Message: ${response.data}");
+        throw Exception(
+            "Failed to decrement following count: ${response.data}");
+      }
+
+      log("Decremented following count via API");
+    } on DioException catch (e, stackTrace) {
+      log('Network Error decrementing following count: ${e.message}\n$stackTrace');
+
       rethrow;
     } catch (e, stackTrace) {
       log('Error decrementing following count: $e\n$stackTrace');
-      state = AsyncValue.data(currentUserModel);
+
       rethrow;
+    }
+  }
+
+  Future<bool> isFollowing(String followeeId) async {
+    final authUser = _auth.currentUser;
+    if (authUser == null) return false;
+
+    try {
+      final response = await _dio.get(
+        '/user/${authUser.uid}/is-following/$followeeId',
+      );
+
+      if (response.statusCode == 200) {
+        return response.data['is_following'] as bool;
+      } else {
+        log("Failed to check following status. Status: ${response.statusCode}, Message: ${response.data}");
+        throw Exception("Failed to check following status: ${response.data}");
+      }
+    } on DioException catch (e, stackTrace) {
+      log('Network Error checking following status: ${e.message}\n$stackTrace');
+      rethrow;
+    } catch (e, stackTrace) {
+      log('Error checking following status: $e\n$stackTrace');
+      rethrow;
+    }
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    final userId = _auth.currentUser?.uid;
+    if (userId != null) {
+      try {
+        final response = await _dio.patch(
+          '/user/$userId',
+          data: user.toMap(),
+        );
+
+        if (response.statusCode == 200) {
+          log("User data updated successfully");
+
+          state = AsyncValue.data(user);
+          await _cacheUserData(user);
+        } else {
+          log("Failed to update user data. Status: ${response.statusCode}, Message: ${response.data}");
+          throw Exception("Failed to update user data: ${response.data}");
+        }
+      } catch (e) {
+        log("Error updating user data: $e");
+        rethrow;
+      }
+    } else {
+      log("User not authenticated");
+      throw Exception("User not authenticated");
     }
   }
 }
@@ -211,11 +261,9 @@ class UserProfileNotFoundException implements Exception {
   final String message;
 
   UserProfileNotFoundException(this.userId,
-      [this.message = "User profile document not found in Firestore."]);
+      [this.message = "User profile not found in the database."]);
 
   @override
   String toString() =>
       'UserProfileNotFoundException: $message (UserID: $userId)';
 }
-
-const String usersCollection = 'users';

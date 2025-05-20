@@ -2,17 +2,17 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Data/Services/firebase_services.dart';
+import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/app_bar.dart';
+import 'package:synqit/UI/Screens/ProfileScreen/Widgets/edit_row.dart';
+import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_button.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/following_stats.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/profile_bio.dart';
 import 'package:synqit/Utils/datetime.dart';
@@ -30,12 +30,26 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   UserModel? viewedUser;
   bool isRefreshing = false;
-  final FirebaseServices firebaseServices = FirebaseServices();
+  final UserServices userServices = UserServices();
 
   @override
   void initState() {
     viewedUser = widget.user;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeUserStats();
+    });
     super.initState();
+  }
+
+  void _initializeUserStats() {
+    final userToDisplay = widget.user ?? ref.read(userProvider).value;
+    if (userToDisplay != null) {
+      ref.read(followStatsProvider(userToDisplay.id).notifier).loadStats(
+          followers: userToDisplay.followers,
+          following: userToDisplay.following,
+          playlists: 0);
+    }
   }
 
   @override
@@ -48,7 +62,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           return const Center(child: Text('No user logged in'));
         }
 
-        final bool isOwnProfile = widget.user == null || widget.user!.id == currentUser.id;
+        final bool isOwnProfile =
+            widget.user == null || widget.user!.id == currentUser.id;
 
         if (!isOwnProfile && viewedUser == null) {
           return const Center(child: CircularProgressIndicator());
@@ -61,7 +76,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           backgroundColor: AppColors.backgroundDark,
           body: Stack(
             children: [
-              profileAppBar(displayedUser.profilePic, context, ref, isOwnProfile),
+              profileAppBar(
+                  displayedUser.profilePic, context, ref, isOwnProfile),
               _buildProfileBackground(context),
               _buildProfilePicture(displayedUser, context),
               _buildProfileContent(displayedUser, isOwnProfile, currentUser.id),
@@ -155,16 +171,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              profileBio(
-                user.name,
-                user.bio,
-                user.username,
-                isOwnProfile
-              ),
+              profileBio(user.name, user.bio, user.username, isOwnProfile),
               const SizedBox(height: 20),
-              Center(child: isOwnProfile ? _buildEditRow() : _buildFollowRow()),
+              Center(
+                  child: isOwnProfile
+                      ? editRow()
+                      : FollowButton(followeeId: user.id)),
               const SizedBox(height: 20),
-              followingStats(user.followers, user.following, user.following),
+              // followingStats(user.followers, user.following, user.following),
+              FollowingStatsWidget(userId: user.id),
               const SizedBox(height: 40),
               _buildLastPlayed(user.id),
               const SizedBox(height: 100),
@@ -175,88 +190,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildEditRow() {
-      return Center(
-        child: MaterialButton(
-          padding: EdgeInsets.zero,
-          onPressed: () {},
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 35),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: const BorderRadius.all(Radius.circular(25)),
-              border: Border.all(color: Colors.white30, width: 1),
-            ),
-            child: const Text(
-              "Edit Profile",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      );
-  }
-
-  Widget _buildFollowRow() {
-    return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white12,
-              ),
-            ),
-            child: Center(
-              child: IconButton(
-                onPressed: () {},
-                icon: const FaIcon(Icons.chat_outlined, size: 18),
-              ),
-            ),
-          ),
-          const SizedBox(width: 18),
-          Center(
-            child: MaterialButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {},
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 35),
-                decoration: const BoxDecoration(
-                  color: Color(0xff3a71fa),
-                  borderRadius: BorderRadius.all(Radius.circular(25)),
-                ),
-                child: const Text(
-                  "Follow",
-                  style: TextStyle(),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 18),
-          Container(
-            width: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white12,
-              ),
-            ),
-            child: Center(
-              child: IconButton(
-                onPressed: () {},
-                icon: const FaIcon(Icons.share, size: 18),
-              ),
-            ),
-          ),
-        ],
-      );
-  }
-
   Widget _buildLastPlayed(String userId) {
     return FutureBuilder(
-      future: firebaseServices.getLastPlayedSong(uid: userId),
+      future: userServices.getLastPlayedSong(uid: userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -279,7 +215,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ),
                         Text(
-                          formatTrackPlayedAt(Timestamp.now()).toString(),
+                          formatTrackPlayedAt(DateTime.now()).toString(),
                           textAlign: TextAlign.left,
                           style: const TextStyle(
                             fontSize: 12,
@@ -308,7 +244,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         }
 
         final Track track = snapshot.data!['track'];
-        final playedAt = snapshot.data!['lastPlayed'];
+        final playedAt = DateTime.parse(snapshot.data!['lastPlayed']);
 
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -328,7 +264,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                   ),
                   Text(
-                    formatTrackPlayedAt(playedAt ?? Timestamp.now()).toString(),
+                    formatTrackPlayedAt(playedAt).toString(),
                     textAlign: TextAlign.left,
                     style: const TextStyle(
                       fontSize: 12,
@@ -356,7 +292,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     try {
       if (widget.user != null) {
-        final updatedUser = await firebaseServices.getUserByUsername(widget.user!.username);
+        final updatedUser =
+            await userServices.getUserByUsername(widget.user!.username);
         setState(() => viewedUser = updatedUser);
       }
     } catch (e) {

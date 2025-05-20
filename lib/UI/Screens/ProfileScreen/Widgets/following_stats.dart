@@ -1,7 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Widget followingStats(int followers, int following, int playlistCount) {
-  Widget statColumn(String title, int count) {
+class FollowStats {
+  final int followers;
+  final int following;
+  final int playlists;
+
+  const FollowStats({
+    required this.followers,
+    required this.following,
+    required this.playlists,
+  });
+
+  FollowStats copyWith({
+    int? followers,
+    int? following,
+    int? playlists,
+  }) {
+    return FollowStats(
+      followers: followers ?? this.followers,
+      following: following ?? this.following,
+      playlists: playlists ?? this.playlists,
+    );
+  }
+}
+
+class FollowStatsNotifier extends StateNotifier<FollowStats> {
+  FollowStatsNotifier(
+      {required int followers, required int following, required int playlists})
+      : super(FollowStats(
+            followers: followers, following: following, playlists: playlists));
+
+  void incrementFollowers() {
+    state = state.copyWith(followers: state.followers + 1);
+  }
+
+  void decrementFollowers() {
+    state = state.copyWith(followers: state.followers - 1);
+  }
+
+  void loadStats({required int followers,required int following,required int playlists}) {
+    state = state.copyWith(
+      followers: followers,
+      following: following,
+      playlists: playlists,
+    );
+  }
+}
+
+final followStatsProvider =
+    StateNotifierProvider.family<FollowStatsNotifier, FollowStats, String>(
+  (ref, userId) =>
+      FollowStatsNotifier(followers: 0, following: 0, playlists: 0),
+);
+
+class FollowingStatsWidget extends ConsumerWidget {
+  final String userId;
+
+  const FollowingStatsWidget({
+    super.key,
+    required this.userId,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(followStatsProvider(userId));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _statColumn("Followers", stats.followers),
+            const VerticalDivider(
+                color: Colors.white30, width: 1, indent: 10, endIndent: 10),
+            _statColumn("Following", stats.following),
+            const VerticalDivider(
+                color: Colors.white30, width: 1, indent: 10, endIndent: 10),
+            _statColumn("Playlists", stats.playlists),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _statColumn(String title, int count) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -17,22 +101,4 @@ Widget followingStats(int followers, int following, int playlistCount) {
       ],
     );
   }
-
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 25),
-    child: IntrinsicHeight(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          statColumn("Followers", followers),
-          const VerticalDivider(
-              color: Colors.white30, width: 1, indent: 10, endIndent: 10),
-          statColumn("Following", following),
-          const VerticalDivider(
-              color: Colors.white30, width: 1, indent: 10, endIndent: 10),
-          statColumn("Playlists", playlistCount),
-        ],
-      ),
-    ),
-  );
 }

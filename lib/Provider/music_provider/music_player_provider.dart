@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
-import 'package:synqit/Data/Services/firebase_services.dart';
+import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Data/Services/api_services.dart';
 import 'package:synqit/Provider/music_provider/audio_streaming_provider.dart';
 import 'package:synqit/Provider/music_provider/queue_provider.dart';
@@ -13,8 +13,7 @@ import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'music_player_state.dart';
 
 final databaseProvider = Provider<Database>((ref) => Database());
-final firebaseServicesProvider =
-    Provider<FirebaseServices>((ref) => FirebaseServices());
+final userServices = Provider<UserServices>((ref) => UserServices());
 
 final audioPlayer = AudioPlayer();
 
@@ -28,7 +27,7 @@ final musicPlayerProvider =
     ref.watch(audioStreamingServiceProvider),
     ApiServices(),
     Database(),
-    FirebaseServices(),
+    UserServices(),
   );
 
   ref.onDispose(() {
@@ -41,7 +40,7 @@ final musicPlayerProvider =
 
 class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   final Database _database;
-  final FirebaseServices _firebaseService;
+  final UserServices _userServices;
   final ApiServices _apiServices;
   final AudioStreamingService _streamingService;
 
@@ -63,7 +62,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     this._streamingService,
     this._apiServices,
     this._database,
-    this._firebaseService,
+    this._userServices,
   ) : super(const MusicPlayerState()) {
     log('[MusicPlayerNotifier] Initializing.');
     _listenToPlayerState();
@@ -204,7 +203,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     });
   }
 
-    void _listenToPlayerIndex() {
+  void _listenToPlayerIndex() {
     log('[MusicPlayerNotifier] Subscribing to player index stream.');
     _playerIndexSubscription =
         _audioPlayer.currentIndexStream.listen((index) async {
@@ -224,8 +223,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
           log("[MusicPlayerNotifier] Synced current track provider to: ${track.trackName} at index $index.");
 
           _database.writeTrack(track, state.duration?.inSeconds);
-          _firebaseService.writeLastPlayedTrack(track.trackId);
-          _firebaseService.historyTrack(track.trackId);
+          _userServices.historyTrack(track.trackId);
         } else {
           _ref.read(currentTrackProvider.notifier).state = null;
           log("[MusicPlayerNotifier] Player index indicates no current track.");
@@ -371,42 +369,47 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     try {
       log("[MusicPlayerNotifier] Setting new ConcatenatingAudioSource with ${sources.length} items.");
 
+      await _audioPlayer.stop();
+
       final effectiveInitialIndex =
           initialIndex >= 0 && initialIndex < sources.length
               ? initialIndex
               : (sources.isNotEmpty ? 0 : -1);
 
-      if (effectiveInitialIndex != -1) {
-        await _audioPlayer.setAudioSource(
-          _currentPlaylistSource!,
-          initialIndex: effectiveInitialIndex,
-          initialPosition: Duration.zero,
-          preload: true,
-        );
-        log("[MusicPlayerNotifier] setAudioSource completed. Autoplay is $shouldPlay.");
-
-        if (shouldPlay) {
-          log("[MusicPlayerNotifier] Auto-playing after setting audio source with index 0.");
-          await _audioPlayer.play();
-        }
-      } else if (sources.isEmpty) {
+      if (sources.isEmpty) {
         log("[MusicPlayerNotifier] Playlist is empty. Setting empty source.");
         await _audioPlayer.setAudioSource(
           ConcatenatingAudioSource(children: []),
           preload: false,
         );
         log("[MusicPlayerNotifier] Set empty audio source.");
-      } else {
-        await _audioPlayer.setAudioSource(
-          _currentPlaylistSource!,
-          initialIndex: 0,
-          initialPosition: Duration.zero,
-          preload: true,
-        );
-        log("[MusicPlayerNotifier] setAudioSource completed with index 0. Autoplay is $shouldPlay.");
+        return;
+      }
+
+      if (effectiveInitialIndex != -1) {
+        await Future.delayed(Duration(milliseconds: 100));
+
+        try {
+          await _audioPlayer.setAudioSource(
+            _currentPlaylistSource!,
+            initialIndex: effectiveInitialIndex,
+            initialPosition: Duration.zero,
+            preload: true,
+          );
+          log("[MusicPlayerNotifier] setAudioSource completed. Autoplay is $shouldPlay.");
+        } catch (e) {
+          log("[MusicPlayerNotifier] First attempt to set audio source failed: $e. Retrying...");
+          await Future.delayed(Duration(milliseconds: 300));
+          await _audioPlayer.setAudioSource(
+            _currentPlaylistSource!,
+            initialIndex: effectiveInitialIndex,
+            initialPosition: Duration.zero,
+            preload: true,
+          );
+        }
 
         if (shouldPlay) {
-          log("[MusicPlayerNotifier] Auto-playing after setting audio source with index 0.");
+          log("[MusicPlayerNotifier] Auto-playing after setting audio source.");
           await _audioPlayer.play();
         }
       }

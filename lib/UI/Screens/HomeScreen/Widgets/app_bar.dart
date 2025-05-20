@@ -7,18 +7,18 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
-import 'package:synqit/Data/Services/firebase_services.dart';
+import 'package:synqit/Data/Services/user_services.dart';
 
 import 'package:synqit/Provider/user_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/history_widget.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
 
-final firebaseServices = FirebaseServices();
+final userServices = UserServices();
 final database = Database();
 
 Future<List<HistoryTrack>> getHistoryTracks() async {
   try {
-    final historyEntries = await firebaseServices.getHistoryTracks();
+    final historyEntries = await userServices.getHistoryTracks();
     if (historyEntries.isEmpty) {
       return [];
     }

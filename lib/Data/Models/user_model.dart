@@ -136,8 +136,8 @@ class UserModel extends ChangeNotifier {
       country: map['country'],
       profilePic: map['profilePic'],
       createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
-      followers: map['followers'] ?? 0,
-      following: map['following'] ?? 0,
+      followers: map['follower_count'] ?? 0,
+      following: map['following_count'] ?? 0,
       favoriteGenres: (map['favoriteGenres'] as List<dynamic>?)?.cast<String>(),
       bio: map['bio'],
     );

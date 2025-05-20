@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Constants/colors.dart';
+import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/user_provider.dart';
 import 'package:synqit/Utils/snackbar.dart';
 
 class CreateAccountScreen extends ConsumerStatefulWidget {
-  final User firebaseUser;
-  const CreateAccountScreen({super.key, required this.firebaseUser});
+  final User user;
+  const CreateAccountScreen({super.key, required this.user});
 
   @override
   ConsumerState<CreateAccountScreen> createState() =>
@@ -26,17 +27,21 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
   late TextEditingController _usernameController;
   late TextEditingController _nameController;
   late TextEditingController _bioController;
+  late final Dio _dio;
 
   bool _isLoading = false;
   String? _usernameError;
+
+  final UserServices userServices = UserServices();
 
   @override
   void initState() {
     super.initState();
     _usernameController = TextEditingController();
     _nameController =
-        TextEditingController(text: widget.firebaseUser.displayName ?? '');
+        TextEditingController(text: widget.user.displayName ?? '');
     _bioController = TextEditingController();
+    _dio = ref.read(dioProvider);
   }
 
   @override
@@ -86,33 +91,6 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     return null;
   }
 
-  Future<bool> _isUsernameUnique(String username) async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-
-      final querySnapshot = await firestore
-          .collection(usersCollection)
-          .where('username_lowercase', isEqualTo: username.trim().toLowerCase())
-          .limit(1)
-          .get();
-      return querySnapshot.docs.isEmpty;
-    } catch (e) {
-      log("Error checking username uniqueness: $e");
-
-      if (mounted) {
-        showSnackBar(
-          context: context,
-          message: 'Error checking username. Please try again.',
-          icon: const Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-        );
-      }
-      return false;
-    }
-  }
-
   Future<void> _createProfile() async {
     setState(() {
       _usernameError = null;
@@ -127,7 +105,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     });
 
     final username = _usernameController.text.trim();
-    final isUnique = await _isUsernameUnique(username);
+    final isUnique = await userServices.isUsernameUnique(username);
 
     if (!mounted) return;
 
@@ -142,16 +120,12 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
     }
 
     try {
-      final firestore = FirebaseFirestore.instance;
-      final userRef =
-          firestore.collection(usersCollection).doc(widget.firebaseUser.uid);
-
       final newUser = UserModel(
-        id: widget.firebaseUser.uid,
+        id: widget.user.uid,
         username: username,
         name: _nameController.text.trim(),
-        email: widget.firebaseUser.email ?? '',
-        profilePic: widget.firebaseUser.photoURL,
+        email: widget.user.email ?? '',
+        profilePic: widget.user.photoURL,
         bio: _bioController.text.trim().isNotEmpty
             ? _bioController.text.trim()
             : null,
@@ -163,25 +137,34 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
         favoriteGenres: [],
       );
 
-      await userRef.set(newUser.toFirestore());
+      final response = await _dio.post(
+        '/user',
+        data: newUser.toMap(),
+      );
 
-      log("User profile created successfully for UID: ${widget.firebaseUser.uid}");
+      if (response.statusCode == 201) {
+        log("User profile created successfully for UID: ${widget.user.uid}");
 
-      if (mounted) {
-        showSnackBar(
-          context: context,
-          message: 'Profile created successfully!',
-          icon: const Icon(Icons.check_circle, color: Colors.green),
-        );
-        
-        context.pushReplacement('/main-screen');
+        if (mounted) {
+          showSnackBar(
+            context: context,
+            message: 'Profile created successfully!',
+            icon: const Icon(Icons.check_circle, color: Colors.green),
+          );
+
+          context.pushReplacement('/main-screen');
+        }
+      } else {
+        throw Exception(
+            "API returned status code ${response.statusCode}: ${response.data}");
       }
-    } on FirebaseException catch (e) {
-      log("Firestore Error creating profile: ${e.code} - ${e.message}");
+    } on DioException catch (e) {
+      log("API Error creating profile: ${e.response?.data ?? e.message}");
       if (mounted) {
         showSnackBar(
           context: context,
-          message: 'Failed to create profile: ${e.message}',
+          message:
+              'Failed to create profile: ${e.response?.data?['detail'] ?? e.message}',
           icon: const Icon(Icons.error, color: Colors.red),
         );
       }
@@ -279,11 +262,11 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
                 ),
                 child: CircleAvatar(
                   radius: 50,
-                  backgroundImage: widget.firebaseUser.photoURL != null
-                      ? NetworkImage(widget.firebaseUser.photoURL!)
+                  backgroundImage: widget.user.photoURL != null
+                      ? NetworkImage(widget.user.photoURL!)
                       : null,
                   backgroundColor: AppColors.surfaceDark.withValues(alpha: 0.7),
-                  child: widget.firebaseUser.photoURL == null
+                  child: widget.user.photoURL == null
                       ? const Icon(Icons.person,
                           size: 50, color: AppColors.textPrimary)
                       : null,
@@ -456,8 +439,10 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
         color: AppColors.textPrimary.withValues(alpha: 0.8),
         fontWeight: FontWeight.w500,
       ),
-      hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.6)),
-      prefixIcon: Icon(prefixIcon, color: AppColors.accent.withValues(alpha: 0.8)),
+      hintStyle:
+          TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.6)),
+      prefixIcon:
+          Icon(prefixIcon, color: AppColors.accent.withValues(alpha: 0.8)),
       filled: true,
       fillColor: AppColors.surface.withValues(alpha: 0.2),
       border: OutlineInputBorder(

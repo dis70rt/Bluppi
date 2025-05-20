@@ -42,23 +42,22 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent, // Make dialog background transparent
+      backgroundColor: Colors.transparent,
       child: ClipRRect(
-        borderRadius:
-            BorderRadius.circular(20.0), // Match glassmorphism corners
+        borderRadius: BorderRadius.circular(20.0),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0), // Apply blur
+          filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
           child: Container(
             padding: const EdgeInsets.all(24.0),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1), // Translucent background
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20.0),
               border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min, // Content takes minimum space
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -72,8 +71,8 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _usernameController,
-                    autofocus: true, // Automatically focus input
-                    style: const TextStyle(color: Colors.white), // Text color
+                    autofocus: true,
+                    style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       labelText: 'New Username',
                       labelStyle:
@@ -82,30 +81,25 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                       hintStyle:
                           TextStyle(color: Colors.white.withValues(alpha: 0.4)),
                       enabledBorder: OutlineInputBorder(
-                        // Border when not focused
                         borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                        borderSide: BorderSide(
+                            color: Colors.white.withValues(alpha: 0.2)),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        // Border when focused
                         borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            BorderSide(color: Colors.white.withValues(alpha: 0.6)),
+                        borderSide: BorderSide(
+                            color: Colors.white.withValues(alpha: 0.6)),
                       ),
                       errorBorder: OutlineInputBorder(
-                        // Border on error
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(color: Colors.redAccent),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
-                        // Border on error and focused
                         borderRadius: BorderRadius.circular(10),
                         borderSide: const BorderSide(color: Colors.red),
                       ),
                       filled: true,
-                      fillColor: Colors.white
-                          .withValues(alpha: 0.05), // Slight fill for input area
+                      fillColor: Colors.white.withValues(alpha: 0.05),
                       contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
                     ),
@@ -133,8 +127,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                       ElevatedButton(
                         onPressed: _save,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple
-                              .withValues(alpha: 0.6), // Translucent save button
+                          backgroundColor: Colors.purple.withValues(alpha: 0.6),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

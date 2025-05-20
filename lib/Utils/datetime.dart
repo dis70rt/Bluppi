@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-String formatTimeAgo(Timestamp timestamp) {
+String formatTimeAgo(DateTime dateTime) {
   final now = DateTime.now();
-  final dateTime = timestamp.toDate();
   final difference = now.difference(dateTime);
 
   if (difference.inSeconds < 5) {
@@ -31,8 +29,7 @@ String formatTimeAgo(Timestamp timestamp) {
   }
 }
 
-String formatTrackPlayedAt(Timestamp playedAt) {
-  final dateTime = playedAt.toDate();
+String formatTrackPlayedAt(DateTime dateTime) {
   final now = DateTime.now();
 
   final isToday = dateTime.year == now.year &&

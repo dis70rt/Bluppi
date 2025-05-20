@@ -10,8 +10,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Constants/data.dart';
 import 'package:synqit/Data/Models/user_model.dart';
+import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/user_provider.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/app_bar.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/username_dialog.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Widgets/edit_profile_widgets.dart';
 import 'package:synqit/Utils/datetime.dart';
@@ -26,6 +26,7 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  final UserServices userServices = UserServices();
 
   late TextEditingController _nameController;
   late TextEditingController _bioController;
@@ -84,7 +85,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       String? newProfilPicUrl;
       if (_selectedProfilePic != null) {
-        newProfilPicUrl = await firebaseServices.uploadFile(_selectedProfilePic!, "profile_picture", isProfilePic: true);
+        newProfilPicUrl = await userServices.uploadFile(_selectedProfilePic!, "profile_picture", isProfilePic: true);
         if (newProfilPicUrl == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

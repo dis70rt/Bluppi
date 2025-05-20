@@ -1,17 +1,17 @@
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Services/firebase_services.dart';
+import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/music_provider/music_player_provider.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
 import 'package:synqit/Utils/datetime.dart';
+import 'package:synqit/Utils/snackbar.dart';
 
 class HistoryTrack {
   final Track track;
-  final Timestamp playedAt;
+  final DateTime playedAt;
 
   HistoryTrack({required this.track, required this.playedAt});
 }
@@ -34,7 +34,7 @@ class _HistoryOverlayState extends ConsumerState<HistoryOverlay> {
   @override
   Widget build(BuildContext context) {
     final playerNotifier = ref.read(musicPlayerProvider.notifier);
-    final firebaseService = FirebaseServices();
+    final userServices = UserServices();
 
     return Stack(
       children: [
@@ -59,10 +59,12 @@ class _HistoryOverlayState extends ConsumerState<HistoryOverlay> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * (widget.historyItems.isEmpty ? 0.2 : 0.5),
+                    maxHeight: MediaQuery.of(context).size.height *
+                        (widget.historyItems.isEmpty ? 0.2 : 0.5),
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                    border:
+                        Border.all(color: Colors.white.withValues(alpha: 0.2)),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: widget.historyItems.isEmpty
@@ -76,13 +78,17 @@ class _HistoryOverlayState extends ConsumerState<HistoryOverlay> {
                                   'Oops—your play history is empty.',
                                   style: TextStyle(color: Colors.white70),
                                 ),
-                                TextButton(onPressed: () {
-                                  ref.read(mainScreenIndexProvider.notifier).state = 2;
-                                  widget.onDismiss();
-                                }, child: const Text(
-                                  'Explore Music',
-                                  // style: TextStyle(color: Colors.white),
-                                )),
+                                TextButton(
+                                    onPressed: () {
+                                      ref
+                                          .read(
+                                              mainScreenIndexProvider.notifier)
+                                          .state = 2;
+                                      widget.onDismiss();
+                                    },
+                                    child: const Text(
+                                      'Explore Music',
+                                    )),
                               ],
                             ),
                           ),
@@ -93,27 +99,48 @@ class _HistoryOverlayState extends ConsumerState<HistoryOverlay> {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.history, color: Colors.white70),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    "History",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                                      Icon(Icons.history,
+                                          color: Colors.white70),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        "History",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   TextButton(
-
-                                    onPressed: () => firebaseService.deleteAllHistoryTracks(),
-                                    child: const Text("Clear History"))
+                                      onPressed: () async {
+                                        final status = await userServices
+                                            .deleteAllHistoryTracks();
+                                        if (status) {
+                                          widget.onDismiss();
+                                          showSnackBar(
+                                            context: context,
+                                            message:
+                                                "History cleared successfully",
+                                            icon: const Icon(Icons.check,
+                                                color: Colors.green),
+                                          );
+                                        } else {
+                                          showSnackBar(
+                                            context: context,
+                                            message: "Failed to clear history",
+                                            icon: const Icon(Icons.error,
+                                                color: Colors.red),
+                                          );
+                                        }
+                                      },
+                                      child: const Text("Clear History"))
                                 ],
                               ),
                             ),
@@ -141,24 +168,23 @@ class _HistoryOverlayState extends ConsumerState<HistoryOverlay> {
                                     ),
                                     title: Text(
                                       item.track.trackName,
-                                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                                      ),
-                                    subtitle:
-                                     
-                                    Text(
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 14),
+                                    ),
+                                    subtitle: Text(
                                       item.track.artistName,
                                       style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white54,
-                                        overflow: TextOverflow.ellipsis
-                                      ),
+                                          fontSize: 12,
+                                          color: Colors.white54,
+                                          overflow: TextOverflow.ellipsis),
                                     ),
                                     trailing: Text(
                                       formatTimeAgo(item.playedAt),
                                       style: const TextStyle(
                                           color: Colors.white54),
                                     ),
-                                    onTap: () => playerNotifier.loadTrack(item.track),
+                                    onTap: () =>
+                                        playerNotifier.loadTrack(item.track),
                                   );
                                 },
                               ),

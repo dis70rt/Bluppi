@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Data/Services/firebase_services.dart';
+import 'package:synqit/Data/Services/user_services.dart';
+import 'package:synqit/Provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
 
 class OtherProfileScreen extends ConsumerWidget {
@@ -17,9 +18,12 @@ class OtherProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
+    final user = ref.watch(userProvider);
+    return user.when(
+      data: (user) {
+        return Scaffold(
       backgroundColor: const Color(0XFF181818),
-      appBar: AppBar(
+      appBar: user!.username != username ? AppBar(
         backgroundColor: AppColors.backgroundDark,
         elevation: 0,
         leading: IconButton(
@@ -33,11 +37,11 @@ class OtherProfileScreen extends ConsumerWidget {
           ),
         ],
         title: username != null ?  Text(username!, style: const TextStyle(fontSize: 16, color: AppColors.textSecondary),) : null,
-      ),
+      ) : null,
       body: username == null 
         ? const Center(child: Text('No username provided'))
         : FutureBuilder(
-            future: FirebaseServices().getUserByUsername(username!),
+            future: UserServices  ().getUserByUsername(username!),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -52,5 +56,10 @@ class OtherProfileScreen extends ConsumerWidget {
             },
           ),
     );
+      },
+      error: (error, stackTrace) => const SizedBox.shrink(),
+      loading: () => const SizedBox.shrink(),
+    );
+    
   }
 }
