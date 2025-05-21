@@ -1,0 +1,2 @@
+/home/ethernode/Projects/SynqIt/synqit/android/app/.cxx/RelWithDebInfo/4m2xv6x4/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/ethernode/Projects/SynqIt/synqit/android/app/.cxx/RelWithDebInfo/4m2xv6x4/armeabi-v7a/CMakeFiles/rebuild_cache.dir

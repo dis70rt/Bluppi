@@ -1,0 +1,2 @@
+/home/ethernode/Projects/SynqIt/synqit/android/app/.cxx/RelWithDebInfo/4m2xv6x4/x86/CMakeFiles/edit_cache.dir
+/home/ethernode/Projects/SynqIt/synqit/android/app/.cxx/RelWithDebInfo/4m2xv6x4/x86/CMakeFiles/rebuild_cache.dir

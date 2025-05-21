@@ -170,6 +170,7 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                           onPressed: () {
                                             showModalBottomSheet(
                                               context: context,
+                                              useRootNavigator: false,
                                               backgroundColor: Colors.transparent,
                                               sheetAnimationStyle: AnimationStyle(
                                                 curve: Curves.easeInOut,

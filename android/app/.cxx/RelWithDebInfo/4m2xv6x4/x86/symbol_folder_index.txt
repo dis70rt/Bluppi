@@ -1,0 +1,1 @@
+/home/ethernode/Projects/SynqIt/synqit/build/app/intermediates/cxx/RelWithDebInfo/4m2xv6x4/obj/x86

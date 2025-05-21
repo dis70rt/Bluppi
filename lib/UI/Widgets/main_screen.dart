@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
+import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_overlay.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_navigation_screen.dart';
 
@@ -24,20 +25,37 @@ class MainScreenWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(mainScreenIndexProvider);
+    final currentTrack = ref.watch(currentTrackProvider);
 
-    ref.listen<dynamic>(currentTrackProvider, (previous, next) {
-      if (next != null) {
-        FloatingMusicPlayerManager.show(context, ref);
-      } else {
-        FloatingMusicPlayerManager.hide();
-      }
-    });
+    // ref.listen<dynamic>(currentTrackProvider, (previous, next) {
+    //   if (next != null) {
+    //     FloatingMusicPlayerManager.show(context, ref);
+    //   } else {
+    //     FloatingMusicPlayerManager.hide();
+    //   }
+    // });
 
     return Scaffold(
       extendBody: true,
-      body: IndexedStack(
-        index: selectedIndex,
-        children: _pages,
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: selectedIndex,
+            children: _pages,
+          ),
+
+          if (currentTrack != null)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: kBottomNavigationBarHeight + 8.0,
+            child: FloatingMusicPlayer(
+              onDispose: () {
+                // Handle dispose if needed
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: Theme(
         data: Theme.of(context).copyWith(
