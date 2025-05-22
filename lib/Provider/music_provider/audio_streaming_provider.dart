@@ -4,9 +4,15 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/youtube_services.dart';
 
 class AudioStreamingService {
-  AudioStreamingService();
+  final Map<int, Map<String, String?>> _streamCache = {};
+  final int _maxCacheSize = 20;
 
   Future<Map<String, String?>> getAudioStreamData(Track track) async {
+    if (_streamCache.containsKey(track.trackId)) {
+      log('[AudioStreamingService] Cache hit for: ${track.trackName}');
+      return _streamCache[track.trackId]!;
+    }
+
     log('[AudioStreamingService] Fetching stream data for: ${track.trackName}');
     try {
       Map<String, dynamic> data;
@@ -22,16 +28,29 @@ class AudioStreamingService {
         throw Exception('Failed to get audio URL for track.');
       }
 
-      return {
+      final result = {
         'audioUrl': data['audioUrl'] as String?,
         'videoId': data['videoId'] as String?,
       };
-    } catch (e, st) {
-      log('[AudioStreamingService] Error fetching stream data for ${track.trackName}: $e',
-          error: e, stackTrace: st);
 
+      _addToCache(track.trackId, result);
+      return result;
+    } catch (e) {
+      log('[AudioStreamingService] Error: $e');
       rethrow;
     }
+  }
+
+  void _addToCache(int trackId, Map<String, String?> data) {
+    if (_streamCache.length >= _maxCacheSize) {
+      final oldestKey = _streamCache.keys.first;
+      _streamCache.remove(oldestKey);
+    }
+    _streamCache[trackId] = data;
+  }
+
+  void clearCache() {
+    _streamCache.clear();
   }
 }
 

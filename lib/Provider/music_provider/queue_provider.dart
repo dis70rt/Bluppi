@@ -6,10 +6,12 @@ import 'package:synqit/Data/Models/track_model.dart';
 class QueueState {
   final List<Track> items;
   final int currentIndex;
+  final Set<int> autoRecommendedIndices;
 
   const QueueState({
     this.items = const [],
     this.currentIndex = -1,
+    this.autoRecommendedIndices = const {},
   });
 
   Track? get current => (currentIndex >= 0 && currentIndex < items.length)
@@ -36,10 +38,13 @@ class QueueState {
   QueueState copyWith({
     List<Track>? items,
     int? currentIndex,
+    Set<int>? autoRecommendedIndices,
   }) {
     return QueueState(
       items: items ?? this.items,
       currentIndex: currentIndex ?? this.currentIndex,
+      autoRecommendedIndices:
+          autoRecommendedIndices ?? this.autoRecommendedIndices,
     );
   }
 }
@@ -88,6 +93,45 @@ class QueueNotifier extends StateNotifier<QueueState> {
   //   state = QueueState(items: state.items, currentIndex: idx);
   //   return state.current;
   // }
+
+  void addAfterCurrent(Track track) {
+    if (state.currentIndex == -1 || state.items.isEmpty) {
+      add(track);
+      return;
+    }
+
+    final newIndex = state.currentIndex + 1;
+    List<Track> newItems = List.from(state.items);
+
+    if (newIndex < newItems.length &&
+        state.autoRecommendedIndices.contains(newIndex)) {
+      newItems[newIndex] = track;
+      final newRecommended = Set<int>.from(state.autoRecommendedIndices);
+      newRecommended.remove(newIndex);
+      state = state.copyWith(
+          items: newItems, autoRecommendedIndices: newRecommended);
+      log("QueueNotifier: Replaced auto-recommended track with user track '${track.trackName}' at index $newIndex.");
+    } else {
+      newItems.insert(newIndex, track);
+      state = state.copyWith(items: newItems);
+      log("QueueNotifier: Added user track '${track.trackName}' after current at index $newIndex.");
+    }
+  }
+
+  void addRecommendation(Track track) {
+    final newItems = List<Track>.from(state.items);
+    final newRecommended = Set<int>.from(state.autoRecommendedIndices);
+    
+    final newIndex = newItems.length;
+    newItems.add(track);
+    newRecommended.add(newIndex);
+    
+    state = state.copyWith(
+      items: newItems, 
+      autoRecommendedIndices: newRecommended
+    );
+    log("QueueNotifier: Added recommended track '${track.trackName}' at index $newIndex.");
+  }
 
   void next() {
     if (state.currentIndex + 1 < state.items.length) {

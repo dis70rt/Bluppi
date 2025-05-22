@@ -44,6 +44,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   final ApiServices _apiServices;
   final AudioStreamingService _streamingService;
 
+  bool _isPrefetchingRecommendation = false;
+
   final Ref _ref;
   final AudioPlayer _audioPlayer;
   ConcatenatingAudioSource? _currentPlaylistSource;
@@ -133,6 +135,10 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       PlayerStatus currentStatus = state.status;
       PlayerStatus newStatus = currentStatus;
 
+      if (processingState == ProcessingState.ready && isPlaying) {
+        _checkAndPrefetchNextTrack();
+      }
+
       switch (processingState) {
         case ProcessingState.idle:
           if (currentStatus != PlayerStatus.error &&
@@ -172,17 +178,19 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
             final endPosition = state.duration ?? Duration.zero;
             state = state.copyWith(status: newStatus, position: endPosition);
 
-            final isLastTrackInPlayer = (_audioPlayer.currentIndex != null &&
-                _currentPlaylistSource != null &&
-                _audioPlayer.currentIndex ==
-                    _currentPlaylistSource!.children.length - 1);
+            // final isLastTrackInPlayer = (_audioPlayer.currentIndex != null &&
+            //     _currentPlaylistSource != null &&
+            //     _audioPlayer.currentIndex ==
+            //         _currentPlaylistSource!.children.length - 1);
 
-            final queue = _ref.read(queueProvider);
-            if (isLastTrackInPlayer || queue.items.isEmpty) {
-              log("[MusicPlayerNotifier] Player completed last track in source or queue is empty. Attempting recommendation.");
+            // final queue = _ref.read(queueProvider);
+            // if (isLastTrackInPlayer || queue.items.isEmpty) {
+            //   log("[MusicPlayerNotifier] Player completed last track in source or queue is empty. Attempting recommendation.");
 
-              await skipToNext();
-            }
+            //   await skipToNext();
+            // }
+
+            await skipToNext();
           }
           break;
       }
@@ -201,6 +209,59 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       _ref.read(currentTrackProvider.notifier).state = null;
       _ref.read(queueProvider.notifier).syncIndex(-1);
     });
+  }
+
+  Future<void> _checkAndPrefetchNextTrack() async {
+    if (!mounted) return;
+    
+    final queueState = _ref.read(queueProvider);
+    final hasUserAddedNext = queueState.currentIndex + 1 < queueState.items.length && 
+                            !queueState.autoRecommendedIndices.contains(queueState.currentIndex + 1);
+                            
+    if (hasUserAddedNext || _isPrefetchingRecommendation) {
+      return;
+    }
+    
+    final shouldPrefetch = queueState.currentIndex == queueState.items.length - 1 ||
+                          (queueState.currentIndex + 1 < queueState.items.length && 
+                           queueState.autoRecommendedIndices.contains(queueState.currentIndex + 1));
+                           
+    if (shouldPrefetch) {
+      _prefetchNextRecommendation();
+    }
+  }
+
+  Future<void> _prefetchNextRecommendation() async {
+    if (_isPrefetchingRecommendation || !mounted) return;
+    
+    _isPrefetchingRecommendation = true;
+    log("[MusicPlayerNotifier] Started prefetching next recommendation in background");
+    
+    try {
+      final currentTrack = _ref.read(currentTrackProvider);
+      if (currentTrack == null) return;
+      
+      final rec = await _apiServices.getNextRecommendedTrack(
+        currentTrack.artistName,
+        currentTrack.trackName,
+      );
+      
+      if (!mounted) return;
+      
+      if (rec != null) {
+        log("[MusicPlayerNotifier] Background prefetch successful: ${rec.trackName}");
+        
+        _ref.read(queueProvider.notifier).addRecommendation(rec);
+        
+        if (_currentPlaylistSource != null) {
+          await _addTrackToExistingPlaylist(rec);
+        }
+      }
+    } catch (e) {
+      log("[MusicPlayerNotifier] Error prefetching recommendation: $e", error: e);
+    } finally {
+      _isPrefetchingRecommendation = false;
+    }
   }
 
   void _listenToPlayerIndex() {
@@ -387,7 +448,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       }
 
       if (effectiveInitialIndex != -1) {
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
 
         try {
           await _audioPlayer.setAudioSource(
@@ -399,7 +460,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
           log("[MusicPlayerNotifier] setAudioSource completed. Autoplay is $shouldPlay.");
         } catch (e) {
           log("[MusicPlayerNotifier] First attempt to set audio source failed: $e. Retrying...");
-          await Future.delayed(Duration(milliseconds: 300));
+          await Future.delayed(const Duration(milliseconds: 300));
           await _audioPlayer.setAudioSource(
             _currentPlaylistSource!,
             initialIndex: effectiveInitialIndex,
@@ -439,7 +500,6 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     }
 
     _ref.read(currentTrackProvider.notifier).state = track;
-
     state = state.copyWith(status: PlayerStatus.loading);
 
     try {
@@ -448,15 +508,20 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       final bool wasAlreadyCurrent = (existingIndex != -1 &&
           existingIndex == currentQueueState.currentIndex);
 
-      if (existingIndex == -1 || !wasAlreadyCurrent) {
-        _ref.read(queueProvider.notifier).playTrack(track);
+      if (existingIndex == -1 ) {
+        // _ref.read(queueProvider.notifier).playTrack(track);
+        _ref.read(queueProvider.notifier).addAfterCurrent(track);
+        _ref.read(queueProvider.notifier).next();
 
         final updatedQueueState = _ref.read(queueProvider);
         await _updatePlayerPlaylist(
             updatedQueueState.items, updatedQueueState.currentIndex,
             shouldPlay: true);
         log("[MusicPlayerNotifier] Updated playlist with selected track as current.");
-      } else if (wasAlreadyCurrent) {
+      } else if (!wasAlreadyCurrent) {
+        _ref.read(queueProvider.notifier).playTrack(track);
+      }
+      else if (wasAlreadyCurrent) {
         log("[MusicPlayerNotifier] Track was already current. Starting playback.");
         await play();
       }
@@ -625,55 +690,60 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
     if (_audioPlayer.hasNext) {
       log("[MusicPlayerNotifier] Skipping to next via player. _audioPlayer.hasNext is true.");
-      try {
-        await _audioPlayer.seekToNext();
-        log("[MusicPlayerNotifier] _audioPlayer.seekToNext() called.");
-      } catch (e, st) {
-        log("[MusicPlayerNotifier] Error seeking to next player item: $e",
-            error: e, stackTrace: st);
-      }
+      await _audioPlayer.seekToNext();
+      _checkAndPrefetchNextTrack();
     } else {
-      log("[MusicPlayerNotifier] No next item in player source. Checking recommendations.");
+      // log("[MusicPlayerNotifier] No next item in player source. Checking recommendations.");
 
-      if (_isFetchingRecommendation) {
-        log("[MusicPlayerNotifier] Already fetching recommendation, skipping redundant call.");
-        return;
+      // if (_isFetchingRecommendation) {
+      //   log("[MusicPlayerNotifier] Already fetching recommendation, skipping redundant call.");
+      //   return;
+      // }
+      // _isFetchingRecommendation = true;
+
+      // final queue = _ref.read(queueProvider);
+      // final currentTrack = queue.current;
+
+      // if (currentTrack != null) {
+      //   log("[MusicPlayerNotifier] End of queue reached (or source ended), fetching recommendation for ${currentTrack.trackName}");
+
+      //   try {
+      //     state = state.copyWith(status: PlayerStatus.loading);
+
+      //     final rec = await _apiServices.getNextRecommendedTrack(
+      //       currentTrack.artistName,
+      //       currentTrack.trackName,
+      //     );
+
+      //     if (!mounted) return;
+
+      //     if (rec != null) {
+      //       log("[MusicPlayerNotifier] Recommendation found: ${rec.trackName}. Adding to queue and playing.");
+
+      //       _ref.read(currentTrackProvider.notifier).state = rec;
+
+      //       _ref.read(queueProvider.notifier).playTrack(rec);
+      //     } else {
+      //       log("[MusicPlayerNotifier] No next recommended track available. Stopping playback.");
+      //       await stop();
+      //     }
+      //   } catch (e) {
+      //     log("[MusicPlayerNotifier] Error fetching next recommended track: $e",
+      //         error: e);
+      //   } finally {
+      //     _isFetchingRecommendation = false;
+      //   }
+      // } else {}
+
+      log("[MusicPlayerNotifier] No next track available. Waiting for prefetched content.");
+      state = state.copyWith(status: PlayerStatus.loading);
+
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      if (!_audioPlayer.hasNext && _ref.read(queueProvider).next == null) {
+        log("[MusicPlayerNotifier] No prefetched content available. Stopping playback.");
+        await stop();
       }
-      _isFetchingRecommendation = true;
-
-      final queue = _ref.read(queueProvider);
-      final currentTrack = queue.current;
-
-      if (currentTrack != null) {
-        log("[MusicPlayerNotifier] End of queue reached (or source ended), fetching recommendation for ${currentTrack.trackName}");
-
-        try {
-          state = state.copyWith(status: PlayerStatus.loading);
-
-          final rec = await _apiServices.getNextRecommendedTrack(
-            currentTrack.artistName,
-            currentTrack.trackName,
-          );
-
-          if (!mounted) return;
-
-          if (rec != null) {
-            log("[MusicPlayerNotifier] Recommendation found: ${rec.trackName}. Adding to queue and playing.");
-
-            _ref.read(currentTrackProvider.notifier).state = rec;
-
-            _ref.read(queueProvider.notifier).playTrack(rec);
-          } else {
-            log("[MusicPlayerNotifier] No next recommended track available. Stopping playback.");
-            await stop();
-          }
-        } catch (e) {
-          log("[MusicPlayerNotifier] Error fetching next recommended track: $e",
-              error: e);
-        } finally {
-          _isFetchingRecommendation = false;
-        }
-      } else {}
     }
   }
 
