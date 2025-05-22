@@ -5,7 +5,7 @@ import 'package:synqit/Data/Models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synqit/config.dart';
-import 'auth_provider.dart';
+import '../auth_provider.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio();
@@ -46,7 +46,6 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
       if (userData != null) {
         state = AsyncValue.data(userData);
         log("Loaded user data from cache for user: ${authUser.uid}");
-        log("Check UserData: ${userData}");
         _refreshUserData(authUser.uid);
         return;
       }
@@ -83,9 +82,42 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
     }
   }
 
+  Future<void> refresh() async {
+    final authUser = _auth.currentUser;
+    if (authUser == null) {
+      log("Attempted to refresh user data, but user is not authenticated.");
+      throw Exception("Cannot refresh user data: User not authenticated.");
+    }
+
+    log("Manually refreshing user data for user: ${authUser.uid}");
+    if (!mounted) {
+      log("Skipping refresh - notifier already disposed");
+      return;
+    }
+
+    state = const AsyncValue.loading();
+
+    try {
+      await _refreshUserData(authUser.uid);
+      log("User data manually refreshed for: ${authUser.uid}");
+    } catch (e, stackTrace) {
+      log("Error during manual user refresh: $e");
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
+      rethrow;
+    }
+  }
+
   Future<void> _refreshUserData(String userId) async {
     try {
       final response = await _dio.get('user/$userId');
+
+      if (!mounted) {
+        log("Skipping user data refresh - notifier already disposed");
+        return;
+      }
+
       if (response.statusCode == 200) {
         final userModel = UserModel.fromMap(response.data);
         state = AsyncValue.data(userModel);
@@ -93,17 +125,23 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         log("User data refreshed from API for user: $userId");
       } else {
         log('API Error: User not found for ID: $userId');
-        state = AsyncValue.error(
-          UserProfileNotFoundException(userId),
-          StackTrace.current,
-        );
+        if (mounted) {
+          state = AsyncValue.error(
+            UserProfileNotFoundException(userId),
+            StackTrace.current,
+          );
+        }
       }
     } on DioException catch (e, stackTrace) {
       log('Network Error fetching user data: ${e.message}');
-      state = AsyncValue.error(e, stackTrace);
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
     } catch (e, stackTrace) {
       log('Error during user data refresh for user $userId: $e');
-      state = AsyncValue.error(e, stackTrace);
+      if (mounted) {
+        state = AsyncValue.error(e, stackTrace);
+      }
     }
   }
 

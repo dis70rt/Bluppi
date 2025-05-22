@@ -7,7 +7,7 @@ import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/track_search_provider.dart';
-import 'package:synqit/Provider/user_search_provider.dart';
+import 'package:synqit/Provider/user_provider/user_search_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_navigation_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';

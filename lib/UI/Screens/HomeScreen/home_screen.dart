@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/app_bar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {

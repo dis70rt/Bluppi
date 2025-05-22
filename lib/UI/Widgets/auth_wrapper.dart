@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Provider/auth_provider.dart';
-import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/create_account_screen.dart';
 import 'package:synqit/UI/Screens/login_screen.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';

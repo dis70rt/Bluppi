@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:synqit/Data/Models/follower_model.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/config.dart';
@@ -262,6 +263,46 @@ class UserServices {
     } catch (e) {
       log("Error checking username uniqueness: $e");
       return false;
+    }
+  }
+
+  Future<FollowerModel> getFollowers({
+    required String userId,
+    int limit = 15,
+    int offset = 0,
+  }) async {
+    try {
+      final response = await dio.get(
+        '/user/$userId/followers',
+        queryParameters: {
+          'limit': limit,
+          'offset': offset,
+        },
+      );
+
+      return FollowerModel.fromMap(response.data);
+    } catch (e) {
+      throw Exception('Failed to load followers: $e');
+    }
+  }
+
+  Future<FollowingModel> getFollowing({
+    required String userId,
+    int limit = 15,
+    int offset = 0,
+  }) async {
+    try {
+      final response = await dio.get(
+        '/user/$userId/following',
+        queryParameters: {
+          'limit': limit,
+          'offset': offset,
+        },
+      );
+
+      return FollowingModel.fromMap(response.data);
+    } catch (e) {
+      throw Exception('Failed to load following: $e');
     }
   }
 }

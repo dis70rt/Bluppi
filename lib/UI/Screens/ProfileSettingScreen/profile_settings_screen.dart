@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Provider/auth_provider.dart';
-import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Provider/user_provider/user_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -23,9 +23,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return userAsync.when(
       data: (user) {
         if (user == null) {
-          return const Scaffold(
-            body: Center(child: Text('No user logged in')),
-          );
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.go('/auth');
+        });
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
         }
 
         return Scaffold(
@@ -154,8 +157,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ),
                   leading:
                       const Icon(Icons.exit_to_app, color: Colors.redAccent),
-                  onTap: () {
+                  onTap: () async {
+                    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Dialog(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Logging out...")
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
                     ref.read(authProvider.notifier).signOut();
+
+                    if (context.mounted) {
+        Navigator.of(context).pop(); 
+        context.go('/auth'); 
+      }
                   },
                 ),
               ],

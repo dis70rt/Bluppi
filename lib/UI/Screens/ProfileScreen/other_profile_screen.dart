@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
 
 class OtherProfileScreen extends ConsumerWidget {

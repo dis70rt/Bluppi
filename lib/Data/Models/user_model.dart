@@ -41,14 +41,14 @@ class UserModel extends ChangeNotifier {
         email: data['email'] ?? '',
         phone: data['phone'] as int?,
         country: data['country'] as String?,
-        profilePic: data['profilePic'] as String?,
-        createdAt: (data['createdAt'] != null)
-            ? DateTime.tryParse(data['createdAt'] as String? ?? '') ??
+        profilePic: data['profile_pic'] as String?,
+        createdAt: (data['created_at'] != null)
+            ? DateTime.tryParse(data['created_at'] as String? ?? '') ??
                 DateTime.now()
             : DateTime.now(),
-        followers: data['followers'] as int? ?? 0,
-        following: data['following'] as int? ?? 0,
-        favoriteGenres: (data['favoriteGenres'] as List<dynamic>?)
+        followers: data['follower_count'] as int? ?? 0,
+        following: data['following_count'] as int? ?? 0,
+        favoriteGenres: (data['favorite_genres'] as List<dynamic>?)
             ?.map((e) => e.toString())
             .toList(),
         bio: data['bio'] as String?,
@@ -70,11 +70,11 @@ class UserModel extends ChangeNotifier {
       'email': email,
       'phone': phone,
       'country': country,
-      'profilePic': profilePic,
+      'profile_pic': profilePic,
       'createdAt': createdAt.toIso8601String(),
-      'followers': followers,
-      'following': following,
-      'favoriteGenres': favoriteGenres,
+      'follower_count': followers,
+      'following_count': following,
+      'favorite_genres': favoriteGenres,
       'bio': bio,
     };
   }
@@ -117,11 +117,11 @@ class UserModel extends ChangeNotifier {
       'phone': phone,
       'email': email,
       'country': country,
-      'profilePic': profilePic,
+      'profile_pic': profilePic,
       'createdAt': createdAt.toIso8601String(),
-      'followers': followers,
-      'following': following,
-      'favoriteGenres': favoriteGenres,
+      'follower_count': followers,
+      'following_count': following,
+      'favorite_genres': favoriteGenres,
       'bio': bio,
     };
   }
@@ -134,8 +134,8 @@ class UserModel extends ChangeNotifier {
       phone: map['phone'],
       email: map['email'] ?? '',
       country: map['country'],
-      profilePic: map['profilePic'],
-      createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
+      profilePic: map['profile_pic'],
+      createdAt: DateTime.tryParse(map['created_at'] ?? '') ?? DateTime.now(),
       followers: map['follower_count'] ?? 0,
       following: map['following_count'] ?? 0,
       favoriteGenres: (map['favoriteGenres'] as List<dynamic>?)?.cast<String>(),
@@ -169,8 +169,8 @@ class UserModel extends ChangeNotifier {
     if (newData.containsKey('country')) {
       country = newData['country'] as String?;
     }
-    if (newData.containsKey('profilePic')) {
-      profilePic = newData['profilePic'] as String?;
+    if (newData.containsKey('profile_pic')) {
+      profilePic = newData['profile_pic'] as String?;
     }
 
     // if (newData.containsKey('followers')) {
@@ -179,8 +179,8 @@ class UserModel extends ChangeNotifier {
     // if (newData.containsKey('following')) {
     //   following = newData['following'] as int? ?? 0;
     // }
-    if (newData.containsKey('favoriteGenres')) {
-      favoriteGenres = (newData['favoriteGenres'] as List<dynamic>?)
+    if (newData.containsKey('favorite_genres')) {
+      favoriteGenres = (newData['favorite_genres'] as List<dynamic>?)
           ?.map((e) => e?.toString() ?? '')
           .where((s) => s.isNotEmpty)
           .toList();

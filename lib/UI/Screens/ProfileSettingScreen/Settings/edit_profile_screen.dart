@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Constants/data.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/username_dialog.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Widgets/edit_profile_widgets.dart';
 import 'package:synqit/Utils/datetime.dart';
@@ -137,7 +138,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             duration: Duration(seconds: 2),
           ),
         );
-        ref.read(userProvider.notifier).update(updatedUserData.toFirestore());
+        log("Updated user data: ${updatedUserData.toMap()}");
+        ref.read(userProvider.notifier).update(updatedUserData.toMap());
         context.pop();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

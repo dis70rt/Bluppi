@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_overlay.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_navigation_screen.dart';
 
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';

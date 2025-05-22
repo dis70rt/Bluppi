@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_bottomsheet.dart';
 
 class FollowStats {
   final int followers;
@@ -31,15 +32,26 @@ class FollowStatsNotifier extends StateNotifier<FollowStats> {
       : super(FollowStats(
             followers: followers, following: following, playlists: playlists));
 
-  void incrementFollowers() {
+  void incrementFollower() {
     state = state.copyWith(followers: state.followers + 1);
   }
 
-  void decrementFollowers() {
+  void decrementFollower() {
     state = state.copyWith(followers: state.followers - 1);
   }
 
-  void loadStats({required int followers,required int following,required int playlists}) {
+  void incrementFollowering() {
+    state = state.copyWith(following: state.following + 1);
+  }
+
+  void decrementFollowering() {
+    state = state.copyWith(following: state.following - 1);
+  }
+
+  void loadStats(
+      {required int followers,
+      required int following,
+      required int playlists}) {
     state = state.copyWith(
       followers: followers,
       following: following,
@@ -72,33 +84,79 @@ class FollowingStatsWidget extends ConsumerWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _statColumn("Followers", stats.followers),
+            _statColumn("Followers", stats.followers, context, ref),
             const VerticalDivider(
                 color: Colors.white30, width: 1, indent: 10, endIndent: 10),
-            _statColumn("Following", stats.following),
+            _statColumn("Following", stats.following, context, ref),
             const VerticalDivider(
                 color: Colors.white30, width: 1, indent: 10, endIndent: 10),
-            _statColumn("Playlists", stats.playlists),
+            _statColumn("Playlists", stats.playlists, context, ref),
           ],
         ),
       ),
     );
   }
 
-  Widget _statColumn(String title, int count) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          count.toString(),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          title,
-          style: const TextStyle(fontSize: 12, color: Colors.white54),
-        ),
-      ],
+  Future<void> showFollowBottomSheet({
+    required BuildContext context,
+    required String userId,
+    required WidgetRef ref,
+    required int tabIndex
+  }) {
+    final stats = ref.read(followStatsProvider(userId));
+    final followerCount = stats.followers;
+    final followingCount = stats.following;
+
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) {
+          return FollowBottomSheet(
+            userId: userId,
+            followerCount: followerCount,
+            followingCount: followingCount,
+            tabIndex: tabIndex,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _statColumn(String title, int count, BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () {
+        if (title == "Followers" || title == "Following") {
+          showFollowBottomSheet(
+            context: context,
+            userId: userId,
+            ref: ref,
+            tabIndex: title == "Followers" ? 0 : 1,
+          );
+        } else {
+          // Handle other cases if needed
+        }
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            count.toString(),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 12, color: Colors.white54),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,14 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/following_stats.dart';
 import 'package:synqit/Utils/snackbar.dart';
+import 'package:synqit/config.dart';
 
 class FollowButton extends ConsumerStatefulWidget {
   final String followeeId;
-  const FollowButton({super.key, required this.followeeId});
+  final String username;
+  const FollowButton({super.key, required this.followeeId, required this.username});
 
   @override
   ConsumerState<FollowButton> createState() => _FollowButtonState();
@@ -19,6 +24,7 @@ class _FollowButtonState extends ConsumerState<FollowButton> with SingleTickerPr
   bool? _followStatus;
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  final uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
@@ -83,14 +89,20 @@ class _FollowButtonState extends ConsumerState<FollowButton> with SingleTickerPr
             .decrementFollowing(widget.followeeId);
         ref
             .read(followStatsProvider(widget.followeeId).notifier)
-            .decrementFollowers();
+            .decrementFollower();
+        ref
+            .read(followStatsProvider(uid).notifier)
+            .decrementFollowering();
       } else {
         await ref
             .read(userProvider.notifier)
             .incrementFollowing(widget.followeeId);
         ref
             .read(followStatsProvider(widget.followeeId).notifier)
-            .incrementFollowers();
+            .incrementFollower();
+        ref
+            .read(followStatsProvider(uid).notifier)
+            .incrementFollowering();
       }
     } catch (e) {
       if (mounted) {
@@ -155,7 +167,15 @@ class _FollowButtonState extends ConsumerState<FollowButton> with SingleTickerPr
       ),
       child: Center(
         child: IconButton(
-          onPressed: () {},
+          onPressed: () {
+            SharePlus.instance.share(
+              ShareParams(
+                // text: "Check out this profile!",
+                subject: "Profile",
+                uri: Uri.parse("${AppConfig.appUrl}/${widget.username}"),
+              )
+            );
+          },
           icon: FaIcon(icon, size: 18),
         ),
       ),

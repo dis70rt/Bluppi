@@ -9,7 +9,7 @@ import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider.dart';
+import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/app_bar.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/edit_row.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_button.dart';
@@ -66,7 +66,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             widget.user == null || widget.user!.id == currentUser.id;
 
         if (!isOwnProfile && viewedUser == null) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: Colors.red,));
         }
 
         final UserModel displayedUser =
@@ -87,7 +87,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       },
       error: (error, stackTrace) =>
           Center(child: Text('Error: ${error.toString()}')),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator(color: Colors.yellow,)),
     );
   }
 
@@ -176,7 +176,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Center(
                   child: isOwnProfile
                       ? editRow()
-                      : FollowButton(followeeId: user.id)),
+                      : FollowButton(followeeId: user.id, username: user.username)),
               const SizedBox(height: 20),
               // followingStats(user.followers, user.following, user.following),
               FollowingStatsWidget(userId: user.id),
@@ -283,8 +283,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _refreshCurrentUser() async {
-    final refresh = ref.refresh(userProvider);
-    refresh.isRefreshing;
+    try {
+    ref.refresh(userProvider.notifier).refresh();
+    _initializeUserStats();
+  } catch (e) {
+    log('Error refreshing current user: $e');
+  }
   }
 
   Future<void> _refreshViewedUser() async {
