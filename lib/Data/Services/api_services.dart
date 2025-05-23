@@ -14,7 +14,7 @@ class ApiServices {
     ),
   );
 
-  Future<Track?> getNextRecommendedTrack(String artist, String track) async {
+  Future<Track?> getNextRecommendedTrack({required String artist, required String track}) async {
     try {
       final encodedArtist = Uri.encodeComponent(artist);
       final encodedTrack = Uri.encodeComponent(track);
@@ -27,8 +27,6 @@ class ApiServices {
           },
         ),
       );
-
-      log("[Response] ${response.data['recommendation']}");
 
       if (response.statusCode == 200) {
         return Track.fromJson(response.data['recommendation']);

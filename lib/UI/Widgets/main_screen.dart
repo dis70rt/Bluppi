@@ -26,6 +26,8 @@ class MainScreenWidget extends ConsumerWidget {
     final selectedIndex = ref.watch(mainScreenIndexProvider);
     final currentTrack = ref.watch(currentTrackProvider);
 
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+
     // ref.listen<dynamic>(currentTrackProvider, (previous, next) {
     //   if (next != null) {
     //     FloatingMusicPlayerManager.show(context, ref);
@@ -44,10 +46,12 @@ class MainScreenWidget extends ConsumerWidget {
           ),
 
           if (currentTrack != null)
-          Positioned(
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInCubic,
             left: 0,
             right: 0,
-            bottom: kBottomNavigationBarHeight + 8.0,
+            bottom: kBottomNavigationBarHeight,
             child: FloatingMusicPlayer(
               onDispose: () {
                 // Handle dispose if needed

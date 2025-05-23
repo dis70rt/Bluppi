@@ -29,10 +29,8 @@ class UserTileSkeleton extends StatelessWidget {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0, 
-                horizontal: 8.0
-              ),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
               child: Skeletonizer(
                 enabled: true,
                 child: Row(
@@ -46,20 +44,24 @@ class UserTileSkeleton extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 20),
-                    Expanded(
+                    const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            height: 15,
-                            width: 120,
-                            color: Colors.white,
+                          Text(
+                            "full name",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
-                          const SizedBox(height: 4),
-                          Container(
-                            height: 13,
-                            width: 80,
-                            color: Colors.white,
+                          Text(
+                            "username",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                            ),
                           ),
                         ],
                       ),

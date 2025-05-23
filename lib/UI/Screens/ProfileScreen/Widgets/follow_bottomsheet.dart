@@ -242,7 +242,7 @@ class _FollowBottomSheetState extends ConsumerState<FollowBottomSheet>
   }
 
   List<Widget> _buildSkeletonLoaders() {
-    return List.generate(3, (index) => const UserTileSkeleton());
+    return List.generate(6, (index) => const UserTileSkeleton());
   }
 
   Widget _buildEndOfListIndicator() {

@@ -68,9 +68,8 @@ class AuthNotifier extends AsyncNotifier<Auth> {
       state = const AsyncValue.loading();
 
       final musicPlayerNotifier = ref.read(musicPlayerProvider.notifier);
-      if (musicPlayerNotifier.mounted) {
-        await musicPlayerNotifier.stop();
-      }
+      await musicPlayerNotifier.stop();
+      await musicPlayerNotifier.clearQueueAndStop();
 
       ref.read(currentTrackProvider.notifier).state = null;
       ref.read(queueProvider.notifier).clear();

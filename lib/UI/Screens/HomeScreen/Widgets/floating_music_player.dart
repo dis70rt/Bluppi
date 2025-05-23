@@ -172,6 +172,7 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                               context: context,
                                               useRootNavigator: false,
                                               backgroundColor: Colors.transparent,
+                                              scrollControlDisabledMaxHeightRatio: 0.65,
                                               sheetAnimationStyle: AnimationStyle(
                                                 curve: Curves.easeInOut,
                                                 duration: const Duration(milliseconds: 300),
@@ -218,7 +219,6 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                 ),
                               ),
                               
-                              // Only visible when expanded
                               ClipRect(
                                 child: AnimatedSize(
                                   duration: const Duration(milliseconds: 300),

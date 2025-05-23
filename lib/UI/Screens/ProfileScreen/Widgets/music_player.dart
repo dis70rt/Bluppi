@@ -3,7 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:synqit/Provider/music_provider/music_player_provider.dart';
+import 'package:synqit/Provider/music_provider/music_player_state.dart';
 
 class MiniMusicPlayer extends ConsumerWidget {
   final Track track;
@@ -13,10 +15,11 @@ class MiniMusicPlayer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(musicPlayerProvider);
     final playerNotifier = ref.read(musicPlayerProvider.notifier);
-
-    // final isCurrentTrack = playerState.currentTrack?.id == track.id &&
-    //     playerState.status != PlayerStatus.initial &&
-    //     playerState.status != PlayerStatus.error;
+    final currentTrack = ref.watch(currentTrackProvider);
+    
+    final isCurrentTrack = currentTrack?.trackId == track.trackId &&
+      playerState.status != PlayerStatus.initial &&
+      playerState.status != PlayerStatus.error;
 
     // if (playerState.currentTrack?.id != track.id &&
     //     playerState.status != PlayerStatus.loading &&
@@ -24,35 +27,33 @@ class MiniMusicPlayer extends ConsumerWidget {
     //     track.artist.name.isNotEmpty) {}
 
     double progress = 0.0;
-    // if (isCurrentTrack &&
-    //     playerState.duration != null &&
-    //     playerState.duration!.inMilliseconds > 0) {
-    //   progress = (playerState.position.inMilliseconds /
-    //           playerState.duration!.inMilliseconds)
-    //       .clamp(0.0, 1.0);
-    // }
+    if (isCurrentTrack &&
+    playerState.duration != null &&
+    playerState.duration!.inMilliseconds > 0) {
+    progress = (playerState.position.inMilliseconds /
+          playerState.duration!.inMilliseconds)
+      .clamp(0.0, 1.0);
+}
 
     IconData playPauseIcon = Icons.play_arrow;
-    playPauseAction() => playerNotifier.loadTrack(track);
+    VoidCallback? playPauseAction = () => playerNotifier.loadTrack(track);
 
-    // if (isCurrentTrack) {
-    //   if (playerState.status == PlayerStatus.loading) {
-    //     playPauseIcon = Icons.hourglass_empty;
-    //     playPauseAction = null;
-    //   } else if (playerState.status == PlayerStatus.playing) {
-    //     playPauseIcon = Icons.pause;
-    //     playPauseAction = playerNotifier.pause;
-    //   } else if (playerState.status == PlayerStatus.paused ||
-    //       playerState.status == PlayerStatus.completed
-    //       // playerState.status == PlayerStatus.loaded
-    //       ) {
-    //     playPauseIcon = Icons.play_arrow;
-    //     playPauseAction = playerNotifier.play;
-    //   } else if (playerState.status == PlayerStatus.error) {
-    //     playPauseIcon = Icons.error_outline;
-    //     playPauseAction = () => playerNotifier.loadTrack(track);
-    //   }
-    // }
+    if (isCurrentTrack) {
+  if (playerState.status == PlayerStatus.loading) {
+    playPauseIcon = Icons.hourglass_empty;
+    playPauseAction = null;
+  } else if (playerState.status == PlayerStatus.playing) {
+    playPauseIcon = Icons.pause;
+    playPauseAction = () => playerNotifier.pause();
+  } else if (playerState.status == PlayerStatus.paused ||
+      playerState.status == PlayerStatus.completed) {
+    playPauseIcon = Icons.play_arrow;
+    playPauseAction = () => playerNotifier.play();
+  } else if (playerState.status == PlayerStatus.error) {
+    playPauseIcon = Icons.error_outline;
+    playPauseAction = () => playerNotifier.loadTrack(track);
+  }
+}
 
     return Container(
       margin: const EdgeInsets.all(16),

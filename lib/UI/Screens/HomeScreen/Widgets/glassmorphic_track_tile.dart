@@ -11,11 +11,13 @@ class GrassmorphicTrackTile extends StatelessWidget {
     required this.track,
     required this.onTap,
     this.isCurrent = false,
+    this.trailing,
   });
 
   final Track track;
   final VoidCallback onTap;
   final bool isCurrent;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +60,41 @@ class GrassmorphicTrackTile extends StatelessWidget {
                       vertical: 8.0, horizontal: 8.0),
                   child: Row(
                     children: [
-                      ClipRRect(borderRadius: BorderRadius.circular(8), child: CachedNetworkImage(imageUrl: track.imageUrl, height: 45)),
-                      // if (isCurrent)
-                      //   const Icon(Icons.play_arrow_rounded,
-                      //       color: AppColors.accent, size: 24)
-                      // else
-                        
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: CachedNetworkImage(
+                          imageUrl: track.imageUrl,
+                          height: 45,
+                          width: 45,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: AppColors.darkSurface,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.music_note,
+                              color: AppColors.textSecondary,
+                              size: 20,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: AppColors.darkSurface,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.error_outline,
+                              color: Colors.redAccent,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
                       const SizedBox(width: 20),
                       Expanded(
                         child: Column(
@@ -93,6 +124,10 @@ class GrassmorphicTrackTile extends StatelessWidget {
                           ],
                         ),
                       ),
+                      if (trailing != null) ...[
+                        const SizedBox(width: 8),
+                        trailing!,
+                      ],
                     ],
                   ),
                 ),

@@ -30,7 +30,7 @@ class Database {
       'video_id': track.videoId ?? '',
     };
 
-    final response = await dio.post(
+    await dio.post(
       '/write-track',
       data: jsonEncode(postData),
       options: Options(
@@ -40,7 +40,6 @@ class Database {
         },
       ),
     );
-    log("[Response] ${response.statusCode}");
   }
 
   Future<Map<String, dynamic>> getTrack(String trackId) async {
