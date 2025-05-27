@@ -17,7 +17,7 @@ class MainScreenWidget extends ConsumerWidget {
     HomeScreen(),
     WalletPage(),
     SearchNavigationScreen(),
-    MarketsPage(),
+    // ChatScreen(),
     ProfileScreen(),
   ];
 
@@ -26,7 +26,7 @@ class MainScreenWidget extends ConsumerWidget {
     final selectedIndex = ref.watch(mainScreenIndexProvider);
     final currentTrack = ref.watch(currentTrackProvider);
 
-    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    // final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
     // ref.listen<dynamic>(currentTrackProvider, (previous, next) {
     //   if (next != null) {
@@ -111,7 +111,7 @@ class MainScreenWidget extends ConsumerWidget {
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.chartLine),
+                    icon: FaIcon(FontAwesomeIcons.comment),
                     label: '',
                   ),
                   BottomNavigationBarItem(
@@ -164,12 +164,3 @@ class ExchangePage extends StatelessWidget {
   }
 }
 
-class MarketsPage extends StatelessWidget {
-  const MarketsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-        child: Text("Markets Page", style: TextStyle(color: Colors.white)));
-  }
-}

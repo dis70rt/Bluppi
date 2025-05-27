@@ -176,7 +176,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Center(
                   child: isOwnProfile
                       ? editRow()
-                      : FollowButton(followeeId: user.id, username: user.username)),
+                      : FollowButton(otherUser: user)),
               const SizedBox(height: 20),
               // followingStats(user.followers, user.following, user.following),
               FollowingStatsWidget(userId: user.id),

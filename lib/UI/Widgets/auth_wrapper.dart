@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Provider/auth_provider.dart';
+import 'package:synqit/Provider/chat_provider/socket_provider.dart';
 import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/create_account_screen.dart';
 import 'package:synqit/UI/Screens/login_screen.dart';
@@ -51,6 +52,9 @@ class AuthWrapper extends ConsumerWidget {
             },
             data: (userModel) {
               if (userModel != null) {
+                Future.microtask(() {
+                  ref.read(socketProvider.notifier).initialize(userModel.id);
+                });
                 return const MainScreenWidget();
               } else {
                 log("AuthWrapper: userModel is null despite userProvider succeeding.");
