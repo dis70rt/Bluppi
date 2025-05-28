@@ -407,84 +407,84 @@ class SocketNotifier extends StateNotifier<ChatState> {
     });
   }
 
-  Future<Conversation?> createConversation({
-    required List<String> participants,
-    String? conversationName,
-    bool isGroup = false,
-  }) async {
-    if (_isDisposed) return null;
+  // Future<Conversation?> createConversation({
+  //   required List<String> participants,
+  //   String? conversationName,
+  //   bool isGroup = false,
+  // }) async {
+  //   if (_isDisposed) return null;
 
-    _safeUpdateState((state) => state.copyWith(isLoading: true));
+  //   _safeUpdateState((state) => state.copyWith(isLoading: true));
 
-    try {
-      final response = await _dio.post(
-        'https://socket.saikat.in/ws/v1/conversations',
-        data: {
-          'participants': participants,
-          'conversation_name': conversationName,
-          'is_group': isGroup,
-        },
-      );
+  //   try {
+  //     final response = await _dio.post(
+  //       'https://socket.saikat.in/ws/v1/conversations',
+  //       data: {
+  //         'participants': participants,
+  //         'conversation_name': conversationName,
+  //         'is_group': isGroup,
+  //       },
+  //     );
 
-      if (_isDisposed) return null;
+  //     if (_isDisposed) return null;
 
-      if (response.statusCode == 200) {
-        final conversationId = response.data['conversation_id'];
-        final conversation = Conversation(
-          conversationId: conversationId,
-          conversationName: conversationName,
-          isGroup: isGroup,
-          participants: participants,
-          lastActivity: DateTime.now(),
-        );
+  //     if (response.statusCode == 200) {
+  //       final conversationId = response.data['conversation_id'];
+  //       final conversation = Conversation(
+  //         conversationId: conversationId,
+  //         conversationName: conversationName,
+  //         isGroup: isGroup,
+  //         participants: participants,
+  //         lastActivity: DateTime.now(),
+  //       );
 
-        final updatedConversations = [...state.conversations, conversation];
-        await _storage.saveConversations(updatedConversations);
+  //       final updatedConversations = [...state.conversations, conversation];
+  //       await _storage.saveConversations(updatedConversations);
 
-        _safeUpdateState((state) => state.copyWith(
-              conversations: updatedConversations,
-              isLoading: false,
-            ));
+  //       _safeUpdateState((state) => state.copyWith(
+  //             conversations: updatedConversations,
+  //             isLoading: false,
+  //           ));
 
-        log("Conversation created: $conversationId");
-        return conversation;
-      }
-    } catch (e) {
-      log("Error creating conversation: $e");
-      _safeUpdateState(
-          (state) => state.copyWith(error: e.toString(), isLoading: false));
-    }
+  //       log("Conversation created: $conversationId");
+  //       return conversation;
+  //     }
+  //   } catch (e) {
+  //     log("Error creating conversation: $e");
+  //     _safeUpdateState(
+  //         (state) => state.copyWith(error: e.toString(), isLoading: false));
+  //   }
 
-    _safeUpdateState((state) => state.copyWith(isLoading: false));
-    return null;
-  }
+  //   _safeUpdateState((state) => state.copyWith(isLoading: false));
+  //   return null;
+  // }
 
-  Future<String?> checkConversationExists(List<String> participants) async {
-    if (_isDisposed) return null;
+  // Future<String?> checkConversationExists(List<String> participants) async {
+  //   if (_isDisposed) return null;
 
-    try {
-      final response = await _dio.get(
-        'https://socket.saikat.in/conversations',
-        queryParameters: {
-          'participants': participants,
-        },
-      );
+  //   try {
+  //     final response = await _dio.get(
+  //       'https://socket.saikat.in/conversations',
+  //       queryParameters: {
+  //         'participants': participants,
+  //       },
+  //     );
 
-      if (response.statusCode == 404) {
-        return null;
-      }
+  //     if (response.statusCode == 404) {
+  //       return null;
+  //     }
 
-      if (response.statusCode == 200) {
-        final conversationId = response.data['conversation_id'];
-        return conversationId;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      log("Error checking conversation existence: $e");
-      return null;
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       final conversationId = response.data['conversation_id'];
+  //       return conversationId;
+  //     } else {
+  //       return null;
+  //     }
+  //   } catch (e) {
+  //     log("Error checking conversation existence: $e");
+  //     return null;
+  //   }
+  // }
 
   Future<List<ChatMessage>> loadMoreMessages(String conversationId,
       {String? beforeId}) async {
@@ -534,6 +534,94 @@ class SocketNotifier extends StateNotifier<ChatState> {
     } catch (e) {
       log("Error loading more messages: $e");
       return [];
+    }
+  }
+
+  Future<Map<String, dynamic>?> getConversations(
+      String userId) async {
+    if (_isDisposed) return null;
+
+    try {
+      final response = await _dio.get(
+        'https://socket.saikat.in/${userId}/conversations/',
+      );
+
+      log("Fetched conversations for user $userId: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        log("Failed to fetch conversation details: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      log("Error fetching conversation details: $e");
+      return null;
+    }
+  }
+
+  Future<String?> getOrCreateConversation({
+    required List<String> participants,
+    required String conversationName,
+    bool isGroup = false,
+  }) async {
+    if (_isDisposed) return null;
+
+    try {
+      for (final conversation in state.conversations) {
+        if (!conversation.isGroup &&
+            conversation.participants.length == participants.length &&
+            conversation.participants.toSet().containsAll(participants)) {
+          return conversation.conversationId;
+        }
+      }
+
+      final response = await _dio.post(
+        'https://socket.saikat.in/ws/v1/conversations/get-or-create',
+        data: {
+          'participants': participants,
+          'conversation_name': conversationName,
+          'is_group': isGroup,
+        },
+      );
+
+      if (_isDisposed) return null;
+
+      if (response.statusCode == 200) {
+        final conversationId = response.data['conversation_id'];
+        final isNew = response.data['is_new'] ?? false;
+
+        if (isNew ||
+            !state.conversations
+                .any((c) => c.conversationId == conversationId)) {
+          final conversation = Conversation(
+            conversationId: conversationId,
+            conversationName: conversationName,
+            isGroup: isGroup,
+            participants: participants,
+            lastActivity: DateTime.now(),
+          );
+
+          final updatedConversations = [...state.conversations, conversation];
+          await _storage.saveConversations(updatedConversations);
+
+          _safeUpdateState((state) => state.copyWith(
+                conversations: updatedConversations,
+              ));
+        }
+
+        log("Retrieved conversation: $conversationId (isNew: $isNew)");
+        return conversationId;
+      } else {
+        log("Failed to get or create conversation: ${response.statusCode}");
+        _safeUpdateState((state) => state.copyWith(
+            error: "Failed to get or create conversation", isLoading: false));
+        return null;
+      }
+    } catch (e) {
+      log("Error getting or creating conversation: $e");
+      _safeUpdateState(
+          (state) => state.copyWith(error: e.toString(), isLoading: false));
+      return null;
     }
   }
 

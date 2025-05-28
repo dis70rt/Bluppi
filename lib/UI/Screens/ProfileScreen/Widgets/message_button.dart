@@ -27,8 +27,6 @@ class MessageButton extends ConsumerWidget {
         final conversationId = await _getOrCreateConversation(
             ref, currentUserId, otherUser.id, otherUser.username);
 
-        log("Conversation ID: $conversationId");
-
         if (conversationId != null) {
           navigator.push(
             MaterialPageRoute(
@@ -68,32 +66,15 @@ class MessageButton extends ConsumerWidget {
   Future<String?> _getOrCreateConversation(WidgetRef ref, String currentUserId,
       String otherId, String otherName) async {
     final socketNotifier = ref.read(socketProvider.notifier);
-    final conversations = ref.read(socketProvider).conversations;
-
-    for (final conversation in conversations) {
-      final participants = conversation.participants;
-      if (participants.length == 2 &&
-          participants.contains(currentUserId) &&
-          participants.contains(otherId)) {
-        return conversation.conversationId;
-      }
-    }
-
-    final conversationId =
-        await socketNotifier.checkConversationExists([currentUserId, otherId]);
-    if (conversationId != null) {
-      return conversationId;
-    }
 
     try {
-      final newConversation = await socketNotifier.createConversation(
+      return await socketNotifier.getOrCreateConversation(
         participants: [currentUserId, otherId],
         conversationName: otherName,
         isGroup: false,
       );
-      return newConversation?.conversationId;
     } catch (e) {
-      log('Error creating conversation: $e');
+      log('Error getting or creating conversation: $e');
       return null;
     }
   }
