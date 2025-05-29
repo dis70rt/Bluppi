@@ -1,12 +1,13 @@
-import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/message_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Data/Services/socket_service.dart';
-import 'package:synqit/Provider/auth_provider.dart';
+import 'package:synqit/Provider/chat_provider/messages_provider.dart';
 import 'package:synqit/Provider/chat_provider/socket_provider.dart';
+import 'package:synqit/Utils/snackbar.dart';
 
 class ChattingScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -19,171 +20,68 @@ class ChattingScreen extends ConsumerStatefulWidget {
   ConsumerState<ChattingScreen> createState() => _ChattingScreenState();
 }
 
-class _ChattingScreenState extends ConsumerState<ChattingScreen> with WidgetsBindingObserver {
+class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  bool _isLoadingMore = false;
-  bool _isInitialized = false;
-  bool _isDisposed = false; // Add disposal flag
 
-  String? get currentUserId => ref.read(authProvider).value?.user?.uid;
+  String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_isDisposed) {
-        _initializeChat();
-      }
-    });
-
     _scrollController.addListener(_onScroll);
   }
 
-  Future<void> _initializeChat() async {
-    if (_isInitialized || currentUserId == null || _isDisposed) return;
-    
-    try {
-      final success = await ref.read(socketProvider.notifier).initialize(currentUserId!);
-      if (!_isDisposed) {
-        if (success) {
-          setState(() {
-            _isInitialized = true;
-          });
-          log("Chat initialized successfully");
-        } else {
-          log("Failed to initialize chat");
-          _showConnectionError();
-        }
-      }
-    } catch (e) {
-      log("Error initializing chat: $e");
-      if (!_isDisposed) {
-        _showConnectionError();
-      }
-    }
-  }
-
-  void _showConnectionError() {
-    if (_isDisposed || !mounted) return;
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Failed to connect to chat server'),
-        action: SnackBarAction(
-          label: 'Retry',
-          onPressed: () => _initializeChat(),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    
-    if (state == AppLifecycleState.resumed && _isInitialized && !_isDisposed) {
-      // Reconnect when app comes to foreground
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (currentUserId != null && !_isDisposed) {
-          ref.read(socketProvider.notifier).initialize(currentUserId!);
-        }
-      });
-    }
-  }
-
   void _onScroll() {
-    if (_isDisposed) return;
-    
     if (_scrollController.position.pixels ==
             _scrollController.position.maxScrollExtent &&
-        !_isLoadingMore) {
+        !ref.read(messageProvider(widget.conversationId)).isLoadingMore) {
       _loadMoreMessages();
     }
   }
 
   Future<void> _loadMoreMessages() async {
-    if (_isDisposed) return;
-    
-    final messages =
-        ref.read(socketProvider).messages[widget.conversationId] ?? [];
-    if (messages.isEmpty) return;
+    final messagesState = ref.read(messageProvider(widget.conversationId));
+    if (messagesState.messages.isEmpty) return;
 
-    if (mounted && !_isDisposed) {
-      setState(() {
-        _isLoadingMore = true;
-      });
-    }
-
-    await ref.read(socketProvider.notifier).loadMoreMessages(
-        widget.conversationId,
-        beforeId: messages.first.messageId);
-
-    if (mounted && !_isDisposed) {
-      setState(() {
-        _isLoadingMore = false;
-      });
-    }
+    await ref
+        .read(messageProvider(widget.conversationId).notifier)
+        .loadMoreMessages(
+            beforeId: messagesState.messages.isNotEmpty
+                ? messagesState.messages.first.messageId
+                : null);
   }
 
-  Future<void> _sendMessage() async {
-    if (_isDisposed) return;
-    
+  void _sendMessage() {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
     final connectionStatus = ref.read(socketProvider).connectionStatus;
     if (connectionStatus != ConnectionStatus.connected) {
-      if (mounted && !_isDisposed) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Not connected to chat server')),
-        );
-      }
+      showSnackBar(context: context, message: "Not connected to chat server", icon: const Icon(Icons.cloud_off_rounded));
       return;
     }
 
+    ref.read(messageProvider(widget.conversationId).notifier).sendMessage(text);
     _messageController.clear();
 
-    try {
-      final success = await ref.read(socketProvider.notifier).sendMessage(widget.conversationId, text);
-      
-      if (!_isDisposed && success) {
-        // Scroll to bottom after sending
-        Future.delayed(const Duration(milliseconds: 100), () {
-          if (_scrollController.hasClients && !_isDisposed) {
-            _scrollController.animateTo(
-              0,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
-      } else if (!_isDisposed && !success) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to send message')),
-          );
-        }
-      }
-    } catch (e) {
-      log("Error sending message: $e");
-      if (mounted && !_isDisposed) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
         );
       }
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isDisposed) return const SizedBox.shrink();
-    
-    final chatState = ref.watch(socketProvider);
-    final messages = chatState.messages[widget.conversationId] ?? [];
-    final connectionStatus = chatState.connectionStatus;
+    final connectionStatus = ref.watch(socketProvider).connectionStatus;
+    final messagesState = ref.watch(messageProvider(widget.conversationId));
+    final messages = messagesState.messages;
+    final isLoadingMore = messagesState.isLoadingMore;
     final user = widget.user;
 
     return Stack(
@@ -235,7 +133,8 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> with WidgetsBin
                         const SizedBox(width: 4),
                         Text(
                           _getStatusText(connectionStatus),
-                          style: const TextStyle(fontSize: 12, color: Colors.white70),
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white70),
                         ),
                       ],
                     ),
@@ -250,39 +149,50 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> with WidgetsBin
           body: Column(
             children: [
               Expanded(
-                child: messages.isEmpty
+                child: messages.isEmpty &&
+                        messagesState.loadingState ==
+                            MessageLoadingState.loading
                     ? const Center(
-                        child: Text('No messages yet',
-                            style: TextStyle(color: Colors.white70)),
+                        child: CircularProgressIndicator(color: Colors.white),
                       )
-                    : ListView.builder(
-                        controller: _scrollController,
-                        reverse: true,
-                        itemCount: messages.length + (_isLoadingMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (_isLoadingMore && index == 0) {
-                            return const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child:
-                                    CircularProgressIndicator(color: Colors.green),
-                              ),
-                            );
-                          }
-        
-                          final actualIndex = _isLoadingMore ? index - 1 : index;
-                          final message =
-                              messages[messages.length - 1 - actualIndex];
-                          final isMyMessage = message.senderId == currentUserId;
-        
-                          final isFirstMessageFromSender = actualIndex == 0 ||
-                              messages[messages.length - actualIndex].senderId !=
-                                  message.senderId;
-        
-                          return _buildMessageItem(
-                              message, isMyMessage, isFirstMessageFromSender);
-                        },
-                      ),
+                    : messages.isEmpty
+                        ? const Center(
+                            child: Text('No messages yet',
+                                style: TextStyle(color: Colors.white70)),
+                          )
+                        : ListView.builder(
+                            controller: _scrollController,
+                            reverse: true,
+                            itemCount:
+                                messages.length + (isLoadingMore ? 1 : 0),
+                            itemBuilder: (context, index) {
+                              if (isLoadingMore && index == 0) {
+                                return const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: CircularProgressIndicator(
+                                        color: Colors.green),
+                                  ),
+                                );
+                              }
+
+                              final actualIndex =
+                                  isLoadingMore ? index - 1 : index;
+                              final message =
+                                  messages[messages.length - 1 - actualIndex];
+                              final isMyMessage =
+                                  message.senderId == currentUserId;
+
+                              final isFirstMessageFromSender =
+                                  actualIndex == 0 ||
+                                      messages[messages.length - actualIndex]
+                                              .senderId !=
+                                          message.senderId;
+
+                              return _buildMessageItem(message, isMyMessage,
+                                  isFirstMessageFromSender);
+                            },
+                          ),
               ),
               _buildMessageInput(connectionStatus),
             ],
@@ -383,7 +293,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> with WidgetsBin
 
   Widget _buildMessageInput(ConnectionStatus connectionStatus) {
     final isConnected = connectionStatus == ConnectionStatus.connected;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
       color: Colors.black,
@@ -400,7 +310,8 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> with WidgetsBin
                 enabled: isConnected,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: isConnected ? 'Type your message...' : 'Connecting...',
+                  hintText:
+                      isConnected ? 'Type your message...' : 'Connecting...',
                   hintStyle: TextStyle(color: Colors.grey.shade400),
                   fillColor: Colors.grey.shade900,
                   filled: true,
@@ -417,7 +328,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> with WidgetsBin
             ),
             IconButton(
               icon: Icon(
-                Icons.send, 
+                Icons.send,
                 color: isConnected ? Colors.green : Colors.grey,
               ),
               onPressed: isConnected ? _sendMessage : null,
@@ -441,24 +352,14 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> with WidgetsBin
       case MessageStatus.failed:
         return Icons.error_outline;
     }
-  } 
-
-  void disconnet() {
-    ref.read(socketProvider.notifier).disconnect();
   }
 
   @override
   void dispose() {
-    log("ChattingScreen disposing");
-    _isDisposed = true; // Set disposal flag first
-    
-    WidgetsBinding.instance.removeObserver(this);
     _messageController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-    
-    disconnet();
-    
+
     super.dispose();
   }
 }

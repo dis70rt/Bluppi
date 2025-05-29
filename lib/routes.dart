@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:synqit/Data/Models/user_model.dart';
+import 'package:synqit/UI/Screens/ChatScreen/chatting_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_bar.dart';
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/other_profile_screen.dart';
@@ -61,6 +63,19 @@ final GoRouter router = GoRouter(
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
+        );
+      },
+    ),
+    GoRoute(
+      name: 'chat',
+      path: '/chat/:conversationId',
+      builder: (context, state) {
+        final conversationId = state.pathParameters['conversationId']!;
+        final user = state.extra as UserModel;
+        
+        return ChattingScreen(
+          conversationId: conversationId,
+          user: user,
         );
       },
     ),

@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:synqit/Data/Models/message_model.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as webStatus;
 
 enum ConnectionStatus {
   disconnected,
@@ -278,7 +277,7 @@ class SocketService {
     _reconnectTimer?.cancel();
     _heartbeatTimer?.cancel();
     try {
-      _channel?.sink.close(webStatus.goingAway);
+      _channel?.sink.close(1001);
     } catch (e) {
       log('Error closing previous channel: $e');
     }

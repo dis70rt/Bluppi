@@ -1,81 +1,60 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Provider/chat_provider/socket_provider.dart';
-import 'package:synqit/UI/Screens/ChatScreen/chatting_screen.dart';
+import 'package:synqit/Provider/chat_provider/conversation_provider.dart';
+import 'package:synqit/Utils/snackbar.dart';
 
-class MessageButton extends ConsumerWidget {
+class MessageButton extends ConsumerStatefulWidget {
   final UserModel otherUser;
 
   const MessageButton({super.key, required this.otherUser});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MessageButton> createState() => _MessageButtonState();
+}
+
+class _MessageButtonState extends ConsumerState<MessageButton> {
+  @override
+  Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    // final chatState = ref.watch(socketProvider);
 
-    return GestureDetector(
-      onTap: () async {
-        if (currentUserId.isEmpty) return;
-
-        final navigator = Navigator.of(context);
-        final messenger = ScaffoldMessenger.of(context);
-
-        final conversationId = await _getOrCreateConversation(
-            ref, currentUserId, otherUser.id, otherUser.username);
-
-        if (conversationId != null) {
-          navigator.push(
-            MaterialPageRoute(
-              builder: (context) => ChattingScreen(
-                conversationId: conversationId,
-                user: otherUser,
-              ),
-            ),
-          );
-        } else {
-          messenger.showSnackBar(
-              const SnackBar(content: Text('Failed to create conversation')));
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          border: Border.all(color: Colors.white70),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.message, size: 16, color: Colors.white),
-            // SizedBox(width: 8),
-            // Text(
-            //   'Message',
-            //   style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-            // ),
-          ],
-        ),
+    return Container(
+      width: 40,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white12),
       ),
+      child: IconButton(
+          onPressed: () => _onpressed(currentUserId),
+          icon: const Icon(Icons.message, size: 16, color: Colors.white)),
     );
   }
 
-  Future<String?> _getOrCreateConversation(WidgetRef ref, String currentUserId,
-      String otherId, String otherName) async {
-    final socketNotifier = ref.read(socketProvider.notifier);
+  void _onpressed(String currentUserId) async {
+    if (currentUserId.isEmpty) return;
 
-    try {
-      return await socketNotifier.getOrCreateConversation(
-        participants: [currentUserId, otherId],
-        conversationName: otherName,
-        isGroup: false,
+    final conversationId =
+        await ref.read(conversationProvider.notifier).getOrCreateConversation(
+      participants: [currentUserId, widget.otherUser.id],
+      conversationName: widget.otherUser.name,
+      isGroup: false,
+    );
+
+    if (!mounted) return;
+
+    if (conversationId != null) {
+      context.pushNamed(
+        'chat',
+        pathParameters: {'conversationId': conversationId},
+        extra: widget.otherUser,
       );
-    } catch (e) {
-      log('Error getting or creating conversation: $e');
-      return null;
+    } else {
+      showSnackBar(
+          context: context,
+          message: 'Failed to create conversation',
+          icon: const Icon(Icons.voice_over_off_rounded));
     }
   }
 }

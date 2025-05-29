@@ -86,7 +86,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       String? newProfilPicUrl;
       if (_selectedProfilePic != null) {
-        newProfilPicUrl = await userServices.uploadFile(_selectedProfilePic!, "profile_picture", isProfilePic: true);
+        newProfilPicUrl = await userServices.uploadFile(
+            _selectedProfilePic!, "profile_picture",
+            isProfilePic: true);
         if (newProfilPicUrl == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -109,11 +111,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       }
 
       final updatedUserData = _initialUserData?.copyWith(
-        name: _nameController.text,
-        bio: _bioController.text.isEmpty ? null : _bioController.text,
-        country: countryToSave,
-        profilePic: newProfilPicUrl
-      );
+          name: _nameController.text,
+          bio: _bioController.text.isEmpty ? null : _bioController.text,
+          country: countryToSave,
+          profilePic: newProfilPicUrl);
 
       setState(() {
         isUploading = false;
@@ -336,7 +337,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                               bottom: 0,
                               right: 0,
                               child: GestureDetector(
-                                onTap: isPickingImage ? null : _changeProfilePic,
+                                onTap:
+                                    isPickingImage ? null : _changeProfilePic,
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
@@ -446,21 +448,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                             backgroundColor: AppColors.primaryAltDeep,
                             foregroundColor: AppColors.textPrimary,
                           ),
-                          child: isUploading ?
-                              const SizedBox(
-                                width: 25,
-                                height: 25,
-                                child: CircularProgressIndicator(
-                                  strokeCap: StrokeCap.round,
-                                  strokeWidth: 3,
-                                  color: AppColors.textPrimary,
+                          child: isUploading
+                              ? const SizedBox(
+                                  width: 25,
+                                  height: 25,
+                                  child: CircularProgressIndicator(
+                                    strokeCap: StrokeCap.round,
+                                    strokeWidth: 3,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                )
+                              : const Text(
+                                  'Save Profile',
+                                  style: TextStyle(fontSize: 18),
                                 ),
-                              )
-                            : 
-                           const Text(
-                            'Save Profile',
-                            style: TextStyle(fontSize: 18),
-                          ),
                         ),
                       ),
                       const SizedBox(height: 24),

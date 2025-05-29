@@ -7,9 +7,7 @@ import 'package:synqit/Provider/user_provider/follow_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_tile_skeleton.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/grassmorphic_user_tile.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
-// import 'package:synqit/Provider/follow_provider.dart';
-// import 'package:synqit/UI/Screens/ProfileScreen/Widgets/glassmorphic_user_tile.dart';
-// import 'package:synqit/UI/Screens/ProfileScreen/Widgets/user_tile_skeleton.dart';
+import 'package:synqit/Utils/snackbar.dart';
 
 class FollowBottomSheet extends ConsumerStatefulWidget {
   final String userId;
@@ -176,16 +174,26 @@ class _FollowBottomSheetState extends ConsumerState<FollowBottomSheet>
                       onTap: () async {
                         final sendUser =
                             await userServices.getUserByID(user.id);
+
+                        if (!mounted) return;
+
                         Navigator.pop(context);
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfileScreen(
-                              user: sendUser,
+                        if (sendUser != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfileScreen(
+                                user: sendUser,
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        } else {
+                          showSnackBar(
+                              context: context,
+                              message: "User Not Found",
+                              icon: const Icon(Icons.person_off));
+                        }
                       },
                     )),
                 if (followersState.isLoading) ..._buildSkeletonLoaders(),
@@ -221,15 +229,24 @@ class _FollowBottomSheetState extends ConsumerState<FollowBottomSheet>
                       onTap: () async {
                         final sendUser =
                             await userServices.getUserByID(user.id);
+
+                        if (!mounted) return;
                         Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ProfileScreen(
-                              user: sendUser,
+                        if (sendUser != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfileScreen(
+                                user: sendUser,
+                              ),
                             ),
-                          ),
-                        );
+                          );
+                        } else {
+                          showSnackBar(
+                              context: context,
+                              message: "User Not Found",
+                              icon: const Icon(Icons.person_off));
+                        }
                       },
                     )),
                 if (followingState.isLoading) ..._buildSkeletonLoaders(),

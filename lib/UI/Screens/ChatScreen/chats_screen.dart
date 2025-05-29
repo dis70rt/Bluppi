@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/chat_provider/socket_provider.dart';
+import 'package:synqit/Provider/chat_provider/conversation_provider.dart';
 import 'package:synqit/Provider/user_provider/user_provider.dart';
 
 class ChatsScreen extends ConsumerStatefulWidget {
@@ -16,30 +15,10 @@ class ChatsScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatsScreenState extends ConsumerState<ChatsScreen> {
-  Future<Map<String, dynamic>?>? _conversationsFuture;
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeConversations();
-    });
-  }
-
-  void _initializeConversations() {
-    final user = ref.read(userProvider).value;
-    if (user != null) {
-      setState(() {
-        _conversationsFuture =
-            ref.read(socketProvider.notifier).getConversations(user.id);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = ref.read(userProvider).value;
+    final conversationState = ref.watch(conversationProvider);
     final userService = UserServices();
 
     return Scaffold(
@@ -65,97 +44,95 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
           )
         ],
       ),
-      body: _conversationsFuture == null
-          ? const Center(child: CircularProgressIndicator())
-          : FutureBuilder(
-              future: _conversationsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildLoadingConversations();
-                } else if (snapshot.hasError) {
-                  return _buildErrorState(snapshot.error.toString());
-                } else if (!snapshot.hasData || snapshot.data == null) {
-                  return const Center(
-                      child: Text('No conversations available.'));
-                } else if (snapshot.data!["conversations"]?.isEmpty ?? true) {
-                  return const Center(child: Text('No messages yet.'));
+      body: Builder(
+        builder: (context) {
+          if (conversationState.loadingState ==
+                  ConversationLoadingState.loading &&
+              conversationState.conversations.isEmpty) {
+            return _buildLoadingConversations();
+          } else if (conversationState.error != null) {
+            return _buildErrorState(conversationState.error.toString());
+          } else if (conversationState.conversations.isEmpty) {
+            return const Center(child: Text('No messages yet.'));
+          }
+
+          final conversations = conversationState.conversations;
+          return RefreshIndicator(
+            onRefresh: () async {
+              await ref
+                  .read(conversationProvider.notifier)
+                  .fetchConversations();
+            },
+            child: ListView.builder(
+              itemCount: conversations.length,
+              itemBuilder: (context, index) {
+                final conversation = conversations[index];
+
+                final participants =
+                    List<String>.from(conversation.participants);
+                String receiverId = '';
+                if (participants.isNotEmpty) {
+                  if (participants.length == 1) {
+                    receiverId = participants.first;
+                  } else {
+                    receiverId = participants.firstWhere(
+                      (id) => id != user?.id,
+                      orElse: () => participants.first,
+                    );
+                  }
                 }
 
-                final conversations = snapshot.data!["conversations"];
-                log("Conversations: ${conversations.length}");
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    _initializeConversations();
-                  },
-                  child: ListView.builder(
-                    itemCount: conversations.length,
-                    itemBuilder: (context, index) {
-                      final conversation = conversations[index];
-
-                      final participants =
-                          List<String>.from(conversation['participants']);
-                      String receiverId = '';
-                      if (participants.isNotEmpty) {
-                        if (participants.length == 1) {
-                          receiverId = participants.first;
-                        } else {
-                          receiverId = participants.firstWhere(
-                            (id) => id != user?.id,
-                            orElse: () => participants.first,
-                          );
-                        }
-                      }
-
-                      return FutureBuilder(
-                        future: userService.getUserByID(receiverId),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return _buildUserItemSkeleton();
-                          } else if (snapshot.hasError) {
-                            return ListTile(
-                              leading: const CircleAvatar(
-                                child: Icon(Icons.error),
-                              ),
-                              title: Text('Error: ${snapshot.error}'),
-                              subtitle: const Text('Could not load user data'),
-                            );
-                          } else if (!snapshot.hasData) {
-                            return ListTile(
-                              leading: const CircleAvatar(
-                                child: Icon(Icons.person),
-                              ),
-                              title: const Text('Unknown User'),
-                              subtitle: Text(conversation['lastMessage'] ??
-                                  'No messages yet'),
-                            );
-                          }
-
-                          final user = snapshot.data!;
-                          return ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage: user.profilePic != null
-                                  ? CachedNetworkImageProvider(user.profilePic!)
-                                  : null,
-                              child: user.profilePic == null
-                                  ? const Icon(Icons.person)
-                                  : null,
-                            ),
-                            title: Text(user.name),
-                            subtitle: Text(conversation['lastMessage'] ??
-                                'No messages yet'),
-                            onTap: () {},
-                          );
-                        },
+                return FutureBuilder(
+                  future: userService.getUserByID(receiverId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildUserItemSkeleton();
+                    } else if (snapshot.hasError) {
+                      return ListTile(
+                        leading: const CircleAvatar(
+                          child: Icon(Icons.error),
+                        ),
+                        title: Text('Error: ${snapshot.error}'),
+                        subtitle: const Text('Could not load user data'),
                       );
-                    },
-                  ),
+                    } else if (!snapshot.hasData) {
+                      return const ListTile(
+                        leading: CircleAvatar(
+                          child: Icon(Icons.person),
+                        ),
+                        title: Text('Unknown User'),
+                        subtitle: Text('No messages yet'),
+                      );
+                    }
+
+                    final user = snapshot.data!;
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: user.profilePic != null
+                            ? CachedNetworkImageProvider(user.profilePic!)
+                            : null,
+                        child: user.profilePic == null
+                            ? const Icon(Icons.person)
+                            : null,
+                      ),
+                      title: Text(user.name),
+                      subtitle: const Text('No messages yet'),
+                      onTap: () async {
+                        context.pushNamed(
+                          'chat',
+                          pathParameters: {
+                            'conversationId': conversation.conversationId
+                          },
+                          extra: user,
+                        );
+                      },
+                    );
+                  },
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.chat),
+          );
+        },
       ),
     );
   }
@@ -195,7 +172,11 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: _initializeConversations,
+            onPressed: () async {
+              await ref
+                  .read(conversationProvider.notifier)
+                  .fetchConversations();
+            },
             child: const Text('Retry'),
           ),
         ],

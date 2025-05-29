@@ -216,7 +216,7 @@ class UserServices {
     }
   }
 
-  Future<UserModel> getUserByID(String uid) async {
+  Future<UserModel?> getUserByID(String uid) async {
     try {
       final response = await dio.get('/user/$uid');
 
@@ -224,11 +224,11 @@ class UserServices {
         return UserModel.fromMap(response.data);
       } else {
         log("No user found with UID: $uid");
-        throw Exception("User not found");
+        return null;
       }
     } catch (e) {
       log("Error fetching user: $e");
-      rethrow;
+      return null;
     }
   }
 
