@@ -104,13 +104,33 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
             titleSpacing: 0,
             title: Row(
               children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.grey.shade700,
-                  child: user.profilePic != null
-                      ? CachedNetworkImage(
-                          imageUrl: user.profilePic!, fit: BoxFit.cover)
-                      : const Icon(Icons.person, color: Colors.white),
+                Stack(
+                  children: [
+                    ClipOval(
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.grey.shade700,
+                        child: user.profilePic != null
+                            ? CachedNetworkImage(
+                                imageUrl: user.profilePic!, fit: BoxFit.cover)
+                            : const Icon(Icons.person, color: Colors.white),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(connectionStatus),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.black, width: 0.5),
+                            ),
+                          ),
+                    ),
+                  ],
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -120,24 +140,28 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
                       user.name,
                       style: const TextStyle(fontSize: 16),
                     ),
-                    Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: _getStatusColor(connectionStatus),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _getStatusText(connectionStatus),
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.white70),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Container(
+                    //       width: 8,
+                    //       height: 8,
+                    //       decoration: BoxDecoration(
+                    //         color: _getStatusColor(connectionStatus),
+                    //         shape: BoxShape.circle,
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 4),
+                    //     Text(
+                    //       _getStatusText(connectionStatus),
+                    //       style: const TextStyle(
+                    //           fontSize: 12, color: Colors.white70),
+                    //     ),
+                    //   ],
+                    // ),
+                    const SizedBox(height: 2),
+                    Text("@${user.username}",
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.white70)),
                   ],
                 ),
               ],
@@ -296,7 +320,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-      color: Colors.black,
+      color: Colors.transparent,
       child: SafeArea(
         child: Row(
           children: [
@@ -329,7 +353,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
             IconButton(
               icon: Icon(
                 Icons.send,
-                color: isConnected ? Colors.green : Colors.grey,
+                color: isConnected ? Colors.indigo.shade300 : Colors.grey,
               ),
               onPressed: isConnected ? _sendMessage : null,
             ),

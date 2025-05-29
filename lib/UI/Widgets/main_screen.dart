@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:synqit/UI/Screens/ChatScreen/chats_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_navigation_screen.dart';
+import 'package:synqit/UI/Screens/SearchScreen/search_navigation_screen.dart';
 
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
@@ -76,9 +76,9 @@ class MainScreenWidget extends ConsumerWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              stops: const [0.0, 0.75],
+              stops: const [0.0, 0.85],
               colors: [
-              Colors.black.withValues(alpha: 0),
+              Colors.black.withValues(alpha: 0.3),
               Colors.black.withValues(alpha: 1),
             ]),
             

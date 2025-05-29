@@ -277,7 +277,7 @@ class SocketService {
     _reconnectTimer?.cancel();
     _heartbeatTimer?.cancel();
     try {
-      _channel?.sink.close(1001);
+      _channel?.sink.close(1000);
     } catch (e) {
       log('Error closing previous channel: $e');
     }

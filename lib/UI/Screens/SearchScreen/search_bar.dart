@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -8,7 +9,7 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/track_search_provider.dart';
 import 'package:synqit/Provider/user_provider/user_search_provider.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/search_navigation_screen.dart';
+import 'package:synqit/UI/Screens/SearchScreen/search_navigation_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
@@ -263,10 +264,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           radius: 30,
                           backgroundColor:
                               Colors.primaries[index % Colors.primaries.length],
-                          child: user["avatar_url"] != null
+                          child: user["profile_pic"] != null
                               ? ClipOval(
-                                  child: Image.network(
-                                    user["avatar_url"]!,
+                                  child: CachedNetworkImage(
+                                    imageUrl: user["profile_pic"]!,
                                     fit: BoxFit.cover,
                                     width: 60,
                                     height: 60,
