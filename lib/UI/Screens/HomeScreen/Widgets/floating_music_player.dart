@@ -9,7 +9,7 @@ import 'package:synqit/Provider/music_provider/music_player_provider.dart';
 import 'dart:ui';
 
 import 'package:synqit/Provider/music_provider/music_player_state.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/queue_bottomsheet.dart';
+import 'package:synqit/UI/Screens/SearchScreen/Widgets/queue_bottomsheet.dart';
 
 // final _isExpandedProvider = StateProvider<bool>((ref) => false);
 

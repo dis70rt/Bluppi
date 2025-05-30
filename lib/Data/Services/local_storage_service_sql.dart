@@ -7,7 +7,7 @@ import 'dart:developer' as dev;
 class LocalStorageService {
   static Database? _database;
   static const String dbName = 'synqit_chat.db';
-  static const int dbVersion = 1;
+  static const int dbVersion = 2;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -23,7 +23,21 @@ class LocalStorageService {
       path,
       version: dbVersion,
       onCreate: _createDatabase,
+      onUpgrade: _upgradeDatabase,
     );
+  }
+
+  Future<void> _upgradeDatabase(
+      Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      try {
+        await db.execute(
+            'ALTER TABLE messages ADD COLUMN type INTEGER NOT NULL DEFAULT 0');
+        dev.log('Successfully added type column to messages table');
+      } catch (e) {
+        dev.log('Error adding type column: $e');
+      }
+    }
   }
 
   Future<void> _createDatabase(Database db, int version) async {
@@ -45,6 +59,7 @@ class LocalStorageService {
       message_text TEXT NOT NULL,
       created_at TEXT NOT NULL,
       status TEXT NOT NULL,
+      type INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (conversation_id) REFERENCES conversations (conversation_id)
     )
   ''');
@@ -121,6 +136,7 @@ class LocalStorageService {
           'message_text': message.messageText,
           'created_at': message.createdAt.toIso8601String(),
           'status': message.status.toString(),
+          'type': message.type.toString(),
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
@@ -150,6 +166,10 @@ class LocalStorageService {
                   (e) => e.toString() == map['status'],
                   orElse: () => MessageStatus.sent,
                 ),
+                type: MessageType.values.firstWhere(
+                  (e) => e.toString() == map['type'],
+                  orElse: () => MessageType.text,
+                ),
               ))
           .toList();
     } catch (e) {
@@ -177,6 +197,7 @@ class LocalStorageService {
             'message_text': message.messageText,
             'created_at': message.createdAt.toIso8601String(),
             'status': message.status.toString(),
+            'type': message.type.toString(),
           },
         );
 
@@ -227,6 +248,10 @@ class LocalStorageService {
                   (e) => e.toString() == map['status'],
                   orElse: () => MessageStatus.sent,
                 ),
+                type: MessageType.values.firstWhere(
+                  (e) => e.toString() == map['type'],
+                  orElse: () => MessageType.text,
+                ),
               ))
           .toList();
 
@@ -237,35 +262,40 @@ class LocalStorageService {
     }
   }
 
-  Future<List<ChatMessage>> loadMessagesBefore(
-    String conversationId, 
-    {required DateTime beforeDate, int limit = 20}) async {
-  try {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'messages',
-      where: 'conversation_id = ? AND created_at < ?',
-      whereArgs: [conversationId, beforeDate.toIso8601String()],
-      orderBy: 'created_at DESC',
-      limit: limit,
-    );
-    
-    final messages = maps.map((map) => ChatMessage(
-      messageId: map['message_id'],
-      senderId: map['sender_id'],
-      conversationId: map['conversation_id'],
-      messageText: map['message_text'],
-      createdAt: DateTime.parse(map['created_at']),
-      status: MessageStatus.values.firstWhere(
-        (e) => e.toString() == map['status'],
-        orElse: () => MessageStatus.sent,
-      ),
-    )).toList();
-    
-    return messages.reversed.toList();
-  } catch (e) {
-    dev.log('Error loading messages before date: $e');
-    return [];
+  Future<List<ChatMessage>> loadMessagesBefore(String conversationId,
+      {required DateTime beforeDate, int limit = 20}) async {
+    try {
+      final db = await database;
+      final List<Map<String, dynamic>> maps = await db.query(
+        'messages',
+        where: 'conversation_id = ? AND created_at < ?',
+        whereArgs: [conversationId, beforeDate.toIso8601String()],
+        orderBy: 'created_at DESC',
+        limit: limit,
+      );
+
+      final messages = maps
+          .map((map) => ChatMessage(
+                messageId: map['message_id'],
+                senderId: map['sender_id'],
+                conversationId: map['conversation_id'],
+                messageText: map['message_text'],
+                createdAt: DateTime.parse(map['created_at']),
+                status: MessageStatus.values.firstWhere(
+                  (e) => e.toString() == map['status'],
+                  orElse: () => MessageStatus.sent,
+                ),
+                type: MessageType.values.firstWhere(
+                  (e) => e.toString() == map['type'],
+                  orElse: () => MessageType.text,
+                ),
+              ))
+          .toList();
+
+      return messages.reversed.toList();
+    } catch (e) {
+      dev.log('Error loading messages before date: $e');
+      return [];
+    }
   }
-}
 }

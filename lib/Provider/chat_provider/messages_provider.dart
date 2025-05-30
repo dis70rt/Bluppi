@@ -90,7 +90,7 @@ class MessageNotifier extends StateNotifier<MessagesState> {
     });
   }
 
-  Future<void> loadMoreMessages({String? beforeId}) async {
+  Future<void> loadMoreMessages({String? beforeId, int limit = 20}) async {
     if (state.isLoadingMore) return;
     
     state = state.copyWith(isLoadingMore: true);
@@ -103,7 +103,7 @@ class MessageNotifier extends StateNotifier<MessagesState> {
         'https://socket.saikat.in/conversations/$_conversationId/messages',
         queryParameters: {
           if (actualBeforeId != null) 'before_id': actualBeforeId,
-          'limit': 20,
+          'limit': limit,
         },
       );
 
@@ -116,6 +116,10 @@ class MessageNotifier extends StateNotifier<MessagesState> {
                 messageText: d['message_text'],
                 createdAt: DateTime.parse(d['created_at']),
                 status: MessageStatus.delivered,
+                type: MessageType.values.firstWhere(
+                  (e) => e.toString() == d['type'],
+                  orElse: () => MessageType.text,
+                ),
               ))
           .toList();
 
@@ -148,7 +152,7 @@ class MessageNotifier extends StateNotifier<MessagesState> {
     }
   }
 
-  Future<bool> sendMessage(String messageText) async {
+  Future<bool> sendMessage(String messageText, {MessageType messageType = MessageType.text}) async {
     if (messageText.trim().isEmpty) return false;
     
     final messageId = const Uuid().v4();
@@ -161,13 +165,14 @@ class MessageNotifier extends StateNotifier<MessagesState> {
       messageText: messageText,
       createdAt: now,
       status: MessageStatus.pending,
+      type: messageType,
     );
 
     _addMessage(pendingMessage);
     await _storage.addMessage(pendingMessage);
 
     try {
-      await _socketNotifier.sendMessage(_conversationId, messageText, messageId);
+      await _socketNotifier.sendMessage(_conversationId, messageText, messageId, messageType.name);
       
       _updateMessageStatus(messageId, MessageStatus.sent);
       await _storage.updateMessageStatus(

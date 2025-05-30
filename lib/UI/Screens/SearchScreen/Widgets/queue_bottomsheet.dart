@@ -6,7 +6,7 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Provider/music_provider/queue_provider.dart';
 import 'package:synqit/Provider/music_provider/queue_manager_provider.dart';
 import 'package:synqit/Provider/music_provider/music_player_provider.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/glassmorphic_track_tile.dart';
+import 'package:synqit/UI/Screens/SearchScreen/Widgets/glassmorphic_track_tile.dart';
 
 Widget queueBottomSheet() {
   return Consumer(

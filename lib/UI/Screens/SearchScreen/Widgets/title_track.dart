@@ -8,7 +8,7 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:synqit/Provider/music_provider/music_player_provider.dart';
 import 'package:synqit/Provider/music_provider/queue_provider.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_preview_player.dart';
+import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_preview_player.dart';
 
 Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
   final playerNotifier = ref.read(musicPlayerProvider.notifier);

@@ -1,12 +1,19 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/message_model.dart';
+import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Data/Services/socket_service.dart';
 import 'package:synqit/Provider/chat_provider/messages_provider.dart';
 import 'package:synqit/Provider/chat_provider/socket_provider.dart';
+import 'package:synqit/UI/Screens/ChatScreen/Widgets/status_helper.dart';
+import 'package:synqit/UI/Screens/ChatScreen/Widgets/track_bottom_model.dart';
+import 'package:synqit/UI/Screens/ProfileScreen/Widgets/music_player.dart';
 import 'package:synqit/Utils/snackbar.dart';
 
 class ChattingScreen extends ConsumerStatefulWidget {
@@ -58,7 +65,10 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
 
     final connectionStatus = ref.read(socketProvider).connectionStatus;
     if (connectionStatus != ConnectionStatus.connected) {
-      showSnackBar(context: context, message: "Not connected to chat server", icon: const Icon(Icons.cloud_off_rounded));
+      showSnackBar(
+          context: context,
+          message: "Not connected to chat server",
+          icon: const Icon(Icons.cloud_off_rounded));
       return;
     }
 
@@ -120,15 +130,14 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
                       right: 0,
                       bottom: 0,
                       child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: _getStatusColor(connectionStatus),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.black, width: 0.5),
-                            ),
-                          ),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Status.getColor(connectionStatus),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black, width: 0.5),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -226,36 +235,61 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
     );
   }
 
-  Color _getStatusColor(ConnectionStatus status) {
-    switch (status) {
-      case ConnectionStatus.connected:
-        return Colors.green;
-      case ConnectionStatus.connecting:
-      case ConnectionStatus.reconnecting:
-        return Colors.orange;
-      case ConnectionStatus.error:
-      case ConnectionStatus.disconnected:
-        return Colors.red;
-    }
-  }
-
-  String _getStatusText(ConnectionStatus status) {
-    switch (status) {
-      case ConnectionStatus.connected:
-        return 'Online';
-      case ConnectionStatus.connecting:
-        return 'Connecting...';
-      case ConnectionStatus.reconnecting:
-        return 'Reconnecting...';
-      case ConnectionStatus.error:
-        return 'Connection error';
-      case ConnectionStatus.disconnected:
-        return 'Offline';
-    }
-  }
-
   Widget _buildMessageItem(
       ChatMessage message, bool isMyMessage, bool showSenderName) {
+    if (message.type == MessageType.track) {
+      try {
+        final trackJson = jsonDecode(message.messageText);
+        final track = Track.fromJson(trackJson);
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+          child: Row(
+            mainAxisAlignment:
+                isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.8,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    MiniMusicPlayer(track: track, isPreview: true),
+                    Row(
+                      mainAxisAlignment: isMyMessage
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${message.createdAt.toLocal().hour}:${message.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        if (isMyMessage) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            Status.getIcon(message.status),
+                            size: 12,
+                            color: Colors.white70,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } catch (e) {
+        log("Error parsing track message: $e");
+      }
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
       child: Row(
@@ -266,6 +300,9 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
           Flexible(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
               decoration: BoxDecoration(
                 color: isMyMessage
                     ? Colors.indigoAccent.shade100
@@ -284,7 +321,9 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
                   const SizedBox(height: 4),
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: isMyMessage
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
                     children: [
                       Text(
                         '${message.createdAt.toLocal().hour}:${message.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
@@ -296,7 +335,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
                       if (isMyMessage) ...[
                         const SizedBox(width: 4),
                         Icon(
-                          _getStatusIcon(message.status),
+                          Status.getIcon(message.status),
                           size: 12,
                           color: Colors.black54,
                         ),
@@ -324,16 +363,34 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
       child: SafeArea(
         child: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.attach_file, color: Colors.grey),
-              onPressed: isConnected ? () {} : null,
-            ),
             Expanded(
               child: TextField(
                 controller: _messageController,
                 enabled: isConnected,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
+                  prefixIcon: IconButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                            context: context,
+                            scrollControlDisabledMaxHeightRatio: 0.8,
+                            builder: (context) {
+                              return trackSearchBottomSheet((track) {
+                                final trackMessageText =
+                                    jsonEncode(track.toJson());
+
+                                ref
+                                    .read(messageProvider(widget.conversationId)
+                                        .notifier)
+                                    .sendMessage(
+                                      trackMessageText,
+                                      messageType: MessageType.track,
+                                    );
+                              });
+                            });
+                      },
+                      icon: Icon(Icons.my_library_music,
+                          color: Colors.grey.shade700)),
                   hintText:
                       isConnected ? 'Type your message...' : 'Connecting...',
                   hintStyle: TextStyle(color: Colors.grey.shade400),
@@ -361,21 +418,6 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
         ),
       ),
     );
-  }
-
-  IconData _getStatusIcon(MessageStatus status) {
-    switch (status) {
-      case MessageStatus.pending:
-        return Icons.access_time;
-      case MessageStatus.sent:
-        return Icons.check;
-      case MessageStatus.delivered:
-        return Icons.done_all;
-      case MessageStatus.seen:
-        return Icons.done_all;
-      case MessageStatus.failed:
-        return Icons.error_outline;
-    }
   }
 
   @override

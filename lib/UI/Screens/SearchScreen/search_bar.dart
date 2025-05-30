@@ -10,8 +10,8 @@ import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/track_search_provider.dart';
 import 'package:synqit/Provider/user_provider/user_search_provider.dart';
 import 'package:synqit/UI/Screens/SearchScreen/search_navigation_screen.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/title_track.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/track_loading.dart';
+import 'package:synqit/UI/Screens/SearchScreen/Widgets/title_track.dart';
+import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_loading.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {

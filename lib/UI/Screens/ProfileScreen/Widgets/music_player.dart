@@ -6,20 +6,23 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:synqit/Provider/music_provider/music_player_provider.dart';
 import 'package:synqit/Provider/music_provider/music_player_state.dart';
+import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_preview_player.dart';
 
 class MiniMusicPlayer extends ConsumerWidget {
   final Track track;
-  const MiniMusicPlayer({super.key, required this.track});
+  final bool isPreview;
+  const MiniMusicPlayer(
+      {super.key, required this.track, this.isPreview = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerState = ref.watch(musicPlayerProvider);
     final playerNotifier = ref.read(musicPlayerProvider.notifier);
     final currentTrack = ref.watch(currentTrackProvider);
-    
+
     final isCurrentTrack = currentTrack?.trackId == track.trackId &&
-      playerState.status != PlayerStatus.initial &&
-      playerState.status != PlayerStatus.error;
+        playerState.status != PlayerStatus.initial &&
+        playerState.status != PlayerStatus.error;
 
     // if (playerState.currentTrack?.id != track.id &&
     //     playerState.status != PlayerStatus.loading &&
@@ -28,35 +31,35 @@ class MiniMusicPlayer extends ConsumerWidget {
 
     double progress = 0.0;
     if (isCurrentTrack &&
-    playerState.duration != null &&
-    playerState.duration!.inMilliseconds > 0) {
-    progress = (playerState.position.inMilliseconds /
-          playerState.duration!.inMilliseconds)
-      .clamp(0.0, 1.0);
-}
+        playerState.duration != null &&
+        playerState.duration!.inMilliseconds > 0) {
+      progress = (playerState.position.inMilliseconds /
+              playerState.duration!.inMilliseconds)
+          .clamp(0.0, 1.0);
+    }
 
     IconData playPauseIcon = Icons.play_arrow;
     VoidCallback? playPauseAction = () => playerNotifier.loadTrack(track);
 
     if (isCurrentTrack) {
-  if (playerState.status == PlayerStatus.loading) {
-    playPauseIcon = Icons.hourglass_empty;
-    playPauseAction = null;
-  } else if (playerState.status == PlayerStatus.playing) {
-    playPauseIcon = Icons.pause;
-    playPauseAction = () => playerNotifier.pause();
-  } else if (playerState.status == PlayerStatus.paused ||
-      playerState.status == PlayerStatus.completed) {
-    playPauseIcon = Icons.play_arrow;
-    playPauseAction = () => playerNotifier.play();
-  } else if (playerState.status == PlayerStatus.error) {
-    playPauseIcon = Icons.error_outline;
-    playPauseAction = () => playerNotifier.loadTrack(track);
-  }
-}
+      if (playerState.status == PlayerStatus.loading) {
+        playPauseIcon = Icons.hourglass_empty;
+        playPauseAction = null;
+      } else if (playerState.status == PlayerStatus.playing) {
+        playPauseIcon = Icons.pause;
+        playPauseAction = () => playerNotifier.pause();
+      } else if (playerState.status == PlayerStatus.paused ||
+          playerState.status == PlayerStatus.completed) {
+        playPauseIcon = Icons.play_arrow;
+        playPauseAction = () => playerNotifier.play();
+      } else if (playerState.status == PlayerStatus.error) {
+        playPauseIcon = Icons.error_outline;
+        playPauseAction = () => playerNotifier.loadTrack(track);
+      }
+    }
 
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(isPreview ? 0 : 16),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Stack(
@@ -122,8 +125,8 @@ class MiniMusicPlayer extends ConsumerWidget {
                                 // isCurrentTrack
                                 //     ? playerState.currentTrack?.name ??
                                 //         track.name
-                                    // : 
-                                    track.trackName,
+                                // :
+                                track.trackName,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: const TextStyle(
@@ -136,8 +139,8 @@ class MiniMusicPlayer extends ConsumerWidget {
                                 // isCurrentTrack
                                 //     ? playerState.currentTrack?.artist.name ??
                                 //         track.artist.name
-                                //     : 
-                                    track.artistName,
+                                //     :
+                                track.artistName,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: const TextStyle(
@@ -161,49 +164,56 @@ class MiniMusicPlayer extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        if (!playerState.hasError)
-                          Visibility(
-                            visible: !playerState.isLoading,
-                            child: SizedBox(
-                              width: 45,
-                              height: 45,
-                              child: CircularProgressIndicator(
-                                value: playerState.isLoading ? null : progress,
-                                strokeWidth: 2.5,
-                                backgroundColor: Colors.white38,
-                                valueColor: const AlwaysStoppedAnimation<Color>(
-                                    Colors.white),
+                  if (isPreview)
+                    TrackPreviewPlayer(
+                      previewUrl: track.previewUrl,
+                    ),
+                  if (!isPreview)
+                    SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          if (!playerState.hasError)
+                            Visibility(
+                              visible: !playerState.isLoading,
+                              child: SizedBox(
+                                width: 45,
+                                height: 45,
+                                child: CircularProgressIndicator(
+                                  value:
+                                      playerState.isLoading ? null : progress,
+                                  strokeWidth: 2.5,
+                                  backgroundColor: Colors.white38,
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                ),
                               ),
                             ),
-                          ),
-                        if (playerState.isLoading)
-                          const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                          if (playerState.isLoading)
+                            const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          else
+                            IconButton(
+                              iconSize: 30,
+                              icon: Icon(
+                                playPauseIcon,
+                                color: Colors.white,
+                              ),
+                              onPressed: playPauseAction,
                             ),
-                          )
-                        else
-                          IconButton(
-                            iconSize: 30,
-                            icon: Icon(
-                              playPauseIcon,
-                              color: Colors.white,
-                            ),
-                            onPressed: playPauseAction,
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

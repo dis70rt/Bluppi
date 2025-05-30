@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 
 enum MessageStatus { pending, sent, delivered, seen, failed }
 
+enum MessageType { text, track }
+
 class ChatMessage extends Equatable {
   final String messageId;
   final String senderId;
@@ -9,6 +11,7 @@ class ChatMessage extends Equatable {
   final String messageText;
   final DateTime createdAt;
   final MessageStatus status;
+  final MessageType type;
 
   const ChatMessage({
     required this.messageId,
@@ -17,6 +20,7 @@ class ChatMessage extends Equatable {
     required this.messageText,
     required this.createdAt,
     this.status = MessageStatus.pending,
+    this.type = MessageType.text,
   });
 
   ChatMessage copyWith({
@@ -26,6 +30,7 @@ class ChatMessage extends Equatable {
     String? messageText,
     DateTime? createdAt,
     MessageStatus? status,
+    MessageType? type,
   }) {
     return ChatMessage(
       messageId: messageId ?? this.messageId,
@@ -34,6 +39,7 @@ class ChatMessage extends Equatable {
       messageText: messageText ?? this.messageText,
       createdAt: createdAt ?? this.createdAt,
       status: status ?? this.status,
+      type: type ?? this.type,
     );
   }
 
@@ -45,6 +51,7 @@ class ChatMessage extends Equatable {
       'messageText': messageText,
       'createdAt': createdAt.toIso8601String(),
       'status': status.toString(),
+      'type': type.toString(),
     };
   }
 
@@ -59,9 +66,23 @@ class ChatMessage extends Equatable {
         (e) => e.toString() == json['status'],
         orElse: () => MessageStatus.sent,
       ),
+      type: json['type'] != null
+          ? MessageType.values.firstWhere(
+              (e) => e.toString() == json['type'],
+              orElse: () => MessageType.text,
+            )
+          : MessageType.text,
     );
   }
 
   @override
-  List<Object?> get props => [messageId, senderId, conversationId, messageText, createdAt, status];
+  List<Object?> get props => [
+        messageId,
+        senderId,
+        conversationId,
+        messageText,
+        createdAt,
+        status,
+        type
+      ];
 }

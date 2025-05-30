@@ -136,14 +136,14 @@ class SocketNotifier extends StateNotifier<SocketState> {
     return messageStream.where((msg) => msg.conversationId == conversationId);
   }
 
-  Future<bool> sendMessage(String conversationId, String messageText, String messageId) async {
+  Future<bool> sendMessage(String conversationId, String messageText, String messageId, String type) async {
     if (_isDisposed || state.currentUserId == null) {
       log("Cannot send message - disposed or no current user");
       return false;
     }
 
     try {
-      await _socketService.sendMessage(conversationId, messageText, messageId);
+      await _socketService.sendMessage(conversationId, messageText, messageId, type);
       return true;
     } catch (e) {
       log("Failed to send message: $e");

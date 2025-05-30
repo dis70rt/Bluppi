@@ -221,14 +221,14 @@ class SocketService {
   }
 
   Future<bool> sendMessage(
-      String conversationId, String messageText, String messageId) async {
+      String conversationId, String messageText, String messageId, String type) async {
     if (!isConnected) {
       log('Cannot send message - not connected');
       throw Exception('Not connected to WebSocket');
     }
 
     final payload = {
-      'type': 'message',
+      'type': type,
       'conversation_id': conversationId,
       'message_id': messageId,
       'message': messageText,
