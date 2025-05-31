@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Models/message_model.dart';
+import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Provider/chat_provider/conversation_detail_provider.dart';
 import 'package:synqit/Provider/chat_provider/conversation_provider.dart';
@@ -102,8 +104,8 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
             prefixIcon: const Icon(Icons.search, color: Colors.white70),
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
-                    icon:
-                        Icon(Icons.clear, color: Colors.white.withValues(alpha: 0.8)),
+                    icon: Icon(Icons.clear,
+                        color: Colors.white.withValues(alpha: 0.8)),
                     onPressed: () {
                       _searchController.clear();
                       _debounce?.cancel();
@@ -124,8 +126,8 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
       UserModel? currentUser) {
     return userSearchAsyncValue.when(
       loading: () => ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) => _buildUserItemSkeleton()),
+          itemCount: 10,
+          itemBuilder: (context, index) => _buildUserItemSkeleton()),
       error: (error, _) => _buildErrorState('Error searching users: $error'),
       data: (usersResult) {
         if (usersResult.count == 0) {
@@ -171,7 +173,8 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
     );
   }
 
-  void _onpressed(String currentUserId, Map<String, dynamic> otherUserMap) async {
+  void _onpressed(
+      String currentUserId, Map<String, dynamic> otherUserMap) async {
     if (currentUserId.isEmpty) return;
     final otherUser = UserModel.fromMap(otherUserMap);
 
@@ -249,20 +252,7 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
                       : null,
                 ),
                 title: Text(receiver?.name ?? 'Unknown User'),
-                subtitle: isMyMessage
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Status.getIcon(status), size: 16),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(lastMessage!.messageText,
-                                maxLines: 1, overflow: TextOverflow.ellipsis),
-                          )
-                        ],
-                      )
-                    : Text(lastMessage?.messageText ?? 'No messages yet',
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                subtitle: _buildLastMessage(isMyMessage, lastMessage, status),
                 onTap: () {
                   context.pushNamed(
                     'chat',
@@ -284,6 +274,49 @@ class _ChatsScreenState extends ConsumerState<ChatsScreen> {
         );
       },
     );
+  }
+
+  Widget _buildLastMessage(
+      bool isMyMessage, ChatMessage? lastMessage, MessageStatus status) {
+    String lastMessageText;
+    bool isTrack = false;
+
+    if (lastMessage == null) {
+      lastMessageText = 'No messages yet';
+    } else {
+      try {
+        final track = Track.fromJson(jsonDecode(lastMessage.messageText));
+        lastMessageText = "${track.trackName} by ${track.artistName}";
+        isTrack = true;
+      } catch (e) {
+        lastMessageText = lastMessage.messageText;
+      }
+    }
+
+    return isMyMessage
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(isTrack ? Icons.music_note : Status.getIcon(status),
+                  size: 16),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(lastMessageText,
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+              )
+            ],
+          )
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isTrack) const Icon(Icons.music_note, size: 16),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(lastMessageText,
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+              )
+            ],
+          );
   }
 
   Widget _buildLoadingConversations() {

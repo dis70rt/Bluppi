@@ -5,7 +5,6 @@ import 'package:synqit/Provider/auth_provider.dart';
 import 'package:synqit/Provider/user_provider/user_provider.dart';
 import 'package:synqit/UI/Screens/create_account_screen.dart';
 import 'package:synqit/UI/Screens/login_screen.dart';
-import 'package:synqit/UI/Widgets/initialize.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
 
 class AuthWrapper extends ConsumerWidget {
@@ -48,20 +47,6 @@ class AuthWrapper extends ConsumerWidget {
             if (userModel == null) {
               log("AuthWrapper: userModel is null despite userProvider succeeding.");
               return CreateAccountScreen(user: authResult.user!);
-            }
-
-            final initState = ref.watch(appInitializationProvider);
-
-            if (initState.status == InitializationStatus.error) {
-              return _ErrorScreen(
-                error: "Initialization error: ${initState.error}",
-                allowSignOut: true,
-                ref: ref,
-              );
-            }
-
-            if (!initState.isSocketConnected) {
-              return const _LoadingScreen(message: "Connecting to services...");
             }
 
             return const MainScreenWidget();

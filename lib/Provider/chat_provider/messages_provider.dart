@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/message_model.dart';
 import 'package:synqit/Data/Services/local_storage_service_sql.dart';
@@ -45,7 +46,7 @@ class MessageNotifier extends StateNotifier<MessagesState> {
   final Dio _dio;
   final String _conversationId;
   final String _currentUserId;
-  final SocketNotifier _socketNotifier;
+  final ConversationSocketNotifier _socketNotifier;
   StreamSubscription? _messageSubscription;
 
   MessageNotifier(
@@ -61,10 +62,10 @@ class MessageNotifier extends StateNotifier<MessagesState> {
 
   Future<void> _initialize() async {
     state = state.copyWith(loadingState: MessageLoadingState.loading);
-    
+
     try {
       final localMessages = await _storage.loadMessages(_conversationId);
-      
+
       if (localMessages.isNotEmpty) {
         state = state.copyWith(
           messages: localMessages,
@@ -84,21 +85,20 @@ class MessageNotifier extends StateNotifier<MessagesState> {
 
   void _listenToNewMessages() {
     _messageSubscription?.cancel();
-    _messageSubscription = _socketNotifier.messageStreamForConversation(_conversationId)
-        .listen((message) {
+    _messageSubscription = _socketNotifier.messages.listen((message) {
       _addMessage(message);
     });
   }
 
   Future<void> loadMoreMessages({String? beforeId, int limit = 20}) async {
     if (state.isLoadingMore) return;
-    
+
     state = state.copyWith(isLoadingMore: true);
-    
+
     try {
-      final actualBeforeId = beforeId ?? 
+      final actualBeforeId = beforeId ??
           (state.messages.isNotEmpty ? state.messages.first.messageId : null);
-      
+
       final response = await _dio.get(
         'https://socket.saikat.in/conversations/$_conversationId/messages',
         queryParameters: {
@@ -128,15 +128,15 @@ class MessageNotifier extends StateNotifier<MessagesState> {
       }
 
       final allMessages = [...state.messages];
-      
+
       for (final newMsg in newMessages) {
         if (!allMessages.any((msg) => msg.messageId == newMsg.messageId)) {
           allMessages.add(newMsg);
         }
       }
-      
+
       allMessages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-      
+
       state = state.copyWith(
         messages: allMessages,
         isLoadingMore: false,
@@ -152,9 +152,10 @@ class MessageNotifier extends StateNotifier<MessagesState> {
     }
   }
 
-  Future<bool> sendMessage(String messageText, {MessageType messageType = MessageType.text}) async {
+  Future<bool> sendMessage(String messageText,
+      {MessageType messageType = MessageType.text}) async {
     if (messageText.trim().isEmpty) return false;
-    
+
     final messageId = const Uuid().v4();
     final now = DateTime.now();
 
@@ -172,46 +173,68 @@ class MessageNotifier extends StateNotifier<MessagesState> {
     await _storage.addMessage(pendingMessage);
 
     try {
-      await _socketNotifier.sendMessage(_conversationId, messageText, messageId, messageType.name);
-      
+      final success = await _socketNotifier.sendMessage(
+          messageId, messageText, messageType.name);
+
+      if (!success) {
+        _updateMessageStatus(messageId, MessageStatus.failed);
+        await _storage.updateMessageStatus(
+            messageId, _conversationId, MessageStatus.failed);
+        state = state.copyWith(error: "Failed to send message");
+        return false;
+      }
+
       _updateMessageStatus(messageId, MessageStatus.sent);
       await _storage.updateMessageStatus(
-        messageId, _conversationId, MessageStatus.sent);
-      
+          messageId, _conversationId, MessageStatus.sent);
+
       return true;
     } catch (e) {
       log("Failed to send message: $e");
-      
+
       _updateMessageStatus(messageId, MessageStatus.failed);
       await _storage.updateMessageStatus(
-        messageId, _conversationId, MessageStatus.failed);
-      
+          messageId, _conversationId, MessageStatus.failed);
+
       state = state.copyWith(error: "Failed to send message: ${e.toString()}");
       return false;
     }
   }
 
-  void _addMessage(ChatMessage message) {
+  void _addMessage(ChatMessage message) async {
     if (state.messages.any((m) => m.messageId == message.messageId)) {
       return;
     }
 
     final updatedMessages = [...state.messages, message];
     updatedMessages.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    
+
     state = state.copyWith(messages: updatedMessages);
+    try {
+      await _storage.addMessage(message);
+      log("Message saved to database: ${message.messageId}");
+    } catch (e) {
+      log("Error saving message to database: $e");
+    }
   }
 
-  void _updateMessageStatus(String messageId, MessageStatus status) {
-    final messageIndex = state.messages.indexWhere((m) => m.messageId == messageId);
+  void _updateMessageStatus(String messageId, MessageStatus status) async {
+    final messageIndex =
+        state.messages.indexWhere((m) => m.messageId == messageId);
     if (messageIndex != -1) {
       final message = state.messages[messageIndex];
       final updatedMessage = message.copyWith(status: status);
-      
+
       final updatedMessages = [...state.messages];
       updatedMessages[messageIndex] = updatedMessage;
-      
+
       state = state.copyWith(messages: updatedMessages);
+
+      try {
+        await _storage.updateMessageStatus(messageId, _conversationId, status);
+      } catch (e) {
+        log("Error updating message status in database: $e");
+      }
     }
   }
 
@@ -222,15 +245,19 @@ class MessageNotifier extends StateNotifier<MessagesState> {
   }
 }
 
-final messageProvider = StateNotifierProvider.family<MessageNotifier, MessagesState, String>((ref, conversationId) {
+final messageProvider =
+    StateNotifierProvider.family<MessageNotifier, MessagesState, String>(
+        (ref, conversationId) {
   final storage = ref.watch(localStorageProvider);
   final dio = ref.watch(dioProvider);
-  final socketNotifier = ref.watch(socketProvider.notifier);
-  final currentUserId = ref.watch(socketProvider).currentUserId;
-  
+  final socketNotifier =
+      ref.watch(conversationSocketProvider(conversationId).notifier);
+  final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
   if (currentUserId == null) {
     throw Exception("Cannot create message provider: User is not logged in");
   }
-  
-  return MessageNotifier(storage, dio, conversationId, currentUserId, socketNotifier);
+
+  return MessageNotifier(
+      storage, dio, conversationId, currentUserId, socketNotifier);
 });

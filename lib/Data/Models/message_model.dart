@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 
 enum MessageStatus { pending, sent, delivered, seen, failed }
@@ -57,22 +59,53 @@ class ChatMessage extends Equatable {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      messageId: json['messageId'],
-      senderId: json['senderId'],
-      conversationId: json['conversationId'],
-      messageText: json['messageText'],
-      createdAt: DateTime.parse(json['createdAt']),
+      messageId: json['messageId'] ?? json['message_id'],
+      senderId: json['senderId'] ?? json['sender_id'],
+      conversationId: json['conversationId'] ?? json['conversation_id'],
+      messageText: json['messageText'] ?? json['message_text'],
+      createdAt: DateTime.parse(json['createdAt'] ?? json['created_at']),
       status: MessageStatus.values.firstWhere(
         (e) => e.toString() == json['status'],
         orElse: () => MessageStatus.sent,
       ),
-      type: json['type'] != null
-          ? MessageType.values.firstWhere(
-              (e) => e.toString() == json['type'],
-              orElse: () => MessageType.text,
-            )
-          : MessageType.text,
+      type: _parseMessageType(json),
     );
+  }
+
+  static MessageType _parseMessageType(Map<String, dynamic> json) {
+    if (json['type'] != null) {
+      String typeString = json['type'].toString();
+
+      if (typeString.contains('track')) return MessageType.track;
+      if (typeString.contains('text')) return MessageType.text;
+
+      try {
+        return MessageType.values.firstWhere(
+          (e) =>
+              e.toString() == 'MessageType.$typeString' ||
+              e.toString() == typeString,
+          orElse: () => MessageType.text,
+        );
+      } catch (_) {
+        return MessageType.text;
+      }
+    }
+
+    if (json['messageText'] != null) {
+      try {
+        var content = json['messageText'];
+        if (content is String) {
+          var decoded = jsonDecode(content);
+          if (decoded is Map &&
+              (decoded.containsKey('trackName') ||
+                  decoded.containsKey('artistName'))) {
+            return MessageType.track;
+          }
+        }
+      } catch (_) {}
+    }
+
+    return MessageType.text;
   }
 
   @override

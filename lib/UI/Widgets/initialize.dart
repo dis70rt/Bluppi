@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synqit/Provider/auth_provider.dart';
-import 'package:synqit/Provider/chat_provider/socket_provider.dart';
 import 'package:synqit/Provider/user_provider/user_provider.dart';
 
 enum InitializationStatus { initializing, initialized, error }
@@ -48,7 +47,7 @@ final appInitializationProvider =
 
 class AppInitializationNotifier extends StateNotifier<AppInitializationState> {
   final Ref ref;
-  bool _isInitializingSocket = false;
+  // bool _isInitializingSocket = false;
 
   AppInitializationNotifier(this.ref) : super(AppInitializationState()) {
     _initialize();
@@ -70,7 +69,7 @@ class AppInitializationNotifier extends StateNotifier<AppInitializationState> {
         next.whenData((userModel) {
           if (userModel != null) {
             state = state.copyWith(isUserProfileLoaded: true);
-            _initializeSocket(userModel.id);
+            // _initializeSocket(userModel.id);
           }
         });
       });
@@ -96,20 +95,34 @@ class AppInitializationNotifier extends StateNotifier<AppInitializationState> {
     }
   }
 
-  Future<void> _initializeSocket(String userId) async {
-    if (_isInitializingSocket || state.isSocketConnected) return;
+  // Future<void> _initializeSocket(String userId) async {
+  //   if (_isInitializingSocket || state.isSocketConnected) return;
 
-    try {
-      _isInitializingSocket = true;
-      await ref.read(socketProvider.notifier).initialize(userId);
-      state = state.copyWith(isSocketConnected: true);
-    } catch (e) {
-      log('Socket initialization error: $e');
-      state = state.copyWith(error: 'Failed to connect: $e');
-    } finally {
-      _isInitializingSocket = false;
-    }
-  }
+  //   try {
+  //     _isInitializingSocket = true;
+
+  //     await Future.delayed(const Duration(milliseconds: 500));
+  //     final socketNotifier = ref.read(socketProvider.notifier);
+  //     final success = await socketNotifier.initialize(userId);
+
+  //     if (!success) {
+  //       throw Exception('Failed to initialize socket connection');
+  //     }
+
+  //     state = state.copyWith(isSocketConnected: true);
+  //   } catch (e) {
+  //     log('Socket initialization error: $e');
+  //     state = state.copyWith(error: 'Failed to connect: $e');
+
+  //     Future.delayed(const Duration(seconds: 3), () {
+  //       if (!state.isSocketConnected) {
+  //         _initializeSocket(userId);
+  //       }
+  //     });
+  //   } finally {
+  //     _isInitializingSocket = false;
+  //   }
+  // }
 
   void _resetState() {
     state = AppInitializationState();

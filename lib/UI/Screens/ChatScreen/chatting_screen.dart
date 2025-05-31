@@ -37,6 +37,13 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (currentUserId != null) {
+        ref.read(conversationSocketProvider(widget.conversationId).notifier)
+            .connect(currentUserId!);
+      }
+    });
   }
 
   void _onScroll() {
@@ -63,7 +70,7 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
-    final connectionStatus = ref.read(socketProvider).connectionStatus;
+    final connectionStatus = ref.read(conversationSocketProvider(widget.conversationId)).status;
     if (connectionStatus != ConnectionStatus.connected) {
       showSnackBar(
           context: context,
@@ -88,7 +95,8 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final connectionStatus = ref.watch(socketProvider).connectionStatus;
+    final socketState = ref.watch(conversationSocketProvider(widget.conversationId));
+    final connectionStatus = socketState.status;
     final messagesState = ref.watch(messageProvider(widget.conversationId));
     final messages = messagesState.messages;
     final isLoadingMore = messagesState.isLoadingMore;

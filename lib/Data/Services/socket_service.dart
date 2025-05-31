@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:synqit/Data/Models/message_model.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 enum ConnectionStatus {
@@ -16,12 +17,9 @@ class SocketService {
   final String baseUrl;
   WebSocketChannel? _channel;
   String? _userId;
+  String? _conversationId;
   ConnectionStatus _status = ConnectionStatus.disconnected;
-  Timer? _reconnectTimer;
-  Timer? _heartbeatTimer;
   bool _isDisposing = false;
-  int _reconnectAttempts = 0;
-  final int _maxReconnectAttempts = 5;
 
   final StreamController<ChatMessage> _messageController =
       StreamController<ChatMessage>.broadcast();
@@ -39,28 +37,30 @@ class SocketService {
 
   SocketService({required this.baseUrl});
 
-  Future<bool> connect(String userId) async {
+  Future<bool> connectToConversation(String userId, String conversationId) async {
     if (_isDisposing) return false;
 
-    if (_status == ConnectionStatus.connected && _userId == userId) {
-      log("Already connected as user: $userId");
+    if (_status == ConnectionStatus.connected && 
+        _userId == userId && 
+        _conversationId == conversationId) {
       return true;
     }
 
+    if (_status == ConnectionStatus.connected) {
+      disconnect();
+    }
+
     _userId = userId;
+    _conversationId = conversationId;
     _updateStatus(ConnectionStatus.connecting);
-    log("Connecting to WebSocket as user: $userId");
+    
+    log("Connecting to conversation: $conversationId as user: $userId");
 
     try {
-      _cleanup();
-
-      final uri = Uri.parse('$baseUrl/ws/v1/$userId');
+      final uri = Uri.parse('$baseUrl/ws/v1/$userId/$conversationId');
       log("WebSocket URI: ${uri.toString()}");
 
-      _channel = WebSocketChannel.connect(
-        uri,
-        protocols: null,
-      );
+      _channel = IOWebSocketChannel.connect(uri.toString(), pingInterval: const Duration(seconds: 30));
 
       _channel!.stream.listen(
         _handleMessage,
@@ -70,15 +70,11 @@ class SocketService {
       );
 
       _updateStatus(ConnectionStatus.connected);
-      _startHeartbeat();
-      _reconnectAttempts = 0;
-
-      log('Socket connected successfully for user: $userId');
+      log('Connected to conversation: $conversationId');
       return true;
     } catch (e) {
-      log('Socket connection failed: $e');
+      log('Connection failed: $e');
       _updateStatus(ConnectionStatus.error);
-      _scheduleReconnect();
       return false;
     }
   }
@@ -87,64 +83,32 @@ class SocketService {
     if (_isDisposing) return;
 
     try {
-      log("Raw message received: $data");
-
-      if (data == null || (data is String && data.isEmpty)) {
-        return;
-      }
-
-      final Map<String, dynamic> message = jsonDecode(data.toString());
-      log("Parsed message: $message");
+      final Map<String, dynamic> message = jsonDecode(data);
+      log("Received message: $message");
 
       switch (message['type']) {
-        case 'message':
+        case 'text':
+        case 'track':
           _handleIncomingMessage(message);
           break;
         case 'status_update':
           _handleStatusUpdate(message);
           break;
-        case 'ping':
-          _sendPong();
-          break;
-        case 'pong':
-          log("Pong received");
-          break;
         default:
           log("Unknown message type: ${message['type']}");
       }
     } catch (e, stack) {
-      log('Error handling message: $e');
-      log('Stack trace: $stack');
+      log('Error handling message: $e\n$stack');
     }
   }
 
   void _handleIncomingMessage(Map<String, dynamic> data) {
     try {
-      final conversationId = data['conversation_id'];
-      final messageText = data['message_text'] ?? '';
-      final senderId = data['sender_id'];
-      final messageId = data['message_id'];
-      final createdAt = data['created_at'];
-
-      if (conversationId == null || messageId == null || senderId == null) {
-        log("Invalid message data - missing required fields");
-        return;
-      }
-
-      final message = ChatMessage(
-        messageId: messageId,
-        senderId: senderId,
-        conversationId: conversationId,
-        messageText: messageText,
-        createdAt:
-            createdAt != null ? DateTime.parse(createdAt) : DateTime.now(),
-        status: MessageStatus.delivered,
-      );
-
-      log("Broadcasting message: ${message.messageId} from ${message.senderId}");
+      final message = ChatMessage.fromJson(data);
+      
       _messageController.add(message);
     } catch (e) {
-      log("Error processing incoming message: $e");
+      log('Error parsing message: $e');
     }
   }
 
@@ -157,7 +121,6 @@ class SocketService {
     log('Socket error: $error');
     if (!_isDisposing) {
       _updateStatus(ConnectionStatus.error);
-      _scheduleReconnect();
     }
   }
 
@@ -165,136 +128,67 @@ class SocketService {
     log('Socket disconnected');
     if (!_isDisposing) {
       _updateStatus(ConnectionStatus.disconnected);
-      _scheduleReconnect();
     }
   }
 
-  void _scheduleReconnect() {
-    if (_isDisposing || _reconnectAttempts >= _maxReconnectAttempts) {
-      return;
+  Future<bool> sendMessage(String messageId, String message, String type) async {
+    if (!isConnected || _channel == null) {
+      log('Cannot send message: not connected');
+      return false;
     }
-
-    _reconnectTimer?.cancel();
-    _heartbeatTimer?.cancel();
-
-    final delay = Duration(seconds: 2 * (_reconnectAttempts + 1));
-    log('Scheduling reconnect in ${delay.inSeconds} seconds (attempt ${_reconnectAttempts + 1})');
-
-    _updateStatus(ConnectionStatus.reconnecting);
-    _reconnectTimer = Timer(delay, () {
-      if (!_isDisposing && _userId != null) {
-        _reconnectAttempts++;
-        connect(_userId!);
-      }
-    });
-  }
-
-  void _startHeartbeat() {
-    _heartbeatTimer?.cancel();
-    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (_status == ConnectionStatus.connected && !_isDisposing) {
-        _sendPing();
-      }
-    });
-  }
-
-  void _sendPing() {
-    try {
-      if (_channel != null && _status == ConnectionStatus.connected) {
-        _channel!.sink.add(jsonEncode({'type': 'ping'}));
-        log("Ping sent");
-      }
-    } catch (e) {
-      log("Error sending ping: $e");
-    }
-  }
-
-  void _sendPong() {
-    try {
-      if (_channel != null && _status == ConnectionStatus.connected) {
-        _channel!.sink.add(jsonEncode({'type': 'pong'}));
-        log("Pong sent");
-      }
-    } catch (e) {
-      log("Error sending pong: $e");
-    }
-  }
-
-  Future<bool> sendMessage(
-      String conversationId, String messageText, String messageId, String type) async {
-    if (!isConnected) {
-      log('Cannot send message - not connected');
-      throw Exception('Not connected to WebSocket');
-    }
-
-    final payload = {
-      'type': type,
-      'conversation_id': conversationId,
-      'message_id': messageId,
-      'message': messageText,
-    };
 
     try {
-      log("Sending message: $payload");
-      _channel!.sink.add(jsonEncode(payload));
-      log("Message sent successfully");
+      final messageData = {
+        'type': type,
+        'message_id': messageId,
+        'message': message,
+      };
+
+      _channel!.sink.add(jsonEncode(messageData));
+      log('Message sent: $messageData');
       return true;
     } catch (e) {
       log('Error sending message: $e');
-      throw Exception('Failed to send message: $e');
+      return false;
     }
   }
 
   void updateMessageStatus(String messageId, MessageStatus status) {
-    if (!isConnected) {
-      log('Cannot update status - not connected');
-      return;
-    }
-
-    final payload = {
-      'type': 'status_update',
-      'message_id': messageId,
-      'status': status.name,
-    };
+    if (!isConnected || _channel == null) return;
 
     try {
-      log("Updating message status: $payload");
-      _channel!.sink.add(jsonEncode(payload));
+      final statusData = {
+        'type': 'status_update',
+        'message_id': messageId,
+        'status': status.name,
+      };
+
+      _channel!.sink.add(jsonEncode(statusData));
+      log('Status update sent: $statusData');
     } catch (e) {
-      log('Error updating message status: $e');
+      log('Error sending status update: $e');
     }
   }
 
   void _updateStatus(ConnectionStatus status) {
     if (_status != status) {
       _status = status;
-      log("Connection status changed to: $status");
       _statusController.add(status);
     }
   }
 
-  void _cleanup() {
-    _reconnectTimer?.cancel();
-    _heartbeatTimer?.cancel();
-    try {
-      _channel?.sink.close(1000);
-    } catch (e) {
-      log('Error closing previous channel: $e');
-    }
-    _channel = null;
-  }
-
   void disconnect() {
-    log('Manually disconnecting socket');
-    _isDisposing = true;
-    _cleanup();
+    if (_channel != null) {
+      _channel!.sink.close();
+      _channel = null;
+    }
     _updateStatus(ConnectionStatus.disconnected);
     _userId = null;
-    _reconnectAttempts = 0;
+    _conversationId = null;
   }
 
   void dispose() {
-    log('Disposing socket service');
+    _isDisposing = true;
     disconnect();
     _messageController.close();
     _statusController.close();

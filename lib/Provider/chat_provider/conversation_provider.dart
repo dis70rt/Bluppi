@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/conversation_model.dart';
 import 'package:synqit/Data/Services/local_storage_service_sql.dart';
@@ -200,7 +201,7 @@ class ConversationNotifier extends StateNotifier<ConversationsState> {
 final conversationProvider = StateNotifierProvider<ConversationNotifier, ConversationsState>((ref) {
   final storage = ref.watch(localStorageProvider);
   final dio = ref.watch(dioProvider);
-  final currentUserId = ref.watch(socketProvider).currentUserId;
+  final currentUserId = FirebaseAuth.instance.currentUser?.uid;
   
   if (currentUserId == null) {
     throw Exception("Cannot create conversation provider: User is not logged in");
