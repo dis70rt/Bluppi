@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:synqit/Constants/themes.dart';
 
 import 'package:synqit/Data/Models/message_model.dart';
@@ -263,141 +264,152 @@ class _ChattingScreenState extends ConsumerState<ChattingScreen> {
       ChatMessage message, bool isMyMessage, bool showSenderName) {
     final chatTheme = ref.watch(chatThemeProvider(widget.conversationId));
 
+    Widget messageContent;
 
     if (message.type == MessageType.track) {
       try {
         final trackJson = jsonDecode(message.messageText);
         final track = Track.fromJson(trackJson);
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-          child: Row(
-            mainAxisAlignment:
-                isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+        messageContent = Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.8,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    MiniMusicPlayer(track: track, isPreview: true),
-                    Row(
-                      mainAxisAlignment: isMyMessage
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 300),
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: chatTheme.receivedTimestamp,
-                          ),
-                          child: Text(
-                            '${message.createdAt.toLocal().hour}:${message.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
-                          ),
-                        ),
-                        if (isMyMessage) ...[
-                          const SizedBox(width: 4),
-                          AnimatedDefaultTextStyle(
-                            duration: const Duration(milliseconds: 300),
-                            style: TextStyle(
-                              color: chatTheme.receivedTimestamp,
-                            ),
-                            child: Icon(
-                              Status.getIcon(message.status),
-                              size: 12,
-                              color: chatTheme.receivedTimestamp,
-                            ),
-                          ),
-                        ],
-                      ],
+              MiniMusicPlayer(track: track, isPreview: true),
+              Row(
+                mainAxisAlignment: isMyMessage
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 300),
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: chatTheme.receivedTimestamp,
+                    ),
+                    child: Text(
+                      '${message.createdAt.toLocal().hour}:${message.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
+                    ),
+                  ),
+                  if (isMyMessage) ...[
+                    const SizedBox(width: 4),
+                    AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 300),
+                      style: TextStyle(
+                        color: chatTheme.receivedTimestamp,
+                      ),
+                      child: Icon(
+                        Status.getIcon(message.status),
+                        size: 12,
+                        color: chatTheme.receivedTimestamp,
+                      ),
                     ),
                   ],
-                ),
+                ],
               ),
             ],
           ),
         );
       } catch (e) {
         log("Error parsing track message: $e");
+        messageContent = SizedBox();
       }
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-      child: Row(
-        mainAxisAlignment:
-            isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Flexible(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.8,
+    } else {
+      messageContent = Flexible(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          decoration: BoxDecoration(
+            color: isMyMessage
+                ? chatTheme.userBubble
+                : chatTheme.receivedBubble,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AnimatedDefaultTextStyle(
+                duration: const Duration(milliseconds: 300),
+                style: TextStyle(
+                  color: isMyMessage
+                      ? chatTheme.userText
+                      : chatTheme.receivedText,
+                ),
+                child: Text(message.messageText),
               ),
-              decoration: BoxDecoration(
-                color: isMyMessage
-                    ? chatTheme.userBubble
-                    : chatTheme.receivedBubble,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: isMyMessage
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.start,
                 children: [
                   AnimatedDefaultTextStyle(
                     duration: const Duration(milliseconds: 300),
                     style: TextStyle(
+                      fontSize: 11,
                       color: isMyMessage
-                          ? chatTheme.userText
-                          : chatTheme.receivedText,
+                          ? chatTheme.timestamp
+                          : chatTheme.receivedTimestamp,
                     ),
-                    child: Text(message.messageText),
+                    child: Text(
+                      '${message.createdAt.toLocal().hour}:${message.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: isMyMessage
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
-                    children: [
-                      AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 300),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isMyMessage
-                              ? chatTheme.timestamp
-                              : chatTheme.receivedTimestamp,
-                        ),
-                        child: Text(
-                          '${message.createdAt.toLocal().hour}:${message.createdAt.toLocal().minute.toString().padLeft(2, '0')}',
-                        ),
-                      ),
-                      if (isMyMessage) ...[
-                        const SizedBox(width: 4),
-                        AnimatedIcon(
-                          duration: const Duration(milliseconds: 300),
-                          icon: Status.getIcon(message.status),
-                          size: 12,
-                          color: chatTheme.timestamp,
-                        ),
-                      ],
-                    ],
-                  ),
+                  if (isMyMessage) ...[
+                    const SizedBox(width: 4),
+                    AnimatedIcon(
+                      duration: const Duration(milliseconds: 300),
+                      icon: Status.getIcon(message.status),
+                      size: 12,
+                      color: chatTheme.timestamp,
+                    ),
+                  ],
                 ],
               ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return AnimationConfiguration.staggeredList(
+    position: isMyMessage ? 1 : 0, 
+    duration: const Duration(milliseconds: 350),
+    child: SlideAnimation(
+      horizontalOffset: isMyMessage ? 20.0 : -20.0,
+      curve: Curves.elasticOut,
+      child: FadeInAnimation(
+        child: ScaleAnimation(
+          scale: 0.8, 
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+            child: Row(
+              mainAxisAlignment:
+                  isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (!isMyMessage && message.type != MessageType.track) ...[
+                  const SizedBox(width: 8),
+                ],
+                messageContent,
+                if (isMyMessage && message.type != MessageType.track) ...[
+                  const SizedBox(width: 8),
+                ],
+              ],
             ),
           ),
-          if (isMyMessage) ...[
-            const SizedBox(width: 8),
-          ],
-        ],
+        ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildMessageInput(ConnectionStatus connectionStatus) {
