@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
@@ -68,8 +67,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   final MediaService _mediaService;
 
   bool _disposed = false;
-  Timer? _positionUpdateTimer;
-  
+
   final Map<String, Completer<void>> _locks = {};
   final List<int> _playHistory = [];
   int _historyIndex = -1;
@@ -109,19 +107,40 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   }
 
   void _initPlaybackHandling() {
-    _positionUpdateTimer = Timer.periodic(Duration(milliseconds: 500), (_) async {
-      if (_disposed || state.status != PlayerStatus.playing) return;
-      
-      final position = await _mediaService.getPosition();
-      if (position != null && !state.isSeeking) {
-        state = state.copyWith(position: position);
-        
-        if (position >= (state.duration ?? Duration.zero) && state.duration != null) {
-          _handleTrackCompleted();
-        }
+    _mediaService.playerEvents.listen((event) {
+      if (_disposed) return;
+
+      switch (event['event']) {
+        case 'state':
+          final stateStr = event['state'] as String;
+          if (stateStr == 'ended') {
+            _handleTrackCompleted();
+          }
+
+          break;
+        case 'playing':
+          final isPlaying = event['playing'] as bool;
+          state = state.copyWith(
+              status: isPlaying ? PlayerStatus.playing : PlayerStatus.paused);
+          break;
+        case 'seek':
+        case 'position':
+          final position = event['position'] as int;
+          
+            state = state.copyWith(position: Duration(milliseconds: position));
+          
+          break;
+        case 'duration':
+          final duration = event['duration'] as int;
+          if (duration > 0) {
+            state = state.copyWith(duration: Duration(milliseconds: duration));
+          }
+          break;
       }
+    }, onError: (e) {
+      log('Player events error: $e');
     });
-    
+
     _ref.listen<QueueState>(queueProvider, (previous, next) {
       if (_disposed) return;
       if (_currentQueueVersion == next.version) return;
@@ -144,7 +163,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       final updateType = _determineUpdateType(previous, current);
 
       if (updateType == QueueUpdateType.fullRebuild) {
-        if (current.currentIndex >= 0 && current.currentIndex < current.items.length) {
+        if (current.currentIndex >= 0 &&
+            current.currentIndex < current.items.length) {
           final track = current.items[current.currentIndex];
           final enrichedTrack = await _fetchAndEnsureAudioUrl(track);
           if (enrichedTrack != null) {
@@ -152,12 +172,13 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
           }
         }
       } else if (updateType == QueueUpdateType.indexOnly) {
-        if (current.currentIndex >= 0 && current.currentIndex < current.items.length) {
+        if (current.currentIndex >= 0 &&
+            current.currentIndex < current.items.length) {
           final track = current.items[current.currentIndex];
           final enrichedTrack = await _fetchAndEnsureAudioUrl(track);
           if (enrichedTrack != null) {
             _ref.read(currentTrackProvider.notifier).state = enrichedTrack;
-            
+
             if (state.status == PlayerStatus.playing) {
               await _playCurrentTrack();
             }
@@ -171,7 +192,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
   QueueUpdateType _determineUpdateType(
       QueueState? previous, QueueState current) {
-    if (previous == null || previous.items.isEmpty) return QueueUpdateType.fullRebuild;
+    if (previous == null || previous.items.isEmpty)
+      return QueueUpdateType.fullRebuild;
     if (current.items.isEmpty) return QueueUpdateType.fullRebuild;
 
     if (current.items.length < previous.items.length ||
@@ -235,7 +257,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       _savePlayHistory();
       final queueState = _ref.read(queueProvider);
       if (queueState.current != null) {
-        await _database.writeTrack(queueState.current!, state.duration?.inSeconds ?? 0);
+        await _database.writeTrack(
+            queueState.current!, state.duration?.inSeconds ?? 0);
         await _userServics.historyTrack(queueState.current!.trackId);
       }
     }
@@ -249,16 +272,79 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     }
   }
 
+  Future<void> playTrackAtIndex(int index) async {
+    if (_disposed) return;
+    if (await _acquireLock('play_at_index')) return;
+
+    try {
+      _updateOperationState(true, null, "playing track");
+      _isHistoryNavigation = false;
+
+      final queueState = _ref.read(queueProvider);
+      if (index < 0 || index >= queueState.items.length) {
+        _updateOperationState(false, "Invalid track index", null);
+        _releaseLock('play_at_index');
+        return;
+      }
+
+      _ref.read(queueProvider.notifier).syncIndex(index);
+
+      final track = queueState.items[index];
+      final enrichedTrack = await _fetchAndEnsureAudioUrl(track);
+      if (enrichedTrack == null) {
+        _updateOperationState(false, "Failed to get audio for track", null);
+        _releaseLock('play_at_index');
+        return;
+      }
+
+      _ref.read(currentTrackProvider.notifier).state = enrichedTrack;
+
+      await _mediaService.play(track: enrichedTrack);
+      state = state.copyWith(
+        status: PlayerStatus.playing,
+        position: Duration.zero,
+      );
+
+      _handleIndexChange(index);
+      _prewarmMultipleTracks();
+      _updateOperationState(false, null, "track playing");
+    } catch (e) {
+      _updateOperationState(false, "Failed to play track: $e", null);
+    } finally {
+      _releaseLock('play_at_index');
+    }
+  }
+
+  Future<void> _prewarmMultipleTracks() async {
+    final queueState = _ref.read(queueProvider);
+    if (queueState.currentIndex == -1 || queueState.items.isEmpty) return;
+
+    const int maxPrewarmTracks = 3;
+
+    for (int i = 1; i <= maxPrewarmTracks; i++) {
+      final nextIndex = queueState.currentIndex + i;
+      if (nextIndex < queueState.items.length) {
+        final track = queueState.items[nextIndex];
+        final enrichedTrack = await _fetchAndEnsureAudioUrl(track);
+        if (enrichedTrack != null) {
+          _mediaService.prewarm(track: enrichedTrack);
+
+          await Future.delayed(const Duration(milliseconds: 150));
+        }
+      }
+    }
+  }
+
   void _handleTrackCompleted() {
     final queueState = _ref.read(queueProvider);
-    
+
     state = state.copyWith(status: PlayerStatus.completed);
 
     if (queueState.next != null) {
       skipToNext();
     } else {
       _queueManager.fetchRecommendations(queueState.current!).then((_) {
-        Future.delayed(const Duration(milliseconds: 300), () {
+        Future.delayed(const Duration(milliseconds: 100), () {
           final updatedQueue = _ref.read(queueProvider);
           if (updatedQueue.next != null) {
             skipToNext();
@@ -276,13 +362,15 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   Future<Track?> _fetchAndEnsureAudioUrl(Track track) async {
     try {
       final streamData = await _streamingService.getAudioStreamData(track);
-      if (streamData['audioUrl'] != null && streamData['audioUrl']!.isNotEmpty) {
+      if (streamData['audioUrl'] != null &&
+          streamData['audioUrl']!.isNotEmpty) {
         return track.copyWith(
           audioUrl: streamData['audioUrl'],
           videoId: streamData['videoId'] ?? track.videoId,
         );
       }
-      _updateOperationState(false, "Failed to get audio stream for track", null);
+      _updateOperationState(
+          false, "Failed to get audio stream for track", null);
       return null;
     } catch (e) {
       _updateOperationState(false, "Error retrieving audio: $e", null);
@@ -292,10 +380,15 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
   Future<void> _playCurrentTrack() async {
     final currentTrack = _ref.read(currentTrackProvider);
-    if (currentTrack == null || currentTrack.audioUrl == null || currentTrack.audioUrl!.isEmpty) {
+    if (currentTrack == null ||
+        currentTrack.audioUrl == null ||
+        currentTrack.audioUrl!.isEmpty) {
       throw Exception('Cannot play track without audio URL');
     }
+
     await _mediaService.play(track: currentTrack);
+
+    _prewarmMultipleTracks();
   }
 
   Future<void> loadTrack(Track track) async {
@@ -304,6 +397,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
     try {
       _updateOperationState(true, null, "loading track");
+
+      _ref.read(currentTrackProvider.notifier).state = track;
       state = state.copyWith(status: PlayerStatus.loading);
 
       await _mediaService.stop();
@@ -313,11 +408,11 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       final enrichedTrack = await _fetchAndEnsureAudioUrl(track);
       if (enrichedTrack == null) {
-        _updateOperationState(false, "Failed to get audio for this track", null);
+        _updateOperationState(
+            false, "Failed to get audio for this track", null);
         state = state.copyWith(
-          status: PlayerStatus.error, 
-          errorMessage: "No audio available for this track"
-        );
+            status: PlayerStatus.error,
+            errorMessage: "No audio available for this track");
         _releaseLock('load_track');
         return;
       }
@@ -330,10 +425,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       state = state.copyWith(
         status: PlayerStatus.playing,
         position: Duration.zero,
-        duration: Duration(seconds: 30),
       );
       _handleIndexChange(index);
-      
+
       _queueManager.fetchRecommendations(enrichedTrack);
       _updateOperationState(false, null, "track loaded");
     } catch (e) {
@@ -358,7 +452,8 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       if (currentTrack.audioUrl == null || currentTrack.audioUrl!.isEmpty) {
         final enrichedTrack = await _fetchAndEnsureAudioUrl(currentTrack);
         if (enrichedTrack == null) {
-          _updateOperationState(false, "No audio available for this track", null);
+          _updateOperationState(
+              false, "No audio available for this track", null);
           return;
         }
         _ref.read(currentTrackProvider.notifier).state = enrichedTrack;
@@ -366,7 +461,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       } else {
         await _mediaService.play(track: currentTrack);
       }
-      
+
       state = state.copyWith(status: PlayerStatus.playing);
     } catch (e) {
       state = state.copyWith(
@@ -394,29 +489,31 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       _isHistoryNavigation = false;
 
       final queueState = _ref.read(queueProvider);
-      
+
       if (queueState.next != null) {
-        _ref.read(queueProvider.notifier).syncIndex(queueState.currentIndex + 1);
-        
+        _ref
+            .read(queueProvider.notifier)
+            .syncIndex(queueState.currentIndex + 1);
+
         final nextTrack = _ref.read(queueProvider).current;
         if (nextTrack != null) {
           final enrichedTrack = await _fetchAndEnsureAudioUrl(nextTrack);
           if (enrichedTrack == null) {
-            _updateOperationState(false, "Failed to get audio for next track", null);
+            _updateOperationState(
+                false, "Failed to get audio for next track", null);
             _releaseLock('skip_next');
             return;
           }
-          
+
           _ref.read(currentTrackProvider.notifier).state = enrichedTrack;
-          
+
           await _mediaService.play(track: enrichedTrack);
           _updateOperationState(false, null, "playing next");
           state = state.copyWith(
             status: PlayerStatus.playing,
             position: Duration.zero,
-            duration: Duration(seconds: 30),
           );
-          
+
           _handleIndexChange(_ref.read(queueProvider).currentIndex);
         }
       } else {
@@ -425,27 +522,30 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         if (success) {
           final updatedQueue = _ref.read(queueProvider);
           if (updatedQueue.next != null) {
-            _ref.read(queueProvider.notifier).syncIndex(updatedQueue.currentIndex + 1);
-            
+            _ref
+                .read(queueProvider.notifier)
+                .syncIndex(updatedQueue.currentIndex + 1);
+
             final recommendedTrack = _ref.read(queueProvider).current;
             if (recommendedTrack != null) {
-              final enrichedTrack = await _fetchAndEnsureAudioUrl(recommendedTrack);
+              final enrichedTrack =
+                  await _fetchAndEnsureAudioUrl(recommendedTrack);
               if (enrichedTrack == null) {
-                _updateOperationState(false, "Failed to get audio for recommended track", null);
+                _updateOperationState(
+                    false, "Failed to get audio for recommended track", null);
                 _releaseLock('skip_next');
                 return;
               }
-              
+
               _ref.read(currentTrackProvider.notifier).state = enrichedTrack;
-              
+
               await _mediaService.play(track: enrichedTrack);
               _updateOperationState(false, null, "playing recommended");
               state = state.copyWith(
                 status: PlayerStatus.playing,
                 position: Duration.zero,
-                duration: Duration(seconds: 30),
               );
-              
+
               _handleIndexChange(_ref.read(queueProvider).currentIndex);
             }
           } else {
@@ -477,26 +577,26 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         final queueState = _ref.read(queueProvider);
         if (previousIndex >= 0 && previousIndex < queueState.items.length) {
           _ref.read(queueProvider.notifier).playTrackAtIndex(previousIndex);
-          
+
           final previousTrack = queueState.items[previousIndex];
           final enrichedTrack = await _fetchAndEnsureAudioUrl(previousTrack);
           if (enrichedTrack == null) {
-            _updateOperationState(false, "Failed to get audio for previous track", null);
+            _updateOperationState(
+                false, "Failed to get audio for previous track", null);
             _isHistoryNavigation = false;
             _releaseLock('skip_previous');
             return;
           }
-          
+
           _ref.read(currentTrackProvider.notifier).state = enrichedTrack;
-          
+
           await _mediaService.play(track: enrichedTrack);
-          
+
           state = state.copyWith(
             status: PlayerStatus.playing,
             position: Duration.zero,
-            duration: Duration(seconds: 30),
           );
-          
+
           _updateOperationState(false, null, "playing previous (history)");
           _handleIndexChange(previousIndex);
           _releaseLock('skip_previous');

@@ -8,8 +8,10 @@ import androidx.core.net.toUri
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.EventChannel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -20,69 +22,99 @@ class MainActivity: FlutterActivity() {
     private lateinit var exoPlayer: ExoPlayer
     private lateinit var mediaSession: MediaSession
     private lateinit var notificationManager: PlayerNotificationManager
+    private var eventSink: EventChannel.EventSink? = null
 
     private val CHANNEL_NAME = "synqit/media_channel"
+    private val PLAYBACK_EVENTS = "synqit/media_events"
     private val NOTIFICATION_ID = 1001
     private val NOTIFICATION_CHANNEL_ID = "synqit_player_channel"
-
-
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         createNotificationChannel()
         initPlayer()
 
-        MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
-            CHANNEL_NAME
-        ).setMethodCallHandler { call, result ->
-            when (call.method) {
-                "play" -> {
-                    val url      = call.argument<String>("url")      ?: error("no url")
-                    val title    = call.argument<String>("title")    ?: "Unknown title"
-                    val artist   = call.argument<String>("artist")   ?: "Unknown artist"
-                    val imageUrl = call.argument<String>("imageUrl") ?: ""
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, PLAYBACK_EVENTS)
+            .setStreamHandler(object : EventChannel.StreamHandler {
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
+                    eventSink = events
+                    exoPlayer.addListener(playerListener)
+                }
+                override fun onCancel(arguments: Any?) {
+                    exoPlayer.removeListener(playerListener)
+                    eventSink = null
+                }
+            })
 
-                    // 1. Build MediaMetadata
-                    val mediaMetadata = MediaMetadata.Builder()
-                        .setTitle(title)
-                        .setArtist(artist)
-                        // If you have a Uri for artwork:
-                        .setArtworkUri(imageUrl.toUri())
-                        .build()
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "play" -> {
+                        val url      = call.argument<String>("url")      ?: error("no url")
+                        val title    = call.argument<String>("title")    ?: "Unknown title"
+                        val artist   = call.argument<String>("artist")   ?: "Unknown artist"
+                        val imageUrl = call.argument<String>("imageUrl") ?: ""
 
-                    // 2. Build MediaItem with metadata
-                    val mediaItem = MediaItem.Builder()
-                        .setUri(url)
-                        .setMediaMetadata(mediaMetadata)
-                        .build()
+                        val mediaMetadata = MediaMetadata.Builder()
+                            .setTitle(title)
+                            .setArtist(artist)
+                            .setArtworkUri(imageUrl.toUri())
+                            .build()
 
-                    // 3. Play it
-                    exoPlayer.setMediaItem(mediaItem)
-                    exoPlayer.prepare()
-                    exoPlayer.play()
-                    result.success(null)
-                }
+                        val mediaItem = MediaItem.Builder()
+                            .setUri(url)
+                            .setMediaMetadata(mediaMetadata)
+                            .build()
 
-                "pause" -> {
-                    exoPlayer.pause()
-                    result.success(null)
+                        exoPlayer.setMediaItem(mediaItem)
+                        exoPlayer.prepare()
+                        exoPlayer.play()
+                        result.success(null)
+                    }
+                    "pause" -> {
+                        exoPlayer.pause(); result.success(null)
+                    }
+                    "stop" -> {
+                        exoPlayer.stop(); result.success(null)
+                    }
+                    "seekTo" -> {
+                        val pos = call.argument<Int>("position") ?: 0
+                        exoPlayer.seekTo(pos.toLong()); result.success(null)
+                    }
+                    "getPosition" -> {
+                        result.success(exoPlayer.currentPosition)
+                    }
+                    "prewarm" -> {
+                        val nextUrl      = call.argument<String>("url")      ?: error("no url")
+                        val nextTitle    = call.argument<String>("title")    ?: "Unknown title"
+                        val nextArtist   = call.argument<String>("artist")   ?: "Unknown artist"
+                        val nextImageUrl = call.argument<String>("imageUrl") ?: ""
+
+                        val nextMetadata = MediaMetadata.Builder()
+                            .setTitle(nextTitle)
+                            .setArtist(nextArtist)
+                            .setArtworkUri(nextImageUrl.toUri())
+                            .build()
+                        val nextItem = MediaItem.Builder()
+                            .setUri(nextUrl)
+                            .setMediaMetadata(nextMetadata)
+                            .build()
+
+                        exoPlayer.addMediaItem(nextItem)
+                        exoPlayer.prepare()
+                        result.success(true)
+                    }
+                    "skipToNext" -> {
+                        val nextIndex = exoPlayer.currentMediaItemIndex + 1
+                        if (nextIndex < exoPlayer.mediaItemCount) {
+                            exoPlayer.seekTo(nextIndex, 0L)
+                            exoPlayer.play()
+                            result.success(null)
+                        } else result.error("NO_NEXT","No next item",null)
+                    }
+                    else -> result.notImplemented()
                 }
-                "stop" -> {
-                    exoPlayer.stop()
-                    result.success(null)
-                }
-                "seekTo" -> {
-                    val pos = call.argument<Int>("position") ?: 0
-                    exoPlayer.seekTo(pos.toLong())
-                    result.success(null)
-                }
-                "getPosition" -> {
-                    result.success(exoPlayer.currentPosition)
-                }
-                else -> result.notImplemented()
             }
-        }
     }
 
     private fun initPlayer() {
@@ -101,11 +133,42 @@ class MainActivity: FlutterActivity() {
         notificationManager.setMediaSessionToken(mediaSession.platformToken)
     }
 
-    private fun playUrl(url: String) {
-        val mediaItem = MediaItem.fromUri(url)
-        exoPlayer.setMediaItem(mediaItem)
-        exoPlayer.prepare()
-        exoPlayer.play()
+    private val playerListener = object : Player.Listener {
+        override fun onPlaybackStateChanged(state: Int) {
+            val stateStr = when (state) {
+                Player.STATE_IDLE      -> "idle"
+                Player.STATE_BUFFERING -> "buffering"
+                Player.STATE_READY     -> {
+                    if (exoPlayer.duration > 0) {
+                        eventSink?.success(mapOf(
+                            "event" to "duration",
+                            "duration" to exoPlayer.duration
+                        ))
+                    }
+                    "ready"
+                }
+                Player.STATE_ENDED     -> "ended"
+                else                   -> "unknown"
+            }
+            eventSink?.success(mapOf("event" to "state", "state" to stateStr))
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            eventSink?.success(mapOf("event" to "playing", "playing" to isPlaying))
+        }
+
+        override fun onPositionDiscontinuity(reason: Int) {
+            eventSink?.success(mapOf("event" to "seek", "position" to exoPlayer.currentPosition))
+        }
+
+        override fun onMediaMetadataChanged(metadata: MediaMetadata) {
+            if (exoPlayer.duration > 0) {
+                eventSink?.success(mapOf(
+                    "event" to "duration",
+                    "duration" to exoPlayer.duration
+                ))
+            }
+        }
     }
 
     private fun createNotificationChannel() {

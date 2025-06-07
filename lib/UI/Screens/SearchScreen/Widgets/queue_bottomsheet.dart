@@ -359,7 +359,7 @@ Widget _buildQueueTrackTile({
       track: track,
       onTap: () {
         if (!isCurrent) {
-          // playerNotifier.playTrackAtIndex(index);
+          playerNotifier.playTrackAtIndex(index);
           Navigator.of(context).pop();
         }
       },
