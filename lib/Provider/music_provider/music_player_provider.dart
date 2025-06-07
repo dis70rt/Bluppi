@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
+import 'package:synqit/Data/Services/exoplayer_service.dart';
+import 'package:synqit/Data/Services/media_notification_service.dart';
 import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/music_provider/audio_streaming_provider.dart';
 import 'package:synqit/Provider/music_provider/queue_manager_provider.dart';
@@ -12,9 +13,11 @@ import 'package:synqit/Provider/music_provider/queue_provider.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'music_player_state.dart';
 
-final audioPlayer = AudioPlayer();
+final audioProvider = StateProvider<String>((ref) => '');
+
+final audioPlayer = ExoPlayerService();
 final _database = Database();
-final _userServics = UserServices();
+final _userServices = UserServices();
 
 final musicPlayerProvider =
     StateNotifierProvider.autoDispose<MusicPlayerNotifier, MusicPlayerState>(
@@ -64,7 +67,7 @@ class PlayerOperation {
 
 class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   final Ref _ref;
-  final AudioPlayer _audioPlayer;
+  final ExoPlayerService _audioPlayer;
   final AudioStreamingService _streamingService;
   final QueueManager _queueManager;
 
@@ -76,6 +79,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   final List<int> _playHistory = [];
   int _historyIndex = -1;
   bool _isHistoryNavigation = false;
+  String? audioUri;
 
   int _currentQueueVersion = 0;
 
@@ -104,7 +108,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         _playHistory.addAll(history.map(int.parse));
         _historyIndex = _playHistory.length - 1;
       }
-    } catch (_) {}
+    } catch (_) {
+      log('[MusicPlayer] Failed to restore play history');
+    }
   }
 
   Future<void> _savePlayHistory() async {
@@ -114,7 +120,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         await prefs.setStringList(
             'play_history', _playHistory.map((id) => id.toString()).toList());
       }
-    } catch (_) {}
+    } catch (e) {
+      log('[MusicPlayer] Failed to save play history: $e');
+    }
   }
 
   void _initStreams() {
@@ -127,6 +135,13 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
         if (status == PlayerStatus.completed) {
           _handleTrackCompleted();
+        }
+
+        final currentTrack = _ref.read(currentTrackProvider);
+        if (currentTrack != null) {
+          final notificationService = _ref.read(mediaNotificationServiceProvider);
+          final isPlaying = playerState.playing;
+          notificationService.updatePlaybackState(isPlaying);
         }
       },
       onError: (error) {
@@ -182,6 +197,17 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       _currentQueueVersion = next.version;
       _syncPlayerWithQueue(previous, next);
     });
+
+    _ref.listen(currentTrackProvider, (previous, current) {
+      if (_disposed) return;
+      if (current != null) {
+        final notificationService = _ref.read(mediaNotificationServiceProvider);
+        final isPlaying = state.isPlaying;
+        notificationService.showMusicNotification(current, isPlaying);
+      } else {
+        _ref.read(mediaNotificationServiceProvider).hideNotification();
+      }
+    });
   }
 
   void _syncPlayerWithQueue(QueueState? previous, QueueState current) async {
@@ -212,14 +238,16 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
           if (_audioPlayer.currentIndex != current.currentIndex &&
               current.currentIndex >= 0 &&
               current.currentIndex <
-                  (_audioPlayer.audioSource?.sequence.length ?? 0)) {
-            _audioPlayer.seek(Duration.zero, index: current.currentIndex);
+                  (_playlist?.children.length ?? 0)) {
+            await _audioPlayer.seek(Duration.zero, index: current.currentIndex);
           }
           break;
 
         case QueueUpdateType.none:
           break;
       }
+    } catch (e) {
+      log('[MusicPlayer] Queue sync error: $e');
     } finally {
       _releaseLock('queue_sync');
     }
@@ -275,13 +303,16 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       for (final track in tracks) {
         try {
           final data = await _streamingService.getAudioStreamData(track);
-          if (data['audioUrl'] != null) {
-            sources.add(AudioSource.uri(Uri.parse(data['audioUrl']!)));
+          audioUri = data['audioUrl'] ?? '';
+          _ref.read(audioProvider.notifier).state = audioUri!;
+          if (data['audioUrl'] != null && data['audioUrl']!.isNotEmpty) {
+            sources.add(UriAudioSource(Uri.parse(data['audioUrl']!)));
           } else {
-            sources.add(AudioSource.uri(Uri.parse('')));
+            sources.add(UriAudioSource(Uri.parse('')));
           }
-        } catch (_) {
-          sources.add(AudioSource.uri(Uri.parse('')));
+        } catch (e) {
+          log('[MusicPlayer] Failed to get stream data: $e');
+          sources.add(UriAudioSource(Uri.parse('')));
         }
       }
 
@@ -299,8 +330,6 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       if (wasPlaying) {
         await _audioPlayer.play();
       }
-
-      // _pendingPlay = false;
 
       _updateOperationState(false, null, "playlist ready");
     } catch (e) {
@@ -324,14 +353,15 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
         try {
           final data = await _streamingService.getAudioStreamData(track);
-          if (data['audioUrl'] != null && _playlist != null) {
-            await _playlist!.add(AudioSource.uri(Uri.parse(data['audioUrl']!)));
-          } else {
-            await _playlist!.add(AudioSource.uri(Uri.parse('')));
+          if (data['audioUrl'] != null && data['audioUrl']!.isNotEmpty && _playlist != null) {
+            await _playlist!.add(UriAudioSource(Uri.parse(data['audioUrl']!)));
+          } else if (_playlist != null) {
+            await _playlist!.add(UriAudioSource(Uri.parse('')));
           }
-        } catch (_) {
+        } catch (e) {
+          log('[MusicPlayer] Failed to append track: $e');
           if (_playlist != null) {
-            await _playlist!.add(AudioSource.uri(Uri.parse('')));
+            await _playlist!.add(UriAudioSource(Uri.parse('')));
           }
         }
       }
@@ -360,7 +390,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     }
   }
 
-  void _addToHistory(int index) async{
+  void _addToHistory(int index) async {
     if (_historyIndex >= 0 && _historyIndex < _playHistory.length - 1) {
       _playHistory.removeRange(_historyIndex + 1, _playHistory.length);
     }
@@ -374,12 +404,13 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         _historyIndex = _playHistory.length - 1;
       }
 
-      _savePlayHistory();
+      await _savePlayHistory();
+      
       final queueState = _ref.read(queueProvider);
       if (queueState.current != null) {
-        await _database.writeTrack(queueState.current!, state.duration?.inSeconds ?? 0);
-        await _userServics.historyTrack(queueState.current!.trackId);
-
+        await _database.writeTrack(
+            queueState.current!, state.duration?.inSeconds ?? 0);
+        await _userServices.historyTrack(queueState.current!.trackId);
       }
     }
   }
@@ -436,13 +467,14 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       Future.microtask(() async {
         await _rebuildPlaylist(_ref.read(queueProvider).items, index);
 
-        // _pendingPlay = true;
         await _audioPlayer.play();
-        log("JUST ADD TRACK ON-CLICK");
+        log("[MusicPlayer] Track loaded and playing: ${track.trackName}");
+        
         _queueManager.fetchRecommendations(track);
         _updateOperationState(false, null, "track loaded");
       });
     } catch (e) {
+      log("[MusicPlayer] Failed to load track: $e");
       _updateOperationState(false, "Failed to load track: $e", "load");
       state = state.copyWith(
           status: PlayerStatus.error, errorMessage: e.toString());
@@ -456,7 +488,12 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
     try {
       await _audioPlayer.play();
+      final currentTrack = _ref.read(currentTrackProvider);
+      if (currentTrack != null) {
+        _ref.read(mediaNotificationServiceProvider).updatePlaybackState(true);
+      }
     } catch (e) {
+      log("[MusicPlayer] Play failed: $e");
       state = state.copyWith(
           status: PlayerStatus.error, errorMessage: e.toString());
     }
@@ -467,7 +504,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
     try {
       await _audioPlayer.pause();
+      _ref.read(mediaNotificationServiceProvider).updatePlaybackState(false);
     } catch (e) {
+      log("[MusicPlayer] Pause failed: $e");
       _updateOperationState(false, "Failed to pause: $e", "pause");
     }
   }
@@ -511,6 +550,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       _updateOperationState(false, null, "playing track");
     } catch (e) {
+      log("[MusicPlayer] Failed to play track at index: $e");
       _updateOperationState(false, "Failed to play track: $e", "play_track");
     } finally {
       _releaseLock('play_at_index');
@@ -541,6 +581,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         }
       }
     } catch (e) {
+      log("[MusicPlayer] Failed to skip to next: $e");
       _updateOperationState(false, "Failed to skip: $e", "next");
     } finally {
       _releaseLock('skip_next');
@@ -586,6 +627,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         _updateOperationState(false, "No previous tracks", "previous");
       }
     } catch (e) {
+      log("[MusicPlayer] Failed to skip to previous: $e");
       _updateOperationState(false, "Failed to go back: $e", "previous");
     } finally {
       _releaseLock('skip_previous');
@@ -598,6 +640,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     try {
       await _audioPlayer.seek(position);
     } catch (e) {
+      log("[MusicPlayer] Seek failed: $e");
       _updateOperationState(false, "Failed to seek: $e", "seek");
     }
   }
@@ -618,6 +661,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       _updateOperationState(false, null, "stopped");
     } catch (e) {
+      log("[MusicPlayer] Stop failed: $e");
       _updateOperationState(false, "Failed to stop: $e", "stop");
     } finally {
       _releaseLock('stop');
@@ -643,6 +687,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       _updateOperationState(false, null, "queue cleared");
     } catch (e) {
+      log("[MusicPlayer] Clear queue failed: $e");
       _updateOperationState(false, "Failed to clear queue: $e", "clear");
     } finally {
       _releaseLock('clear_queue');
@@ -715,6 +760,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     _durationSubscription?.cancel();
     _playerIndexSubscription?.cancel();
     _sequenceStateSubscription?.cancel();
+    _audioPlayer.dispose();
   }
 }
 

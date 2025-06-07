@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:synqit/Data/Services/media_notification_service.dart';
+import 'package:synqit/Utils/permissions.dart';
 import 'package:synqit/firebase_options.dart';
 import 'package:synqit/routes.dart';
 
@@ -18,7 +20,11 @@ void main() async {
   //   anonKey: dotenv.env["SUPABASE_ANON_KEY"]!,
   // );
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(
+    overrides: [
+      mediaNotificationServiceProvider
+    ],
+    child: MyApp(),));
 }
 
 class MyApp extends StatefulWidget {
@@ -35,6 +41,11 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _handleIncomingDeepLinks();
+    Future.delayed(const Duration(milliseconds: 500), () {
+    if (mounted) {
+      checkAndRequestAllPermissions(context);
+    }
+  });
   }
 
   void _handleIncomingDeepLinks() async {
