@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:synqit/Data/Models/track_model.dart';
 
 enum PlayerStatus { initial, loading, playing, paused, completed, error, ready }
 
@@ -10,6 +11,7 @@ class MusicPlayerState {
   final Duration? duration;
   final bool isSeeking;
   final String? errorMessage;
+  final Track? track;
 
   const MusicPlayerState({
     this.status = PlayerStatus.initial,
@@ -18,6 +20,7 @@ class MusicPlayerState {
     this.duration,
     this.isSeeking = false,
     this.errorMessage,
+    this.track,
   });
 
   bool get isLoading => status == PlayerStatus.loading;
@@ -31,8 +34,10 @@ class MusicPlayerState {
     Duration? duration,
     bool? isSeeking,
     String? errorMessage,
+    Track? track,
     bool clearError = false,
     bool clearDuration = false,
+    bool clearTrack = false,
   }) {
     return MusicPlayerState(
       status: status ?? this.status,
@@ -41,6 +46,7 @@ class MusicPlayerState {
       duration: clearDuration ? null : (duration ?? this.duration),
       isSeeking: isSeeking ?? this.isSeeking,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      track: clearTrack ? null : (track ?? this.track),
     );
   }
 
@@ -54,7 +60,8 @@ class MusicPlayerState {
           bufferedPosition == other.bufferedPosition &&
           duration == other.duration &&
           isSeeking == other.isSeeking &&
-          errorMessage == other.errorMessage;
+          errorMessage == other.errorMessage &&
+          track?.trackId == other.track?.trackId;
 
   @override
   int get hashCode =>
@@ -63,10 +70,11 @@ class MusicPlayerState {
       bufferedPosition.hashCode ^
       duration.hashCode ^
       isSeeking.hashCode ^
-      errorMessage.hashCode;
+      errorMessage.hashCode ^
+      (track?.trackId.hashCode ?? 0);
 
   @override
   String toString() {
-    return 'MusicPlayerState(status: $status, position: $position, bufferedPosition: $bufferedPosition, duration: $duration, isSeeking: $isSeeking, errorMessage: $errorMessage)';
+    return 'MusicPlayerState(status: $status, position: $position, bufferedPosition: $bufferedPosition, duration: $duration, isSeeking: $isSeeking, errorMessage: $errorMessage, track: ${track?.trackName})';
   }
 }

@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/api_services.dart';
+import 'package:synqit/Data/Services/notification_method_channel.dart';
+import 'package:synqit/Provider/music_provider/audio_streaming_provider.dart';
 import 'package:synqit/Provider/music_provider/queue_provider.dart';
 
 class QueueManager {
@@ -97,6 +99,27 @@ class QueueManager {
         if (forceRefresh || latestQueueState.remainingTracks <= 1) {
           _ref.read(queueProvider.notifier).addRecommendation(recommendation);
           _lastSourceTrackId = trackId;
+
+          final streamService = _ref.read(audioStreamingServiceProvider);
+          try {
+            final streamData =
+                await streamService.getAudioStreamData(recommendation);
+            if (streamData['audioUrl'] != null &&
+                streamData['audioUrl']!.isNotEmpty) {
+              final enrichedTrack = recommendation.copyWith(
+                audioUrl: streamData['audioUrl'],
+                videoId: streamData['videoId'] ?? recommendation.videoId,
+              );
+
+              _ref.read(queueProvider.notifier).updateTrackWithAudioUrl(
+                  recommendation.trackId, enrichedTrack);
+
+              _ref.read(mediaServiceProvider).prewarm(track: enrichedTrack);
+              log('[QueueManager] Pre-warmed recommendation: ${enrichedTrack.trackName}');
+            }
+          } catch (e) {
+            log('[QueueManager] Failed to pre-warm recommendation: $e');
+          }
         }
       }
     } catch (e) {
@@ -148,10 +171,12 @@ class QueueActions {
 
   void addTrack(Track track) {
     _ref.read(queueProvider.notifier).add(track);
+    _prewarmTrack(track);
   }
 
   void addTrackNext(Track track) {
     _ref.read(queueProvider.notifier).addAfterCurrent(track);
+    _prewarmTrack(track);
   }
 
   int playTrack(Track track) {
@@ -168,5 +193,33 @@ class QueueActions {
 
   void removeUpcomingTracks() {
     _ref.read(queueProvider.notifier).removeUpcoming();
+  }
+
+  Future<void> _prewarmTrack(Track track) async {
+    if (track.audioUrl != null && track.audioUrl!.isNotEmpty) {
+      _ref.read(mediaServiceProvider).prewarm(track: track);
+      return;
+    }
+
+    try {
+      final streamService = _ref.read(audioStreamingServiceProvider);
+      final streamData = await streamService.getAudioStreamData(track);
+      if (streamData['audioUrl'] != null &&
+          streamData['audioUrl']!.isNotEmpty) {
+        final enrichedTrack = track.copyWith(
+          audioUrl: streamData['audioUrl'],
+          videoId: streamData['videoId'] ?? track.videoId,
+        );
+
+        _ref
+            .read(queueProvider.notifier)
+            .updateTrackWithAudioUrl(track.trackId, enrichedTrack);
+
+        _ref.read(mediaServiceProvider).prewarm(track: enrichedTrack);
+        log('[QueueActions] Pre-warmed track: ${track.trackName}');
+      }
+    } catch (e) {
+      log('[QueueActions] Failed to pre-warm track: $e');
+    }
   }
 }

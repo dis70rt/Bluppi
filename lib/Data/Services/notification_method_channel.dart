@@ -37,16 +37,49 @@ class MediaService {
 
   void _startPositionUpdates() {
     _positionUpdateTimer?.cancel();
-    _positionUpdateTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+    _positionUpdateTimer =
+        Timer.periodic(const Duration(milliseconds: 100), (_) {
       getPosition().then((position) {
         if (position != null) {
-          _playerEventsController.add({
-            'event': 'position',
-            'position': position.inMilliseconds
-          });
+          _playerEventsController
+              .add({'event': 'position', 'position': position.inMilliseconds});
         }
       });
     });
+  }
+
+  Future<bool> queueTracks({required List<Track> tracks}) async {
+    try {
+      if (tracks.isEmpty) return false;
+
+      final trackMaps = tracks
+          .map((track) {
+            if (track.audioUrl == null || track.audioUrl!.isEmpty) {
+              log('Cannot queue: Track has no audio URL');
+              return null;
+            }
+
+            return {
+              'url': track.audioUrl,
+              'title': track.trackName,
+              'artist': track.artistName,
+              'imageUrl': track.imageUrl.replaceFirstMapped(
+                  RegExp(r'(\d+x\d+bb)'), (match) => '1000x1000bb')
+            };
+          })
+          .whereType<Map<String, dynamic>>()
+          .toList();
+
+      if (trackMaps.isEmpty) return false;
+
+      final result = await _channel
+          .invokeMethod<bool>('queueTracks', {'tracks': trackMaps});
+
+      return result ?? false;
+    } on PlatformException catch (e) {
+      log('Error queuing tracks: $e');
+      return false;
+    }
   }
 
   Future<void> play({required Track track}) async {

@@ -88,7 +88,6 @@ class QueueNotifier extends StateNotifier<QueueState> {
   }
 
   bool playTrackAtIndex(int index) {
-    
     if (index < 0 || index >= state.items.length) return false;
 
     if (state.currentIndex != index) {
@@ -237,6 +236,16 @@ class QueueNotifier extends StateNotifier<QueueState> {
       currentIndex: newCurrentIndex,
       autoRecommendedIndices: {},
     );
+  }
+
+  void updateTrackWithAudioUrl(int trackId, Track updatedTrack) {
+    final index = state.items.indexWhere((track) => track.trackId == trackId);
+    if (index == -1) return;
+
+    final newItems = List<Track>.from(state.items);
+    newItems[index] = updatedTrack;
+
+    state = state.copyWith(items: newItems);
   }
 
   bool _isDuplicate(Track track) {

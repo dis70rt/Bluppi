@@ -112,6 +112,45 @@ class MainActivity: FlutterActivity() {
                             result.success(null)
                         } else result.error("NO_NEXT","No next item",null)
                     }
+
+                    "queueTracks" -> {
+                        val tracks = call.argument<List<Map<String, Any>>>("tracks") ?: emptyList()
+                        if (tracks.isEmpty()) {
+                            result.success(false)
+                            return@setMethodCallHandler
+                        }
+
+                        if (exoPlayer.mediaItemCount <= 1) {
+                            exoPlayer.clearMediaItems()
+                        }
+
+                        for (trackData in tracks) {
+                            val url = trackData["url"] as? String ?: continue
+                            val title = trackData["title"] as? String ?: "Unknown title"
+                            val artist = trackData["artist"] as? String ?: "Unknown artist"
+                            val imageUrl = trackData["imageUrl"] as? String ?: ""
+
+                            val mediaMetadata = MediaMetadata.Builder()
+                                .setTitle(title)
+                                .setArtist(artist)
+                                .setArtworkUri(imageUrl.toUri())
+                                .build()
+
+                            val mediaItem = MediaItem.Builder()
+                                .setUri(url)
+                                .setMediaMetadata(mediaMetadata)
+                                .build()
+
+                            exoPlayer.addMediaItem(mediaItem)
+                        }
+
+                        if (exoPlayer.playbackState != Player.STATE_READY && exoPlayer.playbackState != Player.STATE_BUFFERING) {
+                            exoPlayer.prepare()
+                        }
+
+                        result.success(true)
+                    }
+
                     else -> result.notImplemented()
                 }
             }
@@ -127,10 +166,15 @@ class MainActivity: FlutterActivity() {
         )
             .setChannelNameResourceId(R.string.notification_channel_name)
             .setChannelDescriptionResourceId(R.string.notification_channel_desc)
+            .setNextActionIconResourceId(android.R.drawable.ic_media_next)
+            .setPreviousActionIconResourceId(android.R.drawable.ic_media_previous)
             .build()
 
         notificationManager.setPlayer(exoPlayer)
         notificationManager.setMediaSessionToken(mediaSession.platformToken)
+
+
+
     }
 
     private val playerListener = object : Player.Listener {
@@ -159,6 +203,15 @@ class MainActivity: FlutterActivity() {
 
         override fun onPositionDiscontinuity(reason: Int) {
             eventSink?.success(mapOf("event" to "seek", "position" to exoPlayer.currentPosition))
+        }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            val index = exoPlayer.currentMediaItemIndex
+            eventSink?.success(mapOf(
+                "event" to "track_change",
+                "index" to index,
+                "reason" to reason
+            ))
         }
 
         override fun onMediaMetadataChanged(metadata: MediaMetadata) {

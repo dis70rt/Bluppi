@@ -47,12 +47,10 @@ class MainScreenWidget extends ConsumerWidget {
           ),
 
           if (currentTrack != null)
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInCubic,
+          Positioned(
             left: 0,
             right: 0,
-            bottom: kBottomNavigationBarHeight,
+            bottom:  70,
             child: FloatingMusicPlayer(
               onDispose: () {
                 // Handle dispose if needed
