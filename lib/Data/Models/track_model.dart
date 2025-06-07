@@ -13,6 +13,7 @@ class Track extends Equatable {
   final String lastFmUrl;
   final int popularityScore;
   final String? videoId;
+  final String? audioUrl;
 
   const Track({
     required this.trackId,
@@ -27,6 +28,7 @@ class Track extends Equatable {
     required this.lastFmUrl,
     required this.popularityScore,
     this.videoId,
+    this.audioUrl,
   });
 
   factory Track.empty() {
@@ -43,6 +45,7 @@ class Track extends Equatable {
       lastFmUrl: '',
       popularityScore: 0,
       videoId: null,
+      audioUrl: null,
     );
   }
 
@@ -64,6 +67,7 @@ class Track extends Equatable {
       lastFmUrl: json['lastFmUrl'] as String? ?? '',
       popularityScore: json['popularityScore'] as int? ?? 0,
       videoId: json['videoId'] as String?,
+      audioUrl: json['audioUrl'] as String?,
     );
   }
 
@@ -81,6 +85,7 @@ class Track extends Equatable {
       'lastFmUrl': lastFmUrl,
       'popularityScore': popularityScore,
       'videoId': videoId,
+      'audioUrl': audioUrl,
     };
   }
 
@@ -97,6 +102,7 @@ class Track extends Equatable {
     String? lastFmUrl,
     int? popularityScore,
     String? videoId,
+    String? audioUrl,
   }) {
     return Track(
       trackId: trackId ?? this.trackId,
@@ -111,6 +117,7 @@ class Track extends Equatable {
       lastFmUrl: lastFmUrl ?? this.lastFmUrl,
       popularityScore: popularityScore ?? this.popularityScore,
       videoId: videoId ?? this.videoId,
+      audioUrl: audioUrl ?? this.audioUrl,
     );
   }
 
@@ -128,6 +135,7 @@ class Track extends Equatable {
         lastFmUrl,
         popularityScore,
         videoId,
+        audioUrl,
       ];
 }
 
