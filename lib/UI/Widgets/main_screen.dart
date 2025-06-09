@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Provider/music_provider/current_track_provider.dart';
 import 'package:synqit/UI/Screens/ChatScreen/chats_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
@@ -39,6 +40,7 @@ class MainScreenWidget extends ConsumerWidget {
 
     return Scaffold(
       extendBody: true,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           IndexedStack(
@@ -70,25 +72,7 @@ class MainScreenWidget extends ConsumerWidget {
             )),
         child: Container(
           
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: const [0.0, 0.85],
-              colors: [
-              Colors.black.withValues(alpha: 0.3),
-              Colors.black.withValues(alpha: 1),
-            ]),
-            
-            
-            // color: Colors.black,
-            // border: Border(
-            //   top: BorderSide(
-            //     color: Colors.white.withValues(alpha: 0.1),
-            //     width: 0.5,
-            //   ),
-            // ),
-          ),
+          color: AppColors.darkSurfaceBlack,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,

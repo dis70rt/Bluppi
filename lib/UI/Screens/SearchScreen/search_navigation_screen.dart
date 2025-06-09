@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/UI/Screens/SearchScreen/search_bar.dart';
+import 'package:synqit/UI/Screens/SearchScreen/search_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/other_profile_screen.dart';
 
 class SearchNavigationState {

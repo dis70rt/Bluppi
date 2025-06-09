@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/UI/Screens/ChatScreen/chatting_screen.dart';
-import 'package:synqit/UI/Screens/SearchScreen/search_bar.dart';
+import 'package:synqit/UI/Screens/SearchScreen/search_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/other_profile_screen.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/edit_profile_screen.dart';
