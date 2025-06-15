@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider/user_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_provider.dart';
 import 'package:synqit/Utils/snackbar.dart';
 
 class CreateAccountScreen extends ConsumerStatefulWidget {

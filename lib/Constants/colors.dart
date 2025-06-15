@@ -54,3 +54,15 @@ class AppColors {
   static Color overlay = textPrimary.withValues(alpha: 0.08);
   static Color selectedOverlay = primary.withValues(alpha: 0.25);
 }
+
+class BackgroundColor {
+  static const Color lightBlue = Color(0xFFD6F1FA);
+  static const Color lightLavender = Color(0xFFE8E0F8);
+  static const Color lightYellow = Color(0xFFFFF8DC);
+
+  static final List<Color> gradientColors = [
+    lightBlue,
+    lightLavender,
+    lightYellow,
+  ];
+}

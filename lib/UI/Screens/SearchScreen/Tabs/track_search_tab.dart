@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Provider/track_search_provider.dart';
+import 'package:synqit/Provider/MusicProvider/track_search_provider.dart';
 import 'package:synqit/UI/Screens/SearchScreen/Widgets/title_track.dart';
 import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_loading.dart';
 

@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/track_search_provider.dart';
+import 'package:synqit/Provider/MusicProvider/track_search_provider.dart';
 import 'package:synqit/UI/Screens/SearchScreen/Widgets/glassmorphic_track_tile.dart';
 import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_loading.dart';
 

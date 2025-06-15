@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Provider/music_provider/current_track_provider.dart';
-import 'package:synqit/Provider/music_provider/music_player_provider.dart';
-import 'package:synqit/Provider/music_provider/queue_provider.dart';
+import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
+import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
+import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
 import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_preview_player.dart';
 
 Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {

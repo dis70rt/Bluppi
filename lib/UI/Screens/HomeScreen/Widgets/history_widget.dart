@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/music_provider/music_player_provider.dart';
+import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
 import 'package:synqit/UI/Widgets/main_screen.dart';
 import 'package:synqit/Utils/datetime.dart';
 import 'package:synqit/Utils/snackbar.dart';

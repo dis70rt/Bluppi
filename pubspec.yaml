@@ -46,6 +46,9 @@ dependencies:
   sqflite: ^2.4.2
   path: ^1.9.1
   flutter_staggered_animations: ^1.1.1
+  grpc: ^4.1.0
+  protobuf: ^4.1.0
+  animated_toggle_switch: ^0.8.5
   # hive: ^2.2.3
   # collection: ^1.17.0
 
@@ -63,7 +66,8 @@ flutter:
     - .env
     - assets/images/default_profile.jpg
     - assets/animations/music_playing.json
-    - assets/images/launcher.png
+    - assets/icons/launcher.png
+    - assets/icons/google.png
     - assets/images/avengers_endgame.jpg
     - assets/images/love.jpg
 

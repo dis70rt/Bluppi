@@ -5,7 +5,7 @@ import 'package:synqit/Data/Models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synqit/config.dart';
-import '../auth_provider.dart';
+import 'auth_provider.dart';
 
 final dioProvider = Provider<Dio>((ref) {
   final dio = Dio();

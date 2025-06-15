@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:synqit/Provider/auth_provider.dart';
-import 'package:synqit/Provider/user_provider/user_provider.dart';
+import 'package:synqit/Provider/UserProvider/auth_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_provider.dart';
 
 enum InitializationStatus { initializing, initialized, error }
 

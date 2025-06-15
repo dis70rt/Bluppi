@@ -7,10 +7,10 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/database_services.dart';
 import 'package:synqit/Data/Services/notification_method_channel.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/music_provider/audio_streaming_provider.dart';
-import 'package:synqit/Provider/music_provider/queue_manager_provider.dart';
-import 'package:synqit/Provider/music_provider/queue_provider.dart';
-import 'package:synqit/Provider/music_provider/current_track_provider.dart';
+import 'package:synqit/Provider/MusicProvider/audio_streaming_provider.dart';
+import 'package:synqit/Provider/MusicProvider/queue_manager_provider.dart';
+import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
+import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
 import 'music_player_state.dart';
 
 final _database = Database();

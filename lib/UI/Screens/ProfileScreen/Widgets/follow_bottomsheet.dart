@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider/follow_provider.dart';
+import 'package:synqit/Provider/UserProvider/follow_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_tile_skeleton.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/grassmorphic_user_tile.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';

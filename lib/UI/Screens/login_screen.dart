@@ -1,9 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/auth_provider.dart';
+import 'package:synqit/Provider/UserProvider/auth_provider.dart';
+import 'package:synqit/UI/Widgets/background.dart';
 import 'package:synqit/Utils/snackbar.dart';
 
 class LoginScreen extends ConsumerWidget {
@@ -18,27 +18,7 @@ class LoginScreen extends ConsumerWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primaryAlt,
-                  AppColors.backgroundDark,
-                  AppColors.surfaceDark
-                ],
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.2),
-              ),
-            ),
-          ),
+          AnimatedGradientBackground(),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -66,32 +46,14 @@ class LoginScreen extends ConsumerWidget {
   Widget _buildLogo(Size size) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: size.width * 0.4,
           height: size.width * 0.4,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                AppColors.primary.withValues(alpha: 0.6),
-                AppColors.primaryDark.withValues(alpha: 0.2),
-                Colors.transparent,
-              ],
-              stops: const [0.0, 0.7, 1.0],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.5),
-                blurRadius: 30,
-                spreadRadius: 10,
-              ),
-            ],
-          ),
           child: Center(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.asset(
-                'assets/images/launcher.png',
+                'assets/icons/launcher.png',
                 fit: BoxFit.contain,
                 width: size.width * 0.25,
                 height: size.width * 0.25,
@@ -112,7 +74,7 @@ class LoginScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: AppColors.surface,
             letterSpacing: 1.2,
           ),
           textAlign: TextAlign.center,
@@ -122,7 +84,7 @@ class LoginScreen extends ConsumerWidget {
           "Experience music like never before.",
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white.withValues(alpha: 0.8),
+            color: AppColors.surface.withValues(alpha: 0.8),
             height: 1.5,
           ),
           textAlign: TextAlign.center,
@@ -137,17 +99,13 @@ class LoginScreen extends ConsumerWidget {
       width: double.infinity,
       height: 55,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primaryDark.withValues(alpha: 0.3),
-            blurRadius: 12,
-            spreadRadius: 0,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: ElevatedButton(
+      child: RawMaterialButton(
+        fillColor: const Color.fromARGB(255, 244, 244, 244),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         onPressed: isLoading
             ? null
             : () async {
@@ -166,55 +124,45 @@ class LoginScreen extends ConsumerWidget {
                   }
                 }
               },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white.withValues(alpha: 0.9),
-          foregroundColor: Colors.black87,
-          disabledBackgroundColor: Colors.grey.withValues(alpha: 0.3),
-          disabledForegroundColor: Colors.white70,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          elevation: 0,
-        ),
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 24,
                   height: 24,
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.primary,
+                      AppColors.accent.withValues(alpha: 0.8),
                     ),
                   ),
                 )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white,
+              : Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        child: Image.asset(
+                          'assets/icons/google.png',
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
-                      child: const FaIcon(
-                        FontAwesomeIcons.google,
-                        color: Colors.redAccent,
-                        size: 18,
+                      const SizedBox(width: 12),
+                      const Text(
+                        "Continue with Google",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
+                          color: AppColors.surface,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      "Continue with Google",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
         ),
       ),
@@ -228,7 +176,7 @@ class LoginScreen extends ConsumerWidget {
         'By continuing, you agree to our Terms of Service and Privacy Policy',
         style: TextStyle(
           fontSize: 12,
-          color: Colors.white.withValues(alpha: 0.6),
+          color: AppColors.surface.withValues(alpha: 0.6),
           height: 1.5,
         ),
         textAlign: TextAlign.center,

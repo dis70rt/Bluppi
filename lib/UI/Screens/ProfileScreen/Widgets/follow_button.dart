@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Provider/user_provider/user_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/following_stats.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/message_button.dart';
 import 'package:synqit/Utils/snackbar.dart';

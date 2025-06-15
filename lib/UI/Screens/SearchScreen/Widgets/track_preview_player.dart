@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Provider/preview_provider.dart';
+import 'package:synqit/Provider/MusicProvider/preview_provider.dart';
 
 class TrackPreviewPlayer extends ConsumerWidget {
   final String? previewUrl;

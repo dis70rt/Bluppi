@@ -9,10 +9,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Data/Models/message_model.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Provider/chat_provider/conversation_detail_provider.dart';
-import 'package:synqit/Provider/chat_provider/conversation_provider.dart';
-import 'package:synqit/Provider/user_provider/user_provider.dart';
-import 'package:synqit/Provider/user_provider/user_search_provider.dart';
+import 'package:synqit/Provider/ChatProvider/conversation_detail_provider.dart';
+import 'package:synqit/Provider/ChatProvider/conversation_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_search_provider.dart';
 import 'package:synqit/UI/Screens/ChatScreen/Widgets/status_helper.dart';
 import 'package:synqit/Utils/snackbar.dart';
 

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider/user_search_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_search_provider.dart';
 import 'package:synqit/UI/Screens/SearchScreen/search_navigation_screen.dart';
 
 class UsersSearchTab extends ConsumerWidget {

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/UI/Screens/ChatScreen/chatting_screen.dart';
+import 'package:synqit/UI/Screens/RoomScreen/utils/join_room_deeplinks.dart';
+import 'package:synqit/UI/Screens/RoomScreen/listening_room.dart';
+import 'package:synqit/UI/Screens/RoomScreen/room_screen.dart';
 import 'package:synqit/UI/Screens/SearchScreen/search_screen.dart';
 import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/other_profile_screen.dart';
@@ -49,6 +52,40 @@ final GoRouter router = GoRouter(
       builder: (context, state) => const SettingsScreen(),
     ),
     GoRoute(
+      name: 'chat',
+      path: '/chat/:conversationId',
+      builder: (context, state) {
+        final conversationId = state.pathParameters['conversationId']!;
+        final user = state.extra as UserModel;
+
+        return ChattingScreen(
+          conversationId: conversationId,
+          user: user,
+        );
+      },
+    ),
+    GoRoute(
+      name: 'room',
+      path: '/room',
+      builder: (context, state) => const RoomScreen(),
+    ),
+    GoRoute(
+      name: 'listening',
+      path: '/listening',
+      builder: (context, state) {
+        return const ListeningScreen();
+      },
+    ),
+    GoRoute(
+      name: 'join-room-link',
+      path: '/join/:roomCode',
+      builder: (context, state) {
+        final roomCode = state.pathParameters['roomCode']!;
+        return JoinRoomDeepLinkScreen(roomCode: roomCode);
+      },
+    ),
+    // Keep this route always at the end
+    GoRoute(
       name: 'user-profile',
       path: '/:username',
       pageBuilder: (context, state) {
@@ -63,19 +100,6 @@ final GoRouter router = GoRouter(
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
-        );
-      },
-    ),
-    GoRoute(
-      name: 'chat',
-      path: '/chat/:conversationId',
-      builder: (context, state) {
-        final conversationId = state.pathParameters['conversationId']!;
-        final user = state.extra as UserModel;
-        
-        return ChattingScreen(
-          conversationId: conversationId,
-          user: user,
         );
       },
     ),

@@ -12,7 +12,7 @@ import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Constants/data.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider/user_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/username_dialog.dart';
 import 'package:synqit/UI/Screens/ProfileSettingScreen/Widgets/edit_profile_widgets.dart';
 import 'package:synqit/Utils/datetime.dart';

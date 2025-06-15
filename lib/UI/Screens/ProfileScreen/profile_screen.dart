@@ -9,7 +9,7 @@ import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Models/user_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/user_provider/user_provider.dart';
+import 'package:synqit/Provider/UserProvider/user_provider.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/app_bar.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/edit_row.dart';
 import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_button.dart';

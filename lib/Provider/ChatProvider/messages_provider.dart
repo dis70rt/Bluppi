@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Data/Models/message_model.dart';
 import 'package:synqit/Data/Services/local_storage_service_sql.dart';
-import 'package:synqit/Provider/chat_provider/socket_provider.dart';
+import 'package:synqit/Provider/ChatProvider/socket_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
 

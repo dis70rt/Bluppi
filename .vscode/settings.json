@@ -2,6 +2,7 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
     "java.project.sourcePaths": [
-        "lib/Utils"
+        "lib/Utils",
+        "lib/UI/Screens/RoomScreen"
     ]
 }
