@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/MusicProvider/track_search_provider.dart';
+import 'package:synqit/Provider/MusicProvider/paginated_search_provider.dart';
 import 'package:synqit/UI/Screens/SearchScreen/Widgets/glassmorphic_track_tile.dart';
 import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_loading.dart';
 
@@ -38,6 +38,7 @@ class TrackSearchContent extends ConsumerStatefulWidget {
 class _TrackSearchContentState extends ConsumerState<TrackSearchContent> {
   final TextEditingController _searchController = TextEditingController();
   final userServices = UserServices();
+  final _scrollController = ScrollController();
   String _currentQuery = '';
 
   Timer? _debounce;
@@ -52,20 +53,30 @@ class _TrackSearchContentState extends ConsumerState<TrackSearchContent> {
         setState(() {});
       }
     });
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     _debounce?.cancel();
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     super.dispose();
+  }
+  
+  void _onScroll() {
+    if (_currentQuery.isNotEmpty && 
+        _scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      ref.read(paginatedBottomSheetSearchProvider(_currentQuery).notifier).loadMore();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final searchAsyncValue = ref.watch(trackSearchProvider(_currentQuery));
-    final isSearching = searchAsyncValue.isLoading;
-    final theme = Theme.of(context);
+  final state = ref.watch(paginatedBottomSheetSearchProvider(_currentQuery));
+  final isSearching = state.isLoading;
+  final theme = Theme.of(context);
 
     return Column(
       mainAxisSize: MainAxisSize.max,
@@ -107,10 +118,8 @@ class _TrackSearchContentState extends ConsumerState<TrackSearchContent> {
             switchOutCurve: Curves.easeInOut,
             child: _currentQuery.isEmpty
                 ? _buildRecentSearches(key: const ValueKey('recents'))
-                : _buildSearchResults(
-                    key: ValueKey('results-${_currentQuery.hashCode}'),
-                    searchAsyncValue: searchAsyncValue,
-                  ),
+                : _buildSearchResults(key: ValueKey('results-${_currentQuery.hashCode}')),
+
           ),
         ),
       ],
@@ -176,131 +185,96 @@ class _TrackSearchContentState extends ConsumerState<TrackSearchContent> {
     );
   }
 
-  Widget _buildSearchResults({
-    Key? key,
-    required AsyncValue<List<Track>> searchAsyncValue,
-  }) {
-    final previousTracks = searchAsyncValue.valueOrNull;
+  Widget _buildSearchResults({Key? key}) {
+  final state = ref.watch(paginatedBottomSheetSearchProvider(_currentQuery));
 
-    return SingleChildScrollView(
-      key: key,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
+  return SingleChildScrollView(
+    key: key,
+    controller: _scrollController,
+    physics: const BouncingScrollPhysics(),
+    padding: const EdgeInsets.symmetric(vertical: 16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+          child: Text(
+            "Results for \"$_currentQuery\"",
+            style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.bold,
+                fontSize: 16),
+          ),
+        ),
+        
+        if (state.tracks.isEmpty && state.isLoading)
+          ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: 10,
+            itemBuilder: (context, index) => trackLoadingListItem(context)
+          ),
+          
+        if (state.tracks.isEmpty && !state.isLoading)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-            child: Text(
-              "Results for \"$_currentQuery\"",
-              style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.music_off,
+                  size: 40,
+                  color: AppColors.textHint.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "No results found for '$_currentQuery'",
+                  style: const TextStyle(color: Colors.white54),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "Try a different search term",
+                  style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          searchAsyncValue.when(
-            loading: () {
-              if (previousTracks != null && previousTracks.isNotEmpty) {
-                return Stack(
-                  children: [
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: previousTracks.length,
-                      itemBuilder: (context, index) {
-                        final track = previousTracks[index];
-                        return Opacity(
-                          opacity: 0.7,
-                          child: _buildTrackTile(track),
-                        );
-                      },
-                    ),
-                    Positioned.fill(
-                      child: Container(
-                        color: Colors.black.withValues(alpha: 0.2),
-                        child: Center(
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.5),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: 10,
-                itemBuilder: (context, index) => trackLoadingListItem(context),
-              );
+          
+        if (state.tracks.isNotEmpty)
+          ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: state.tracks.length,
+            itemBuilder: (context, index) {
+              final track = state.tracks[index];
+              return _buildTrackTile(track);
             },
-            error: (error, _) => Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Error searching tracks: $error',
-                style: const TextStyle(color: Colors.redAccent),
-                textAlign: TextAlign.center,
+          ),
+          
+        if (state.isLoading && state.tracks.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Center(
+              child: SizedBox(
+                width: 24, 
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                )
               ),
             ),
-            data: (tracks) {
-              if (tracks.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.music_off,
-                        size: 40,
-                        color: AppColors.textHint.withValues(alpha: 0.5),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        "No results found for '$_currentQuery'",
-                        style: const TextStyle(color: Colors.white54),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "Try a different search term",
-                        style: TextStyle(
-                            color: Colors.white38,
-                            fontSize: 12,
-                            fontStyle: FontStyle.italic),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: tracks.length,
-                itemBuilder: (context, index) {
-                  final track = tracks[index];
-                  return _buildTrackTile(track);
-                },
-              );
-            },
           ),
-        ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
   Widget _buildTrackTile(Track track) {
     return GrassmorphicTrackTile(

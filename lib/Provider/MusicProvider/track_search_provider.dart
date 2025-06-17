@@ -19,18 +19,17 @@ class TrackRepository {
 
   TrackRepository(this._dio);
 
-  Future<List<Track>> searchTracks(String query) async {
+  Future<TrackSearchResponse> searchTracks(String query, {int limit = 10, int offset = 0}) async {
     final encodedQuery = Uri.encodeComponent(query);
-    final url = '/search?query=$encodedQuery';
+    final url = '/search?query=$encodedQuery&limit=$limit&offset=$offset';
 
     try {
       final response = await _dio.get(url);
 
       if (response.statusCode == 200 && response.data != null) {
-        final searchResponse =
-            TrackSearchResponse.fromJson(response.data as Map<String, dynamic>);
+        return TrackSearchResponse.fromJson(response.data as Map<String, dynamic>);
 
-        return searchResponse.results;
+        // return searchResponse.results;
       } else {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -56,14 +55,14 @@ final trackRepositoryProvider = Provider<TrackRepository>((ref) {
   return TrackRepository(dio);
 });
 
-final trackSearchProvider = FutureProvider.family<List<Track>, String>(
-  (ref, query) async {
-    if (query.trim().isEmpty) {
-      return [];
-    }
+// final trackSearchProvider = FutureProvider.family<List<Track>, String>(
+//   (ref, query) async {
+//     if (query.trim().isEmpty) {
+//       return [];
+//     }
 
-    final repository = ref.watch(trackRepositoryProvider);
-    return repository.searchTracks(query);
-  },
-  name: 'trackSearchProvider',
-);
+//     final repository = ref.watch(trackRepositoryProvider);
+//     return repository.searchTracks(query);
+//   },
+//   name: 'trackSearchProvider',
+// );
