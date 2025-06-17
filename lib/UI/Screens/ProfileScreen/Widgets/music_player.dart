@@ -164,10 +164,10 @@ class MiniMusicPlayer extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  if (isPreview)
-                    TrackPreviewPlayer(
-                      previewUrl: track.previewUrl,
-                    ),
+                  // if (isPreview)
+                  //   TrackPreviewPlayer(
+                  //     previewUrl: track.previewUrl,
+                  //   ),
                   if (!isPreview)
                     SizedBox(
                       width: 50,

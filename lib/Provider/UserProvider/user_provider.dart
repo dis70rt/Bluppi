@@ -112,14 +112,13 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
   Future<void> _refreshUserData(String userId) async {
     try {
       final response = await _dio.get('user/$userId');
-
       if (!mounted) {
         log("Skipping user data refresh - notifier already disposed");
         return;
       }
 
       if (response.statusCode == 200) {
-        final userModel = UserModel.fromMap(response.data);
+        final userModel = UserModel.fromMap(response.data['user']);
         state = AsyncValue.data(userModel);
         await _cacheUserData(userModel);
         log("User data refreshed from API for user: $userId");

@@ -11,10 +11,12 @@ import 'package:synqit/Provider/MusicProvider/audio_streaming_provider.dart';
 import 'package:synqit/Provider/MusicProvider/queue_manager_provider.dart';
 import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
 import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
+import 'package:synqit/PubSub/publisher.dart';
+import 'package:synqit/PubSub/subscriber.dart';
 import 'music_player_state.dart';
 
-final _database = Database();
-final _userServics = UserServices();
+// final _database = Database();
+// final _userServics = UserServices();
 
 final musicPlayerProvider =
     StateNotifierProvider.autoDispose<MusicPlayerNotifier, MusicPlayerState>(
@@ -84,6 +86,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   ) : super(const MusicPlayerState()) {
     _initPlaybackHandling();
     _restorePlayHistory();
+
+    _ref.read(trackDatabaseSubscriberProvider);
+    _ref.read(trackHistorySubscriberProvider);
   }
 
   Future<void> _restorePlayHistory() async {
@@ -300,9 +305,16 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       _savePlayHistory();
       final queueState = _ref.read(queueProvider);
       if (queueState.current != null) {
-        await _database.writeTrack(
-            queueState.current!, state.duration?.inSeconds ?? 0);
-        await _userServics.historyTrack(queueState.current!.trackId);
+        // await _database.writeTrack(
+        //     queueState.current!, state.duration?.inSeconds ?? 0);
+        // await _userServics.historyTrack(queueState.current!.trackId);
+
+        final eventBus = _ref.read(trackEventBusProvider);
+        eventBus.publish(TrackEvent(
+          track: queueState.current!,
+          type: TrackEventType.play,
+          durationSeconds: state.duration?.inSeconds ?? 0,
+        ));
       }
     }
   }
@@ -405,6 +417,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   Future<Track?> _fetchAndEnsureAudioUrl(Track track) async {
     try {
       final streamData = await _streamingService.getAudioStreamData(track);
+      log("Stream data. $streamData");
       if (streamData['audioUrl'] != null &&
           streamData['audioUrl']!.isNotEmpty) {
         return track.copyWith(
@@ -435,7 +448,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   }
 
   Future<void> loadTrack(Track track) async {
-    if (_disposed) return;
+    // if (_disposed) return;
     if (await _acquireLock('load_track')) return;
 
     try {
@@ -544,6 +557,15 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       }
 
       state = state.copyWith(status: PlayerStatus.playing);
+
+      if (state.status == PlayerStatus.playing && currentTrack != null) {
+      final eventBus = _ref.read(trackEventBusProvider);
+      eventBus.publish(TrackEvent(
+        track: currentTrack,
+        type: TrackEventType.play,
+        durationSeconds: state.duration?.inSeconds ?? 0,
+      ));
+    }
     } catch (e) {
       state = state.copyWith(
           status: PlayerStatus.error, errorMessage: e.toString());

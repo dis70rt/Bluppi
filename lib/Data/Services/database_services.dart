@@ -25,8 +25,8 @@ class Database {
       'listeners': track.listeners,
       'play_count': track.playcount,
       'duration': duration ?? 0,
-      'popularity': track.popularityScore,
       'video_id': track.videoId ?? '',
+      'popularity': 0,
     };
 
     await dio.post(

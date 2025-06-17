@@ -10,25 +10,25 @@ Dio dio = Dio(
   ),
 );
 
-Future<Map<String, dynamic>> getAudioStreamUrl(String query) async {
-  final response = await dio.get(
-    '/audio-stream?q=$query',
-    options: Options(
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ),
-  );
+// Future<Map<String, dynamic>> getAudioStreamUrl(String query) async {
+//   final response = await dio.get(
+//     '/audio-stream?q=$query',
+//     options: Options(
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Accept': 'application/json',
+//       },
+//     ),
+//   );
 
-  if (response.statusCode == 200) {
-    return response.data;
-  } else {
-    throw Exception('Failed to load audio stream URL');
-  }
-}
+//   if (response.statusCode == 200) {
+//     return response.data;
+//   } else {
+//     throw Exception('Failed to load audio stream URL');
+//   }
+// }
 
-Future<Map<String, dynamic>> getAudioStreamUrlByID(String videoId) async {
+Future<Map<String, dynamic>> getAudioStreamUrl(String videoId) async {
   final response = await dio.get(
     '/audio-stream?id=$videoId',
     options: Options(

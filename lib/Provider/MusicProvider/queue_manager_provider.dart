@@ -143,8 +143,7 @@ class QueueManager {
   Future<Track?> _fetchRecommendation(Track currentTrack) async {
     try {
       return await _apiServices.getNextRecommendedTrack(
-        artist: currentTrack.artistName,
-        track: currentTrack.trackName,
+        videoId: currentTrack.videoId!,
       );
     } catch (e) {
       log('[QueueManager] API error: $e');

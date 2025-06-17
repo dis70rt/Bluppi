@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Track extends Equatable {
-  final int trackId;
+  final String trackId;
   final String artistName;
   final String trackName;
   final String albumName;
@@ -11,7 +11,6 @@ class Track extends Equatable {
   final int listeners;
   final int playcount;
   final String lastFmUrl;
-  final int popularityScore;
   final String? videoId;
   final String? audioUrl;
 
@@ -26,14 +25,13 @@ class Track extends Equatable {
     required this.listeners,
     required this.playcount,
     required this.lastFmUrl,
-    required this.popularityScore,
     this.videoId,
     this.audioUrl,
   });
 
   factory Track.empty() {
     return const Track(
-      trackId: 0,
+      trackId: '',
       artistName: 'Unknown Artist',
       trackName: 'Unknown Track',
       albumName: 'Unknown Album',
@@ -43,7 +41,6 @@ class Track extends Equatable {
       listeners: 0,
       playcount: 0,
       lastFmUrl: '',
-      popularityScore: 0,
       videoId: null,
       audioUrl: null,
     );
@@ -55,7 +52,7 @@ class Track extends Equatable {
         genreListRaw.map((g) => g.toString()).toList();
 
     return Track(
-      trackId: json['trackId'] as int? ?? 0,
+      trackId: json['trackId'],
       artistName: json['artistName'] as String? ?? 'Unknown Artist',
       trackName: json['trackName'] as String? ?? 'Unknown Track',
       albumName: json['albumName'] as String? ?? 'Unknown Album',
@@ -65,7 +62,6 @@ class Track extends Equatable {
       listeners: json['listeners'] as int? ?? 0,
       playcount: json['playcount'] as int? ?? 0,
       lastFmUrl: json['lastFmUrl'] as String? ?? '',
-      popularityScore: json['popularityScore'] as int? ?? 0,
       videoId: json['videoId'] as String?,
       audioUrl: json['audioUrl'] as String?,
     );
@@ -83,14 +79,13 @@ class Track extends Equatable {
       'listeners': listeners,
       'playcount': playcount,
       'lastFmUrl': lastFmUrl,
-      'popularityScore': popularityScore,
       'videoId': videoId,
       'audioUrl': audioUrl,
     };
   }
 
   Track copyWith({
-    int? trackId,
+    String? trackId,
     String? artistName,
     String? trackName,
     String? albumName,
@@ -115,7 +110,6 @@ class Track extends Equatable {
       listeners: listeners ?? this.listeners,
       playcount: playcount ?? this.playcount,
       lastFmUrl: lastFmUrl ?? this.lastFmUrl,
-      popularityScore: popularityScore ?? this.popularityScore,
       videoId: videoId ?? this.videoId,
       audioUrl: audioUrl ?? this.audioUrl,
     );
@@ -133,7 +127,6 @@ class Track extends Equatable {
         listeners,
         playcount,
         lastFmUrl,
-        popularityScore,
         videoId,
         audioUrl,
       ];

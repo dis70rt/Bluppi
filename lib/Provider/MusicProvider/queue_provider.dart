@@ -238,7 +238,7 @@ class QueueNotifier extends StateNotifier<QueueState> {
     );
   }
 
-  void updateTrackWithAudioUrl(int trackId, Track updatedTrack) {
+  void updateTrackWithAudioUrl(String trackId, Track updatedTrack) {
     final index = state.items.indexWhere((track) => track.trackId == trackId);
     if (index == -1) return;
 

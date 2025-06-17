@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 import 'package:synqit/Constants/colors.dart';
 import 'package:synqit/Data/Models/track_model.dart';
+import 'package:synqit/Provider/MusicProvider/audio_streaming_provider.dart';
 import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
 import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
 import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
@@ -13,10 +14,11 @@ import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_preview_player.dart
 Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
   final playerNotifier = ref.read(musicPlayerProvider.notifier);
   final imageUrl = track.imageUrl;
-  final previewUrl = track.previewUrl;
+  // final previewUrl = track.previewUrl;
   const double avatarSize = 50.0;
   final currentTrack = ref.watch(currentTrackProvider);
-  bool isCurrent = currentTrack != null && track.trackId == currentTrack.trackId;
+  bool isCurrent =
+      currentTrack != null && track.trackId == currentTrack.trackId;
 
   return Dismissible(
     key: Key(track.trackId.toString()),
@@ -48,7 +50,9 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
             children: [
               const Icon(Icons.queue_music_outlined, color: Spotify.primary),
               const SizedBox(width: 8),
-              Flexible(child: Text("${track.trackName} added to Queue", style: const TextStyle(color: Colors.white70)))
+              Flexible(
+                  child: Text("${track.trackName} added to Queue",
+                      style: const TextStyle(color: Colors.white70)))
             ],
           ),
           duration: const Duration(seconds: 5),
@@ -105,12 +109,16 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if(isCurrent)
-          Lottie.asset('assets/animations/music_playing.json', height: 20),
+          if (isCurrent)
+            Lottie.asset('assets/animations/music_playing.json', height: 20),
           Flexible(
             child: Text(
               track.trackName,
-              style: TextStyle(color: isCurrent ? AppColors.accent : AppColors.textPrimaryStandard, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: isCurrent
+                      ? AppColors.accent
+                      : AppColors.textPrimaryStandard,
+                  fontWeight: FontWeight.w600),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -123,10 +131,24 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: TrackPreviewPlayer(
-        previewUrl: previewUrl,
-      ),
-      onTap: () {
+      // trailing: Icon(Icons.favorite_border, color: Colors.white.withValues(alpha: 0.8)),
+      onTap: () async {
+        if (track.audioUrl == null || track.audioUrl!.isEmpty) {
+          final streamService = ref.read(audioStreamingServiceProvider);
+          try {
+            final streamData = await streamService.getAudioStreamData(track);
+            if (streamData['audioUrl'] != null) {
+              final enrichedTrack = track.copyWith(
+                audioUrl: streamData['audioUrl'],
+                videoId: streamData['videoId'] ?? track.videoId,
+              );
+              playerNotifier.loadTrack(enrichedTrack);
+              return;
+            }
+          } catch (e) {
+            log("Failed to get audio URL: $e");
+          }
+        }
         playerNotifier.loadTrack(track);
       },
     ),

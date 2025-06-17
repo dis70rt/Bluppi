@@ -129,8 +129,8 @@ class UserModel extends ChangeNotifier {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['id'] ?? '',
-      username: map['username'] ?? '',
-      name: map['name'] ?? 'Unknown',
+      username: map['username'],
+      name: map['name'],
       phone: map['phone'],
       email: map['email'] ?? '',
       country: map['country'],

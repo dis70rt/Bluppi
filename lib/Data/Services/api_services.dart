@@ -14,12 +14,11 @@ class ApiServices {
     ),
   );
 
-  Future<Track?> getNextRecommendedTrack({required String artist, required String track}) async {
+  Future<Track?> getNextRecommendedTrack({required String videoId}) async {
     try {
-      final encodedArtist = Uri.encodeComponent(artist);
-      final encodedTrack = Uri.encodeComponent(track);
+      final encodedVideoId = Uri.encodeComponent(videoId);
       final response = await dio.get(
-        '/recommendations?artist=$encodedArtist&track=$encodedTrack',
+        '/recommendations?videoId=$encodedVideoId',
         options: Options(
           headers: {
             'Content-Type': 'application/json',
