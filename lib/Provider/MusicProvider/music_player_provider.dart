@@ -4,9 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Services/database_services.dart';
 import 'package:synqit/Data/Services/notification_method_channel.dart';
-import 'package:synqit/Data/Services/user_services.dart';
 import 'package:synqit/Provider/MusicProvider/audio_streaming_provider.dart';
 import 'package:synqit/Provider/MusicProvider/queue_manager_provider.dart';
 import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
@@ -558,6 +556,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
       state = state.copyWith(status: PlayerStatus.playing);
 
+      // ignore: unnecessary_null_comparison
       if (state.status == PlayerStatus.playing && currentTrack != null) {
       final eventBus = _ref.read(trackEventBusProvider);
       eventBus.publish(TrackEvent(

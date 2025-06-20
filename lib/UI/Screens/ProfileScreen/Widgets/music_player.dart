@@ -6,7 +6,6 @@ import 'package:synqit/Data/Models/track_model.dart';
 import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
 import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
 import 'package:synqit/Provider/MusicProvider/music_player_state.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_preview_player.dart';
 
 class MiniMusicPlayer extends ConsumerWidget {
   final Track track;

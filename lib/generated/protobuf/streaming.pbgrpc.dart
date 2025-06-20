@@ -20,8 +20,8 @@ import 'streaming.pb.dart' as $5;
 
 export 'streaming.pb.dart';
 
-@$pb.GrpcServiceName('ListeningParty.RoomStreamService')
-class RoomStreamServiceClient extends $grpc.Client {
+@$pb.GrpcServiceName('ListeningParty.SyncService')
+class SyncServiceClient extends $grpc.Client {
   /// The hostname for this service.
   static const $core.String defaultHost = '';
 
@@ -30,55 +30,51 @@ class RoomStreamServiceClient extends $grpc.Client {
     '',
   ];
 
-  static final _$joinRoomStream = $grpc.ClientMethod<$5.JoinRoomStreamRequest, $5.RoomStreamSnapshot>(
-      '/ListeningParty.RoomStreamService/JoinRoomStream',
-      ($5.JoinRoomStreamRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $5.RoomStreamSnapshot.fromBuffer(value));
-  static final _$streamRoomUpdates = $grpc.ClientMethod<$5.StreamRoomUpdatesRequest, $5.RoomStreamUpdate>(
-      '/ListeningParty.RoomStreamService/StreamRoomUpdates',
-      ($5.StreamRoomUpdatesRequest value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $5.RoomStreamUpdate.fromBuffer(value));
+  static final _$measureTiming = $grpc.ClientMethod<$5.SyncMeasurement, $5.SyncResponse>(
+      '/ListeningParty.SyncService/MeasureTiming',
+      ($5.SyncMeasurement value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $5.SyncResponse.fromBuffer(value));
+  static final _$bidirectionalSync = $grpc.ClientMethod<$5.ClientState, $5.PlaybackCommand>(
+      '/ListeningParty.SyncService/BidirectionalSync',
+      ($5.ClientState value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $5.PlaybackCommand.fromBuffer(value));
 
-  RoomStreamServiceClient(super.channel, {super.options, super.interceptors});
+  SyncServiceClient(super.channel, {super.options, super.interceptors});
 
-  $grpc.ResponseFuture<$5.RoomStreamSnapshot> joinRoomStream($5.JoinRoomStreamRequest request, {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$joinRoomStream, request, options: options);
+  $grpc.ResponseFuture<$5.SyncResponse> measureTiming($5.SyncMeasurement request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$measureTiming, request, options: options);
   }
 
-  $grpc.ResponseStream<$5.RoomStreamUpdate> streamRoomUpdates($5.StreamRoomUpdatesRequest request, {$grpc.CallOptions? options}) {
-    return $createStreamingCall(_$streamRoomUpdates, $async.Stream.fromIterable([request]), options: options);
+  $grpc.ResponseStream<$5.PlaybackCommand> bidirectionalSync($async.Stream<$5.ClientState> request, {$grpc.CallOptions? options}) {
+    return $createStreamingCall(_$bidirectionalSync, request, options: options);
   }
 }
 
-@$pb.GrpcServiceName('ListeningParty.RoomStreamService')
-abstract class RoomStreamServiceBase extends $grpc.Service {
-  $core.String get $name => 'ListeningParty.RoomStreamService';
+@$pb.GrpcServiceName('ListeningParty.SyncService')
+abstract class SyncServiceBase extends $grpc.Service {
+  $core.String get $name => 'ListeningParty.SyncService';
 
-  RoomStreamServiceBase() {
-    $addMethod($grpc.ServiceMethod<$5.JoinRoomStreamRequest, $5.RoomStreamSnapshot>(
-        'JoinRoomStream',
-        joinRoomStream_Pre,
+  SyncServiceBase() {
+    $addMethod($grpc.ServiceMethod<$5.SyncMeasurement, $5.SyncResponse>(
+        'MeasureTiming',
+        measureTiming_Pre,
         false,
         false,
-        ($core.List<$core.int> value) => $5.JoinRoomStreamRequest.fromBuffer(value),
-        ($5.RoomStreamSnapshot value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$5.StreamRoomUpdatesRequest, $5.RoomStreamUpdate>(
-        'StreamRoomUpdates',
-        streamRoomUpdates_Pre,
-        false,
+        ($core.List<$core.int> value) => $5.SyncMeasurement.fromBuffer(value),
+        ($5.SyncResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$5.ClientState, $5.PlaybackCommand>(
+        'BidirectionalSync',
+        bidirectionalSync,
         true,
-        ($core.List<$core.int> value) => $5.StreamRoomUpdatesRequest.fromBuffer(value),
-        ($5.RoomStreamUpdate value) => value.writeToBuffer()));
+        true,
+        ($core.List<$core.int> value) => $5.ClientState.fromBuffer(value),
+        ($5.PlaybackCommand value) => value.writeToBuffer()));
   }
 
-  $async.Future<$5.RoomStreamSnapshot> joinRoomStream_Pre($grpc.ServiceCall $call, $async.Future<$5.JoinRoomStreamRequest> $request) async {
-    return joinRoomStream($call, await $request);
+  $async.Future<$5.SyncResponse> measureTiming_Pre($grpc.ServiceCall $call, $async.Future<$5.SyncMeasurement> $request) async {
+    return measureTiming($call, await $request);
   }
 
-  $async.Stream<$5.RoomStreamUpdate> streamRoomUpdates_Pre($grpc.ServiceCall $call, $async.Future<$5.StreamRoomUpdatesRequest> $request) async* {
-    yield* streamRoomUpdates($call, await $request);
-  }
-
-  $async.Future<$5.RoomStreamSnapshot> joinRoomStream($grpc.ServiceCall call, $5.JoinRoomStreamRequest request);
-  $async.Stream<$5.RoomStreamUpdate> streamRoomUpdates($grpc.ServiceCall call, $5.StreamRoomUpdatesRequest request);
+  $async.Future<$5.SyncResponse> measureTiming($grpc.ServiceCall call, $5.SyncMeasurement request);
+  $async.Stream<$5.PlaybackCommand> bidirectionalSync($grpc.ServiceCall call, $async.Stream<$5.ClientState> request);
 }
