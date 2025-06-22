@@ -18,7 +18,7 @@ import 'dart:typed_data' as $typed_data;
 const SyncMeasurement$json = {
   '1': 'SyncMeasurement',
   '2': [
-    {'1': 'client_timestamp_ms', '3': 1, '4': 1, '5': 3, '10': 'clientTimestampMs'},
+    {'1': 'client_send_ms', '3': 1, '4': 1, '5': 3, '10': 'clientSendMs'},
     {'1': 'server_receive_ms', '3': 2, '4': 1, '5': 3, '10': 'serverReceiveMs'},
     {'1': 'server_send_ms', '3': 3, '4': 1, '5': 3, '10': 'serverSendMs'},
     {'1': 'client_receive_ms', '3': 4, '4': 1, '5': 3, '10': 'clientReceiveMs'},
@@ -28,10 +28,10 @@ const SyncMeasurement$json = {
 
 /// Descriptor for `SyncMeasurement`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List syncMeasurementDescriptor = $convert.base64Decode(
-    'Cg9TeW5jTWVhc3VyZW1lbnQSLgoTY2xpZW50X3RpbWVzdGFtcF9tcxgBIAEoA1IRY2xpZW50VG'
-    'ltZXN0YW1wTXMSKgoRc2VydmVyX3JlY2VpdmVfbXMYAiABKANSD3NlcnZlclJlY2VpdmVNcxIk'
-    'Cg5zZXJ2ZXJfc2VuZF9tcxgDIAEoA1IMc2VydmVyU2VuZE1zEioKEWNsaWVudF9yZWNlaXZlX2'
-    '1zGAQgASgDUg9jbGllbnRSZWNlaXZlTXMSGwoJY2xpZW50X2lkGAUgASgJUghjbGllbnRJZA==');
+    'Cg9TeW5jTWVhc3VyZW1lbnQSJAoOY2xpZW50X3NlbmRfbXMYASABKANSDGNsaWVudFNlbmRNcx'
+    'IqChFzZXJ2ZXJfcmVjZWl2ZV9tcxgCIAEoA1IPc2VydmVyUmVjZWl2ZU1zEiQKDnNlcnZlcl9z'
+    'ZW5kX21zGAMgASgDUgxzZXJ2ZXJTZW5kTXMSKgoRY2xpZW50X3JlY2VpdmVfbXMYBCABKANSD2'
+    'NsaWVudFJlY2VpdmVNcxIbCgljbGllbnRfaWQYBSABKAlSCGNsaWVudElk');
 
 @$core.Deprecated('Use syncResponseDescriptor instead')
 const SyncResponse$json = {

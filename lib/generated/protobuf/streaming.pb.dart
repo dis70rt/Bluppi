@@ -25,14 +25,14 @@ export 'streaming.pbenum.dart';
 
 class SyncMeasurement extends $pb.GeneratedMessage {
   factory SyncMeasurement({
-    $fixnum.Int64? clientTimestampMs,
+    $fixnum.Int64? clientSendMs,
     $fixnum.Int64? serverReceiveMs,
     $fixnum.Int64? serverSendMs,
     $fixnum.Int64? clientReceiveMs,
     $core.String? clientId,
   }) {
     final result = create();
-    if (clientTimestampMs != null) result.clientTimestampMs = clientTimestampMs;
+    if (clientSendMs != null) result.clientSendMs = clientSendMs;
     if (serverReceiveMs != null) result.serverReceiveMs = serverReceiveMs;
     if (serverSendMs != null) result.serverSendMs = serverSendMs;
     if (clientReceiveMs != null) result.clientReceiveMs = clientReceiveMs;
@@ -46,7 +46,7 @@ class SyncMeasurement extends $pb.GeneratedMessage {
   factory SyncMeasurement.fromJson($core.String json, [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'SyncMeasurement', package: const $pb.PackageName(_omitMessageNames ? '' : 'ListeningParty'), createEmptyInstance: create)
-    ..aInt64(1, _omitFieldNames ? '' : 'clientTimestampMs')
+    ..aInt64(1, _omitFieldNames ? '' : 'clientSendMs')
     ..aInt64(2, _omitFieldNames ? '' : 'serverReceiveMs')
     ..aInt64(3, _omitFieldNames ? '' : 'serverSendMs')
     ..aInt64(4, _omitFieldNames ? '' : 'clientReceiveMs')
@@ -72,13 +72,13 @@ class SyncMeasurement extends $pb.GeneratedMessage {
   static SyncMeasurement? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $fixnum.Int64 get clientTimestampMs => $_getI64(0);
+  $fixnum.Int64 get clientSendMs => $_getI64(0);
   @$pb.TagNumber(1)
-  set clientTimestampMs($fixnum.Int64 value) => $_setInt64(0, value);
+  set clientSendMs($fixnum.Int64 value) => $_setInt64(0, value);
   @$pb.TagNumber(1)
-  $core.bool hasClientTimestampMs() => $_has(0);
+  $core.bool hasClientSendMs() => $_has(0);
   @$pb.TagNumber(1)
-  void clearClientTimestampMs() => $_clearField(1);
+  void clearClientSendMs() => $_clearField(1);
 
   @$pb.TagNumber(2)
   $fixnum.Int64 get serverReceiveMs => $_getI64(1);

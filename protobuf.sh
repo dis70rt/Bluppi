@@ -28,6 +28,6 @@ protoc --dart_out=grpc:lib/generated \
   lib/protobuf/queue.proto \
   lib/protobuf/room.proto \
   lib/protobuf/events.proto \
-  lib/protobuf/streaming.proto \
+  lib/protobuf/streaming.proto
 
 echo "Proto files generated successfully!"
