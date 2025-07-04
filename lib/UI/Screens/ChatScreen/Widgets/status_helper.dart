@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:synqit/Data/Models/message_model.dart';
-import 'package:synqit/Data/Services/socket_service.dart';
+import 'package:bluppi/Data/Models/message_model.dart';
+import 'package:bluppi/Data/Services/socket_service.dart';
 
 class Status {
   static Color getColor(ConnectionStatus status) {

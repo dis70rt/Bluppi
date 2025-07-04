@@ -2,10 +2,10 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
-import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
-import 'package:synqit/Provider/MusicProvider/music_player_state.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Provider/MusicProvider/current_track_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/music_player_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/music_player_state.dart';
 
 class MiniMusicPlayer extends ConsumerWidget {
   final Track track;

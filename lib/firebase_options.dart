@@ -53,11 +53,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCV_qNM00WJnzP-PfYQIMx2DXWRK6Waj7g',
-    appId: '1:1095263742000:android:37cf9ffa7fb115711fa5f5',
-    messagingSenderId: '1095263742000',
-    projectId: 'synqit-app',
-    storageBucket: 'synqit-app.firebasestorage.app',
+    apiKey: 'AIzaSyCBa-97umH8lgOkop9zCZySfl7P1yn_cMo',
+    appId: '1:493403177434:android:9e2996df0ff7b52675c0e3',
+    messagingSenderId: '493403177434',
+    projectId: 'bluppi-app',
+    storageBucket: 'bluppi-app.firebasestorage.app',
   );
 
 }

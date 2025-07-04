@@ -4,10 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:synqit/Data/Models/follower_model.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/config.dart';
+import 'package:bluppi/Data/Models/follower_model.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/user_model.dart';
+import 'package:bluppi/config.dart';
 
 class UserServices {
   final auth = FirebaseAuth.instance;

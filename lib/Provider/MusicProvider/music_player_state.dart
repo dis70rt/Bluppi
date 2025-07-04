@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:synqit/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
 
 enum PlayerStatus { initial, loading, playing, paused, completed, error, ready }
 

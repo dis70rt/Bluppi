@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Services/api_services.dart';
-import 'package:synqit/Data/Services/notification_method_channel.dart';
-import 'package:synqit/Provider/MusicProvider/audio_streaming_provider.dart';
-import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Services/api_services.dart';
+import 'package:bluppi/Data/Services/notification_method_channel.dart';
+import 'package:bluppi/Provider/MusicProvider/audio_streaming_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/queue_provider.dart';
 
 class QueueManager {
   final ApiServices _apiServices;

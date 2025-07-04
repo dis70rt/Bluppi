@@ -8,15 +8,15 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Constants/data.dart';
-import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/UserProvider/user_provider.dart';
-import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/username_dialog.dart';
-import 'package:synqit/UI/Screens/ProfileSettingScreen/Widgets/edit_profile_widgets.dart';
-import 'package:synqit/Utils/datetime.dart';
-import 'package:synqit/Utils/image_upload.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Constants/data.dart';
+import 'package:bluppi/Data/Models/user_model.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/UI/Screens/ProfileSettingScreen/Settings/username_dialog.dart';
+import 'package:bluppi/UI/Screens/ProfileSettingScreen/Widgets/edit_profile_widgets.dart';
+import 'package:bluppi/Utils/datetime.dart';
+import 'package:bluppi/Utils/image_upload.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});

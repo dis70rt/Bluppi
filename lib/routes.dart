@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/UI/Screens/ChatScreen/chatting_screen.dart';
-import 'package:synqit/UI/Screens/RoomScreen/utils/join_room_deeplinks.dart';
-import 'package:synqit/UI/Screens/RoomScreen/listening_room.dart';
-import 'package:synqit/UI/Screens/RoomScreen/room_screen.dart';
-import 'package:synqit/UI/Screens/SearchScreen/search_screen.dart';
-import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/other_profile_screen.dart';
-import 'package:synqit/UI/Screens/ProfileSettingScreen/Settings/edit_profile_screen.dart';
-import 'package:synqit/UI/Screens/ProfileSettingScreen/profile_settings_screen.dart';
-import 'package:synqit/UI/Widgets/auth_wrapper.dart';
-import 'package:synqit/UI/Widgets/main_screen.dart';
+import 'package:bluppi/Data/Models/user_model.dart';
+import 'package:bluppi/UI/Screens/ChatScreen/chatting_screen.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/utils/join_room_deeplinks.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/listening_room.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/room_screen.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/search_screen.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/home_screen.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/other_profile_screen.dart';
+import 'package:bluppi/UI/Screens/ProfileSettingScreen/Settings/edit_profile_screen.dart';
+import 'package:bluppi/UI/Screens/ProfileSettingScreen/profile_settings_screen.dart';
+import 'package:bluppi/UI/Widgets/auth_wrapper.dart';
+import 'package:bluppi/UI/Widgets/main_screen.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/auth',

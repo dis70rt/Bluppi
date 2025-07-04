@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:synqit/Constants/colors.dart';
+import 'package:bluppi/Constants/colors.dart';
 
 class AnimatedGradientBackground extends StatefulWidget {
   const AnimatedGradientBackground({super.key});

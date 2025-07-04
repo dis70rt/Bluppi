@@ -5,9 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/PubSub/subscriber.dart';
-import 'package:synqit/firebase_options.dart';
-import 'package:synqit/routes.dart';
+import 'package:bluppi/PubSub/subscriber.dart';
+import 'package:bluppi/firebase_options.dart';
+import 'package:bluppi/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

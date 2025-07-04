@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/RoomProvider/room_service_provider.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
 
 class ListeningScreen extends ConsumerWidget {
   const ListeningScreen({super.key});

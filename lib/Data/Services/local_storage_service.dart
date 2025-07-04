@@ -2,8 +2,8 @@
 // import 'dart:io';
 
 // import 'package:path_provider/path_provider.dart';
-// import 'package:synqit/Data/Models/conversation_model.dart';
-// import 'package:synqit/Data/Models/message_model.dart';
+// import 'package:bluppi/Data/Models/conversation_model.dart';
+// import 'package:bluppi/Data/Models/message_model.dart';
 
 // class LocalStorageService {
 //   Future<Directory> get _appDirectory async {

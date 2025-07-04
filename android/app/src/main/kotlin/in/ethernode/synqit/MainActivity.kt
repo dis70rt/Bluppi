@@ -1,4 +1,4 @@
-package `in`.ethernode.synqit
+package `in`.ethernode.bluppi
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -24,10 +24,10 @@ class MainActivity: FlutterActivity() {
     private lateinit var notificationManager: PlayerNotificationManager
     private var eventSink: EventChannel.EventSink? = null
 
-    private val CHANNEL_NAME = "synqit/media_channel"
-    private val PLAYBACK_EVENTS = "synqit/media_events"
+    private val CHANNEL_NAME = "bluppi/media_channel"
+    private val PLAYBACK_EVENTS = "bluppi/media_events"
     private val NOTIFICATION_ID = 1001
-    private val NOTIFICATION_CHANNEL_ID = "synqit_player_channel"
+    private val NOTIFICATION_CHANNEL_ID = "bluppi_player_channel"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

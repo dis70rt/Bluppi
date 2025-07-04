@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
 
 enum TrackEventType {
   play,

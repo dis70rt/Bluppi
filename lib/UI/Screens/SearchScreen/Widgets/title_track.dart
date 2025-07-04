@@ -3,12 +3,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Provider/MusicProvider/audio_streaming_provider.dart';
-import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
-import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
-import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Provider/MusicProvider/audio_streaming_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/current_track_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/music_player_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/queue_provider.dart';
 
 Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
   final playerNotifier = ref.read(musicPlayerProvider.notifier);

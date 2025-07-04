@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Data/Models/track_model.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
 
 class GrassmorphicTrackTile extends StatelessWidget {
   const GrassmorphicTrackTile({

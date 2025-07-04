@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:synqit/Data/Models/message_model.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Provider/ChatProvider/conversation_detail_provider.dart';
-import 'package:synqit/Provider/ChatProvider/conversation_provider.dart';
-import 'package:synqit/Provider/UserProvider/user_provider.dart';
-import 'package:synqit/Provider/UserProvider/user_search_provider.dart';
-import 'package:synqit/UI/Screens/ChatScreen/Widgets/status_helper.dart';
-import 'package:synqit/Utils/snackbar.dart';
+import 'package:bluppi/Data/Models/message_model.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/user_model.dart';
+import 'package:bluppi/Provider/ChatProvider/conversation_detail_provider.dart';
+import 'package:bluppi/Provider/ChatProvider/conversation_provider.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/Provider/UserProvider/user_search_provider.dart';
+import 'package:bluppi/UI/Screens/ChatScreen/Widgets/status_helper.dart';
+import 'package:bluppi/Utils/snackbar.dart';
 
 class ChatsScreen extends ConsumerStatefulWidget {
   const ChatsScreen({super.key});

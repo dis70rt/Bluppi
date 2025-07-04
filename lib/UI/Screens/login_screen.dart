@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/UserProvider/auth_provider.dart';
-import 'package:synqit/UI/Widgets/background.dart';
-import 'package:synqit/Utils/snackbar.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Provider/UserProvider/auth_provider.dart';
+import 'package:bluppi/UI/Widgets/background.dart';
+import 'package:bluppi/Utils/snackbar.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});

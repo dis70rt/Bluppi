@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
 
 import '../../../../generated/protobuf/common.pbenum.dart';
 

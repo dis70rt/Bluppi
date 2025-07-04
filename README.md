@@ -1,4 +1,4 @@
-# synqit
+# Bluppi
 
 A new Flutter project.
 

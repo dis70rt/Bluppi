@@ -5,17 +5,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/UserProvider/user_provider.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/app_bar.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/edit_row.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_button.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/following_stats.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/profile_bio.dart';
-import 'package:synqit/Utils/datetime.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/user_model.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/app_bar.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/edit_row.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/follow_button.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/following_stats.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/profile_bio.dart';
+import 'package:bluppi/Utils/datetime.dart';
 
 import 'Widgets/music_player.dart';
 

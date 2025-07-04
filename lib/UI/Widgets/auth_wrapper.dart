@@ -1,11 +1,11 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Provider/UserProvider/auth_provider.dart';
-import 'package:synqit/Provider/UserProvider/user_provider.dart';
-import 'package:synqit/UI/Screens/create_account_screen.dart';
-import 'package:synqit/UI/Screens/login_screen.dart';
-import 'package:synqit/UI/Widgets/main_screen.dart';
+import 'package:bluppi/Provider/UserProvider/auth_provider.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/UI/Screens/create_account_screen.dart';
+import 'package:bluppi/UI/Screens/login_screen.dart';
+import 'package:bluppi/UI/Widgets/main_screen.dart';
 
 class AuthWrapper extends ConsumerWidget {
   const AuthWrapper({super.key});

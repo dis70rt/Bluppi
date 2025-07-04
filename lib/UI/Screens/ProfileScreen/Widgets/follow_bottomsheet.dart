@@ -1,13 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/UserProvider/follow_provider.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_tile_skeleton.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/grassmorphic_user_tile.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
-import 'package:synqit/Utils/snackbar.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
+import 'package:bluppi/Provider/UserProvider/follow_provider.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/follow_tile_skeleton.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/grassmorphic_user_tile.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/profile_screen.dart';
+import 'package:bluppi/Utils/snackbar.dart';
 
 class FollowBottomSheet extends ConsumerStatefulWidget {
   final String userId;

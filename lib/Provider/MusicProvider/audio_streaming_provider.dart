@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Services/youtube_services.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Services/youtube_services.dart';
 
 class AudioStreamingService {
   final Map<String, Map<String, String?>> _streamCache = {};

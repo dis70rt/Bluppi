@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Tabs/room_search_tab.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Tabs/track_search_tab.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Tabs/user_search_tab.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Widgets/recently_searched_widget.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Widgets/search_bar_widget.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Tabs/room_search_tab.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Tabs/track_search_tab.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Tabs/user_search_tab.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Widgets/recently_searched_widget.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Widgets/search_bar_widget.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});

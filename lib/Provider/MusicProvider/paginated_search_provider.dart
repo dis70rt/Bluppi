@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Provider/MusicProvider/track_search_provider.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Provider/MusicProvider/track_search_provider.dart';
 
 class PaginatedSearchState {
   final List<Track> tracks;

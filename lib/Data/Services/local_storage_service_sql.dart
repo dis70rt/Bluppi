@@ -1,12 +1,12 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:synqit/Data/Models/conversation_model.dart';
-import 'package:synqit/Data/Models/message_model.dart';
+import 'package:bluppi/Data/Models/conversation_model.dart';
+import 'package:bluppi/Data/Models/message_model.dart';
 import 'dart:developer' as dev;
 
 class LocalStorageService {
   static Database? _database;
-  static const String dbName = 'synqit_chat.db';
+  static const String dbName = 'bluppi_chat.db';
   static const int dbVersion = 2;
 
   Future<Database> get database async {

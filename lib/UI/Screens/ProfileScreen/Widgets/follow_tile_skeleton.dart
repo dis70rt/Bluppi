@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:synqit/Constants/colors.dart';
+import 'package:bluppi/Constants/colors.dart';
 
 class UserTileSkeleton extends StatelessWidget {
   const UserTileSkeleton({super.key});

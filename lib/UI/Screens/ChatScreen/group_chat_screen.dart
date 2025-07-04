@@ -1,12 +1,12 @@
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:synqit/Data/Models/message_model.dart';
-// import 'package:synqit/Data/Models/user_model.dart';
-// import 'package:synqit/Data/Services/socket_service.dart';
-// import 'package:synqit/Provider/auth_provider.dart';
-// import 'package:synqit/Provider/chat_provider/socket_provider.dart';
-// import 'package:synqit/Provider/user_provider/user_provider.dart';
+// import 'package:bluppi/Data/Models/message_model.dart';
+// import 'package:bluppi/Data/Models/user_model.dart';
+// import 'package:bluppi/Data/Services/socket_service.dart';
+// import 'package:bluppi/Provider/auth_provider.dart';
+// import 'package:bluppi/Provider/chat_provider/socket_provider.dart';
+// import 'package:bluppi/Provider/user_provider/user_provider.dart';
 
 // class GroupChatScreen extends ConsumerStatefulWidget {
 //   final String conversationId;

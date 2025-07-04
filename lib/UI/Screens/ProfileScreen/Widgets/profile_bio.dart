@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:synqit/Constants/colors.dart';
+import 'package:bluppi/Constants/colors.dart';
 
 Widget profileBio(String name, String? bio, String username, bool isOwnProfile) {
   return Center(

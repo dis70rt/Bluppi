@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Provider/RoomProvider/room_service_provider.dart';
-import 'package:synqit/UI/Screens/RoomScreen/listening_room.dart';
-import 'package:synqit/UI/Screens/RoomScreen/room_screen.dart';
+import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/listening_room.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/room_screen.dart';
 
 class RoomNavigationContainer extends ConsumerWidget {
   const RoomNavigationContainer({

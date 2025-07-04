@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Provider/UserProvider/search_history_provider.dart';
-import 'package:synqit/UI/Widgets/main_screen.dart';
+import 'package:bluppi/Provider/UserProvider/search_history_provider.dart';
+import 'package:bluppi/UI/Widgets/main_screen.dart';
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 final isSearchingProvider = StateProvider<bool>((ref) => false);

@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
 
 final mediaServiceProvider = Provider<MediaService>((ref) {
   return MediaService();
 });
 
 class MediaService {
-  static const MethodChannel _channel = MethodChannel('synqit/media_channel');
-  static const EventChannel _eventChannel = EventChannel('synqit/media_events');
+  static const MethodChannel _channel = MethodChannel('bluppi/media_channel');
+  static const EventChannel _eventChannel = EventChannel('bluppi/media_events');
 
   final StreamController<Map<String, dynamic>> _playerEventsController =
       StreamController<Map<String, dynamic>>.broadcast();

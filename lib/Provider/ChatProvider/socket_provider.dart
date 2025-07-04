@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/message_model.dart';
-import 'package:synqit/Data/Services/local_storage_service_sql.dart';
-import 'package:synqit/Data/Services/socket_service.dart';
-import 'package:synqit/config.dart';
+import 'package:bluppi/Data/Models/message_model.dart';
+import 'package:bluppi/Data/Services/local_storage_service_sql.dart';
+import 'package:bluppi/Data/Services/socket_service.dart';
+import 'package:bluppi/config.dart';
 
 final conversationSocketProvider = 
     StateNotifierProvider.autoDispose.family<ConversationSocketNotifier, ConversationSocketState, String>(

@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
 
 class QueueState {
   final List<Track> items;

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
-import 'package:synqit/Provider/RoomProvider/room_service_provider.dart';
-import 'package:synqit/UI/Screens/ChatScreen/chats_screen.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
-import 'package:synqit/UI/Screens/RoomScreen/utils/room_navigation.dart';
-import 'package:synqit/UI/Screens/SearchScreen/search_navigation_screen.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Provider/MusicProvider/current_track_provider.dart';
+import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/UI/Screens/ChatScreen/chats_screen.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/utils/room_navigation.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/search_navigation_screen.dart';
 
-import 'package:synqit/UI/Screens/HomeScreen/home_screen.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/home_screen.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/profile_screen.dart';
 
 final mainScreenIndexProvider = StateProvider<int>((ref) => 0);
 

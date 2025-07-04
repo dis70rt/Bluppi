@@ -4,9 +4,9 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart' hide OAuthProvider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
-import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
-import 'package:synqit/Provider/MusicProvider/queue_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/current_track_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/music_player_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/queue_provider.dart';
 
 class Auth {
   final User? user;

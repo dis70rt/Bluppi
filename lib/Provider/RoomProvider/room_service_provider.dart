@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grpc/grpc.dart';
-import 'package:synqit/generated/protobuf/room.pbgrpc.dart';
-import 'package:synqit/generated/protobuf/streaming.pbgrpc.dart';
-import 'package:synqit/generated/protobuf/common.pbenum.dart';
-import 'package:synqit/generated/protobuf/playback.pb.dart';
+import 'package:bluppi/generated/protobuf/room.pbgrpc.dart';
+import 'package:bluppi/generated/protobuf/streaming.pbgrpc.dart';
+import 'package:bluppi/generated/protobuf/common.pbenum.dart';
+import 'package:bluppi/generated/protobuf/playback.pb.dart';
 
 
 final grpcChannelProvider = Provider<ClientChannel>((ref) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Constants/colors.dart';
+import 'package:bluppi/Constants/colors.dart';
 
 enum ThemeType {
   avengersEndgame,

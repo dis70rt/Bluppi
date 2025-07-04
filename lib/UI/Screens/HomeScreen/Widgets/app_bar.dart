@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Services/database_services.dart';
-import 'package:synqit/Data/Services/user_services.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Services/database_services.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
 
-import 'package:synqit/Provider/UserProvider/user_provider.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/history_widget.dart';
-import 'package:synqit/UI/Widgets/main_screen.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/history_widget.dart';
+import 'package:bluppi/UI/Widgets/main_screen.dart';
 
 final userServices = UserServices();
 final database = Database();

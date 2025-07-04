@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="in.ethernode.synqit">
+    package="in.ethernode.bluppi">
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -9,7 +9,7 @@
     tools:overrideLibrary="com.ryanheise.audio_session"
     android:minSdkVersion="23" />
     <application
-        android:label="synqit"
+        android:label="Bluppi"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
@@ -39,7 +39,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="synqit.saikat.in"
+                    android:host="bluppi.saikat.in"
                     android:pathPattern=".*" />
             </intent-filter>
             <intent-filter>
@@ -48,7 +48,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="http"
-                    android:host="synqit.saikat.in"
+                    android:host="bluppi.saikat.in"
                     android:pathPattern=".*" />
             </intent-filter>
         </activity>

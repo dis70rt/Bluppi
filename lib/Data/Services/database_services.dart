@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/config.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/config.dart';
 
 class Database {
   final Dio dio = Dio(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/UserProvider/user_provider.dart';
-import 'package:synqit/UI/Screens/HomeScreen/Widgets/app_bar.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/app_bar.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Provider/MusicProvider/paginated_search_provider.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Widgets/title_track.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Widgets/track_loading.dart';
+import 'package:bluppi/Provider/MusicProvider/paginated_search_provider.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Widgets/title_track.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Widgets/track_loading.dart';
 
 class TracksSearchTab extends ConsumerStatefulWidget {
   final String query;

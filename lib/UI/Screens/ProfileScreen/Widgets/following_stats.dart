@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/follow_bottomsheet.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/follow_bottomsheet.dart';
 
 class FollowStats {
   final int followers;

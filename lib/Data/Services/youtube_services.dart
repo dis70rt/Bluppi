@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:synqit/config.dart';
+import 'package:bluppi/config.dart';
 
 Dio dio = Dio(
   BaseOptions(

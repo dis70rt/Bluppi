@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/follower_model.dart';
-import 'package:synqit/Data/Services/user_services.dart';
+import 'package:bluppi/Data/Models/follower_model.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
 
 class FollowListState {
   final List<FollowUserModel> items;

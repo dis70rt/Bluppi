@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Data/Services/user_services.dart';
-import 'package:synqit/Provider/UserProvider/user_provider.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/profile_screen.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/profile_screen.dart';
 
 class OtherProfileScreen extends ConsumerWidget {
   final String? username;

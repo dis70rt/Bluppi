@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Constants/colors.dart';
-import 'package:synqit/Provider/RoomProvider/room_service_provider.dart';
-import 'package:synqit/UI/Screens/RoomScreen/Widgets/create_room_widget.dart';
-import 'package:synqit/UI/Screens/RoomScreen/Widgets/join_room_widget.dart';
+import 'package:bluppi/Constants/colors.dart';
+import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/Widgets/create_room_widget.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/Widgets/join_room_widget.dart';
 
 class RoomScreen extends ConsumerWidget {
   const RoomScreen({super.key});

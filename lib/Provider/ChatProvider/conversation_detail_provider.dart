@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:synqit/Data/Models/conversation_model.dart';
-import 'package:synqit/Data/Models/message_model.dart';
-import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Data/Services/user_services.dart';
+import 'package:bluppi/Data/Models/conversation_model.dart';
+import 'package:bluppi/Data/Models/message_model.dart';
+import 'package:bluppi/Data/Models/user_model.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
 
 class ConversationDetail {
   final UserModel? receiver;

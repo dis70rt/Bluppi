@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:synqit/Provider/MusicProvider/current_track_provider.dart';
-import 'package:synqit/Provider/MusicProvider/music_player_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/current_track_provider.dart';
+import 'package:bluppi/Provider/MusicProvider/music_player_provider.dart';
 import 'dart:ui';
 
-import 'package:synqit/Provider/MusicProvider/music_player_state.dart';
-import 'package:synqit/UI/Screens/SearchScreen/Widgets/queue_bottomsheet.dart';
+import 'package:bluppi/Provider/MusicProvider/music_player_state.dart';
+import 'package:bluppi/UI/Screens/SearchScreen/Widgets/queue_bottomsheet.dart';
 
 // final _isExpandedProvider = StateProvider<bool>((ref) => false);
 

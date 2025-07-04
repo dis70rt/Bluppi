@@ -6,18 +6,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:synqit/Constants/themes.dart';
+import 'package:bluppi/Constants/themes.dart';
 
-import 'package:synqit/Data/Models/message_model.dart';
-import 'package:synqit/Data/Models/track_model.dart';
-import 'package:synqit/Data/Models/user_model.dart';
-import 'package:synqit/Data/Services/socket_service.dart';
-import 'package:synqit/Provider/ChatProvider/messages_provider.dart';
-import 'package:synqit/Provider/ChatProvider/socket_provider.dart';
-import 'package:synqit/UI/Screens/ChatScreen/Widgets/status_helper.dart';
-import 'package:synqit/UI/Screens/ChatScreen/Widgets/track_bottom_model.dart';
-import 'package:synqit/UI/Screens/ProfileScreen/Widgets/music_player.dart';
-import 'package:synqit/Utils/snackbar.dart';
+import 'package:bluppi/Data/Models/message_model.dart';
+import 'package:bluppi/Data/Models/track_model.dart';
+import 'package:bluppi/Data/Models/user_model.dart';
+import 'package:bluppi/Data/Services/socket_service.dart';
+import 'package:bluppi/Provider/ChatProvider/messages_provider.dart';
+import 'package:bluppi/Provider/ChatProvider/socket_provider.dart';
+import 'package:bluppi/UI/Screens/ChatScreen/Widgets/status_helper.dart';
+import 'package:bluppi/UI/Screens/ChatScreen/Widgets/track_bottom_model.dart';
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/music_player.dart';
+import 'package:bluppi/Utils/snackbar.dart';
 
 class ChattingScreen extends ConsumerStatefulWidget {
   final String conversationId;
