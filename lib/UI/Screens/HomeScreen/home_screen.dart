@@ -1,3 +1,5 @@
+import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/Provider/RoomProvider/sync_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,8 +25,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Scaffold(
           backgroundColor: Colors.black,
           appBar: homeAppBar(context, ref),
-          body: const Column(
-
+          body: Center(
+            child: 
+              FilledButton(onPressed: () {
+                ref.read(roomProvider.notifier).toggleRoom();
+              }, child: Text("Sync Test"))
+            ,
           )
         );
       },

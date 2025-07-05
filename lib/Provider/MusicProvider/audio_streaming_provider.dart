@@ -9,11 +9,11 @@ class AudioStreamingService {
 
   Future<Map<String, String?>> getAudioStreamData(Track track) async {
     if (_streamCache.containsKey(track.trackId)) {
-      log('[AudioStreamingService] Cache hit for: ${track.trackName}');
+      log('Cache hit for: ${track.trackName}', name: 'AudioStreamingService');
       return _streamCache[track.trackId]!;
     }
 
-    log('[AudioStreamingService] Fetching stream data for: ${track.trackName}');
+    log('Fetching stream data for: ${track.trackName}', name: 'AudioStreamingService');
     try {
       Map<String, dynamic> data = await getAudioStreamUrl(track.videoId!);
       // if (track.videoId != null && track.videoId!.isNotEmpty) {
@@ -24,7 +24,7 @@ class AudioStreamingService {
       // }
 
       if (data['audioUrl'] == null || data['audioUrl'].isEmpty) {
-        log('[AudioStreamingService] Failed to get audio URL for ${track.trackName}');
+        log('Failed to get audio URL for ${track.trackName}', name: 'AudioStreamingService');
         throw Exception('Failed to get audio URL for track.');
       }
 
@@ -36,7 +36,7 @@ class AudioStreamingService {
       _addToCache(track.trackId, result);
       return result;
     } catch (e) {
-      log('[AudioStreamingService] Error: $e');
+      log('Error: $e', name: 'AudioStreamingService');
       rethrow;
     }
   }

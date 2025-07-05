@@ -382,7 +382,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         final track = queueState.items[nextIndex];
 
         if (track.audioUrl != null && track.audioUrl!.isNotEmpty) {
-          log('[PlayerProvider] Pre-warming track (URL exists): ${track.trackName}');
+          log('Pre-warming track (URL exists): ${track.trackName}', name: 'PlayerProvider');
           prewarmFutures.add(_mediaService.prewarm(track: track));
         } else {
           prewarmFutures.add(_fetchAndPrewarmTrack(track));
@@ -400,7 +400,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     try {
       final enrichedTrack = await _fetchAndEnsureAudioUrl(track);
       if (enrichedTrack != null) {
-        log('[PlayerProvider] Pre-warming track (fetched URL): ${track.trackName}');
+        log('Pre-warming track (fetched URL): ${track.trackName}', name: 'PlayerProvider');
         await _mediaService.prewarm(track: enrichedTrack);
 
         _ref
@@ -408,7 +408,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
             .updateTrackWithAudioUrl(track.trackId, enrichedTrack);
       }
     } catch (e) {
-      log('[PlayerProvider] Failed to fetch and pre-warm track: ${track.trackName} - $e');
+      log('Failed to fetch and pre-warm track: ${track.trackName} - $e', name: 'PlayerProvider');
     }
   }
 

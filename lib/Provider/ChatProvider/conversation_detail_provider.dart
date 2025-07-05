@@ -1,3 +1,4 @@
+import 'package:bluppi/config.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +44,12 @@ class ConversationDetailNotifier extends StateNotifier<ConversationDetail> {
   final Conversation conversation;
   final UserServices _userService = UserServices();
   final Ref ref;
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(BaseOptions(
+    baseUrl: AppConfig.httpSocketUrl,
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 15)
+
+  ));
 
   ConversationDetailNotifier(this.conversation, this.ref) : super(ConversationDetail(isLoading: true)) {
     loadConversationDetails();
@@ -85,7 +91,7 @@ class ConversationDetailNotifier extends StateNotifier<ConversationDetail> {
   Future<ChatMessage?> getLastMessage() async {
   try {
     final response = await _dio.get(
-      'https://socket.saikat.in/conversations/${conversation.conversationId}/messages',
+      '/conversations/${conversation.conversationId}/messages',
       queryParameters: {
         'limit': 1,
       },

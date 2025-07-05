@@ -79,7 +79,7 @@ class ConversationNotifier extends StateNotifier<ConversationsState> {
     
     try {
       final response = await _dio.get(
-        'https://socket.saikat.in/$_currentUserId/conversations/',
+        '/$_currentUserId/conversations/',
       );
 
       if (response.statusCode == 200) {
@@ -136,7 +136,7 @@ class ConversationNotifier extends StateNotifier<ConversationsState> {
       }
 
       final response = await _dio.post(
-        'https://socket.saikat.in/ws/v1/conversations/get-or-create',
+        '/ws/v1/conversations/get-or-create',
         data: {
           'participants': participants,
           'conversation_name': conversationName,

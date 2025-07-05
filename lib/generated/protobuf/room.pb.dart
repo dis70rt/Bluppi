@@ -12,6 +12,7 @@
 
 import 'dart:core' as $core;
 
+import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import '../google/protobuf/timestamp.pb.dart' as $8;
@@ -34,6 +35,10 @@ class Room extends $pb.GeneratedMessage {
     $core.String? hostUserId,
     $1.PlaybackState? playbackState,
     $6.Track? currentTrack,
+    $fixnum.Int64? currentPositionMs,
+    $fixnum.Int64? lastPositionUpdate,
+    $fixnum.Int64? trackStartTime,
+    $core.bool? isPlaying,
   }) {
     final result = create();
     if (id != null) result.id = id;
@@ -47,6 +52,10 @@ class Room extends $pb.GeneratedMessage {
     if (hostUserId != null) result.hostUserId = hostUserId;
     if (playbackState != null) result.playbackState = playbackState;
     if (currentTrack != null) result.currentTrack = currentTrack;
+    if (currentPositionMs != null) result.currentPositionMs = currentPositionMs;
+    if (lastPositionUpdate != null) result.lastPositionUpdate = lastPositionUpdate;
+    if (trackStartTime != null) result.trackStartTime = trackStartTime;
+    if (isPlaying != null) result.isPlaying = isPlaying;
     return result;
   }
 
@@ -67,6 +76,10 @@ class Room extends $pb.GeneratedMessage {
     ..aOS(9, _omitFieldNames ? '' : 'hostUserId')
     ..aOM<$1.PlaybackState>(10, _omitFieldNames ? '' : 'playbackState', subBuilder: $1.PlaybackState.create)
     ..aOM<$6.Track>(11, _omitFieldNames ? '' : 'currentTrack', subBuilder: $6.Track.create)
+    ..aInt64(12, _omitFieldNames ? '' : 'currentPositionMs')
+    ..aInt64(13, _omitFieldNames ? '' : 'lastPositionUpdate')
+    ..aInt64(14, _omitFieldNames ? '' : 'trackStartTime')
+    ..aOB(15, _omitFieldNames ? '' : 'isPlaying')
     ..hasRequiredFields = false
   ;
 
@@ -183,6 +196,42 @@ class Room extends $pb.GeneratedMessage {
   void clearCurrentTrack() => $_clearField(11);
   @$pb.TagNumber(11)
   $6.Track ensureCurrentTrack() => $_ensure(10);
+
+  @$pb.TagNumber(12)
+  $fixnum.Int64 get currentPositionMs => $_getI64(11);
+  @$pb.TagNumber(12)
+  set currentPositionMs($fixnum.Int64 value) => $_setInt64(11, value);
+  @$pb.TagNumber(12)
+  $core.bool hasCurrentPositionMs() => $_has(11);
+  @$pb.TagNumber(12)
+  void clearCurrentPositionMs() => $_clearField(12);
+
+  @$pb.TagNumber(13)
+  $fixnum.Int64 get lastPositionUpdate => $_getI64(12);
+  @$pb.TagNumber(13)
+  set lastPositionUpdate($fixnum.Int64 value) => $_setInt64(12, value);
+  @$pb.TagNumber(13)
+  $core.bool hasLastPositionUpdate() => $_has(12);
+  @$pb.TagNumber(13)
+  void clearLastPositionUpdate() => $_clearField(13);
+
+  @$pb.TagNumber(14)
+  $fixnum.Int64 get trackStartTime => $_getI64(13);
+  @$pb.TagNumber(14)
+  set trackStartTime($fixnum.Int64 value) => $_setInt64(13, value);
+  @$pb.TagNumber(14)
+  $core.bool hasTrackStartTime() => $_has(13);
+  @$pb.TagNumber(14)
+  void clearTrackStartTime() => $_clearField(14);
+
+  @$pb.TagNumber(15)
+  $core.bool get isPlaying => $_getBF(14);
+  @$pb.TagNumber(15)
+  set isPlaying($core.bool value) => $_setBool(14, value);
+  @$pb.TagNumber(15)
+  $core.bool hasIsPlaying() => $_has(14);
+  @$pb.TagNumber(15)
+  void clearIsPlaying() => $_clearField(15);
 }
 
 class CreateRoomRequest extends $pb.GeneratedMessage {

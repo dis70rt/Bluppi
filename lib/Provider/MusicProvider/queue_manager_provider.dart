@@ -35,7 +35,7 @@ class QueueManager {
         }
       }
     } catch (e) {
-      log('[QueueManager] Failed to load cache: $e');
+      log('Failed to load cache: $e', name: 'QueueManager');
     }
   }
 
@@ -115,15 +115,15 @@ class QueueManager {
                   recommendation.trackId, enrichedTrack);
 
               _ref.read(mediaServiceProvider).prewarm(track: enrichedTrack);
-              log('[QueueManager] Pre-warmed recommendation: ${enrichedTrack.trackName}');
+              log('Pre-warmed recommendation: ${enrichedTrack.trackName}', name: 'QueueManager');
             }
           } catch (e) {
-            log('[QueueManager] Failed to pre-warm recommendation: $e');
+            log('Failed to pre-warm recommendation: $e', name: 'QueueManager');
           }
         }
       }
     } catch (e) {
-      log('[QueueManager] Recommendation fetch error: $e');
+      log('Recommendation fetch error: $e', name: 'QueueManager');
     } finally {
       _isFetchingRecommendation = false;
     }
@@ -146,7 +146,7 @@ class QueueManager {
         videoId: currentTrack.videoId!,
       );
     } catch (e) {
-      log('[QueueManager] API error: $e');
+      log('API error: $e', name: 'QueueManager');
       return null;
     }
   }
@@ -215,10 +215,10 @@ class QueueActions {
             .updateTrackWithAudioUrl(track.trackId, enrichedTrack);
 
         _ref.read(mediaServiceProvider).prewarm(track: enrichedTrack);
-        log('[QueueActions] Pre-warmed track: ${track.trackName}');
+        log('Pre-warmed track: ${track.trackName}', name: 'QueueActions');
       }
     } catch (e) {
-      log('[QueueActions] Failed to pre-warm track: $e');
+      log('Failed to pre-warm track: $e', name: 'QueueActions');
     }
   }
 }

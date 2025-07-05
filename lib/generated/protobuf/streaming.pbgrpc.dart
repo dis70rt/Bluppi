@@ -30,23 +30,31 @@ class SyncServiceClient extends $grpc.Client {
     '',
   ];
 
-  static final _$measureTiming = $grpc.ClientMethod<$5.SyncMeasurement, $5.SyncResponse>(
-      '/ListeningParty.SyncService/MeasureTiming',
-      ($5.SyncMeasurement value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $5.SyncResponse.fromBuffer(value));
-  static final _$bidirectionalSync = $grpc.ClientMethod<$5.ClientState, $5.PlaybackCommand>(
-      '/ListeningParty.SyncService/BidirectionalSync',
-      ($5.ClientState value) => value.writeToBuffer(),
-      ($core.List<$core.int> value) => $5.PlaybackCommand.fromBuffer(value));
+  static final _$sendHostCommand = $grpc.ClientMethod<$5.HostCommand, $5.ServerResponse>(
+      '/ListeningParty.SyncService/SendHostCommand',
+      ($5.HostCommand value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $5.ServerResponse.fromBuffer(value));
+  static final _$timingSync = $grpc.ClientMethod<$5.SyncRequest, $5.SyncReply>(
+      '/ListeningParty.SyncService/TimingSync',
+      ($5.SyncRequest value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $5.SyncReply.fromBuffer(value));
+  static final _$memberSync = $grpc.ClientMethod<$5.MemberStatus, $5.ServerBroadcast>(
+      '/ListeningParty.SyncService/MemberSync',
+      ($5.MemberStatus value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $5.ServerBroadcast.fromBuffer(value));
 
   SyncServiceClient(super.channel, {super.options, super.interceptors});
 
-  $grpc.ResponseFuture<$5.SyncResponse> measureTiming($5.SyncMeasurement request, {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$measureTiming, request, options: options);
+  $grpc.ResponseStream<$5.ServerResponse> sendHostCommand($async.Stream<$5.HostCommand> request, {$grpc.CallOptions? options}) {
+    return $createStreamingCall(_$sendHostCommand, request, options: options);
   }
 
-  $grpc.ResponseStream<$5.PlaybackCommand> bidirectionalSync($async.Stream<$5.ClientState> request, {$grpc.CallOptions? options}) {
-    return $createStreamingCall(_$bidirectionalSync, request, options: options);
+  $grpc.ResponseFuture<$5.SyncReply> timingSync($5.SyncRequest request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$timingSync, request, options: options);
+  }
+
+  $grpc.ResponseStream<$5.ServerBroadcast> memberSync($async.Stream<$5.MemberStatus> request, {$grpc.CallOptions? options}) {
+    return $createStreamingCall(_$memberSync, request, options: options);
   }
 }
 
@@ -55,26 +63,34 @@ abstract class SyncServiceBase extends $grpc.Service {
   $core.String get $name => 'ListeningParty.SyncService';
 
   SyncServiceBase() {
-    $addMethod($grpc.ServiceMethod<$5.SyncMeasurement, $5.SyncResponse>(
-        'MeasureTiming',
-        measureTiming_Pre,
-        false,
-        false,
-        ($core.List<$core.int> value) => $5.SyncMeasurement.fromBuffer(value),
-        ($5.SyncResponse value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$5.ClientState, $5.PlaybackCommand>(
-        'BidirectionalSync',
-        bidirectionalSync,
+    $addMethod($grpc.ServiceMethod<$5.HostCommand, $5.ServerResponse>(
+        'SendHostCommand',
+        sendHostCommand,
         true,
         true,
-        ($core.List<$core.int> value) => $5.ClientState.fromBuffer(value),
-        ($5.PlaybackCommand value) => value.writeToBuffer()));
+        ($core.List<$core.int> value) => $5.HostCommand.fromBuffer(value),
+        ($5.ServerResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$5.SyncRequest, $5.SyncReply>(
+        'TimingSync',
+        timingSync_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $5.SyncRequest.fromBuffer(value),
+        ($5.SyncReply value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$5.MemberStatus, $5.ServerBroadcast>(
+        'MemberSync',
+        memberSync,
+        true,
+        true,
+        ($core.List<$core.int> value) => $5.MemberStatus.fromBuffer(value),
+        ($5.ServerBroadcast value) => value.writeToBuffer()));
   }
 
-  $async.Future<$5.SyncResponse> measureTiming_Pre($grpc.ServiceCall $call, $async.Future<$5.SyncMeasurement> $request) async {
-    return measureTiming($call, await $request);
+  $async.Future<$5.SyncReply> timingSync_Pre($grpc.ServiceCall $call, $async.Future<$5.SyncRequest> $request) async {
+    return timingSync($call, await $request);
   }
 
-  $async.Future<$5.SyncResponse> measureTiming($grpc.ServiceCall call, $5.SyncMeasurement request);
-  $async.Stream<$5.PlaybackCommand> bidirectionalSync($grpc.ServiceCall call, $async.Stream<$5.ClientState> request);
+  $async.Stream<$5.ServerResponse> sendHostCommand($grpc.ServiceCall call, $async.Stream<$5.HostCommand> request);
+  $async.Future<$5.SyncReply> timingSync($grpc.ServiceCall call, $5.SyncRequest request);
+  $async.Stream<$5.ServerBroadcast> memberSync($grpc.ServiceCall call, $async.Stream<$5.MemberStatus> request);
 }

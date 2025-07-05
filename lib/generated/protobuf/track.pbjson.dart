@@ -23,6 +23,7 @@ const Track$json = {
     {'1': 'artist', '3': 3, '4': 1, '5': 9, '10': 'artist'},
     {'1': 'image_url', '3': 4, '4': 1, '5': 9, '10': 'imageUrl'},
     {'1': 'duration_ms', '3': 5, '4': 1, '5': 5, '10': 'durationMs'},
+    {'1': 'audio_url', '3': 6, '4': 1, '5': 9, '10': 'audioUrl'},
   ],
 };
 
@@ -30,7 +31,8 @@ const Track$json = {
 final $typed_data.Uint8List trackDescriptor = $convert.base64Decode(
     'CgVUcmFjaxIZCgh0cmFja19pZBgBIAEoCVIHdHJhY2tJZBIUCgV0aXRsZRgCIAEoCVIFdGl0bG'
     'USFgoGYXJ0aXN0GAMgASgJUgZhcnRpc3QSGwoJaW1hZ2VfdXJsGAQgASgJUghpbWFnZVVybBIf'
-    'CgtkdXJhdGlvbl9tcxgFIAEoBVIKZHVyYXRpb25Ncw==');
+    'CgtkdXJhdGlvbl9tcxgFIAEoBVIKZHVyYXRpb25NcxIbCglhdWRpb191cmwYBiABKAlSCGF1ZG'
+    'lvVXJs');
 
 @$core.Deprecated('Use getTrackRequestDescriptor instead')
 const GetTrackRequest$json = {

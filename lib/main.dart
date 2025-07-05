@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:app_links/app_links.dart';
+import 'package:bluppi/Provider/RoomProvider/sync_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -19,6 +20,8 @@ void main() async {
   //   anonKey: dotenv.env["SUPABASE_ANON_KEY"]!,
   // );
 
+  ProviderContainer().read(syncProvider);
+
   runApp(ProviderScope(
     observers: [],
     overrides: [
@@ -28,14 +31,14 @@ void main() async {
     child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   final AppLinks _appLinks = AppLinks();
 
   @override
@@ -68,6 +71,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    ref.read(syncProvider);
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(

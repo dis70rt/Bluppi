@@ -123,6 +123,7 @@ final localStorageProvider = Provider<LocalStorageService>((ref) {
 
 final dioProvider = Provider<Dio>((ref) {
   return Dio(BaseOptions(
+    baseUrl: AppConfig.httpSocketUrl,
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 30),
   ));

@@ -23,6 +23,7 @@ class Track extends $pb.GeneratedMessage {
     $core.String? artist,
     $core.String? imageUrl,
     $core.int? durationMs,
+    $core.String? audioUrl,
   }) {
     final result = create();
     if (trackId != null) result.trackId = trackId;
@@ -30,6 +31,7 @@ class Track extends $pb.GeneratedMessage {
     if (artist != null) result.artist = artist;
     if (imageUrl != null) result.imageUrl = imageUrl;
     if (durationMs != null) result.durationMs = durationMs;
+    if (audioUrl != null) result.audioUrl = audioUrl;
     return result;
   }
 
@@ -44,6 +46,7 @@ class Track extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'artist')
     ..aOS(4, _omitFieldNames ? '' : 'imageUrl')
     ..a<$core.int>(5, _omitFieldNames ? '' : 'durationMs', $pb.PbFieldType.O3)
+    ..aOS(6, _omitFieldNames ? '' : 'audioUrl')
     ..hasRequiredFields = false
   ;
 
@@ -108,6 +111,15 @@ class Track extends $pb.GeneratedMessage {
   $core.bool hasDurationMs() => $_has(4);
   @$pb.TagNumber(5)
   void clearDurationMs() => $_clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get audioUrl => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set audioUrl($core.String value) => $_setString(5, value);
+  @$pb.TagNumber(6)
+  $core.bool hasAudioUrl() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearAudioUrl() => $_clearField(6);
 }
 
 class GetTrackRequest extends $pb.GeneratedMessage {

@@ -45,3 +45,4 @@ app.*.map.json
 
 TODO.md
 /android/app/google-services.json
+/lib/firebase_options.dart

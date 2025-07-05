@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/Constants/colors.dart';
@@ -11,7 +13,6 @@ class ListeningScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomState = ref.watch(roomProvider);
     final room = roomState.currentRoom!;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(room.name),
@@ -64,7 +65,7 @@ class ListeningScreen extends ConsumerWidget {
                     ),
                     const Spacer(),
                     Text(
-                      'Host: ${room.members[0].userId.substring(0, 6)}',
+                      'Host: ${room.hostUserId.substring(0,6)}...',
                       style: TextStyle(
                         color: Colors.grey[400],
                         fontSize: 14,

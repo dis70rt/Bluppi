@@ -117,6 +117,8 @@ class UserStateNotifier extends StateNotifier<AsyncValue<UserModel?>> {
         return;
       }
 
+      log("Response: $response");
+
       if (response.statusCode == 200) {
         final userModel = UserModel.fromMap(response.data['user']);
         state = AsyncValue.data(userModel);

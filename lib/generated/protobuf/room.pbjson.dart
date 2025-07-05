@@ -29,6 +29,10 @@ const Room$json = {
     {'1': 'host_user_id', '3': 9, '4': 1, '5': 9, '10': 'hostUserId'},
     {'1': 'playback_state', '3': 10, '4': 1, '5': 11, '6': '.ListeningParty.PlaybackState', '10': 'playbackState'},
     {'1': 'current_track', '3': 11, '4': 1, '5': 11, '6': '.ListeningParty.Track', '10': 'currentTrack'},
+    {'1': 'current_position_ms', '3': 12, '4': 1, '5': 3, '10': 'currentPositionMs'},
+    {'1': 'last_position_update', '3': 13, '4': 1, '5': 3, '10': 'lastPositionUpdate'},
+    {'1': 'track_start_time', '3': 14, '4': 1, '5': 3, '10': 'trackStartTime'},
+    {'1': 'is_playing', '3': 15, '4': 1, '5': 8, '10': 'isPlaying'},
   ],
 };
 
@@ -42,7 +46,10 @@ final $typed_data.Uint8List roomDescriptor = $convert.base64Decode(
     'RlbmluZ1BhcnR5LlJvb21NZW1iZXJSB21lbWJlcnMSIAoMaG9zdF91c2VyX2lkGAkgASgJUgpo'
     'b3N0VXNlcklkEkQKDnBsYXliYWNrX3N0YXRlGAogASgLMh0uTGlzdGVuaW5nUGFydHkuUGxheW'
     'JhY2tTdGF0ZVINcGxheWJhY2tTdGF0ZRI6Cg1jdXJyZW50X3RyYWNrGAsgASgLMhUuTGlzdGVu'
-    'aW5nUGFydHkuVHJhY2tSDGN1cnJlbnRUcmFjaw==');
+    'aW5nUGFydHkuVHJhY2tSDGN1cnJlbnRUcmFjaxIuChNjdXJyZW50X3Bvc2l0aW9uX21zGAwgAS'
+    'gDUhFjdXJyZW50UG9zaXRpb25NcxIwChRsYXN0X3Bvc2l0aW9uX3VwZGF0ZRgNIAEoA1ISbGFz'
+    'dFBvc2l0aW9uVXBkYXRlEigKEHRyYWNrX3N0YXJ0X3RpbWUYDiABKANSDnRyYWNrU3RhcnRUaW'
+    '1lEh0KCmlzX3BsYXlpbmcYDyABKAhSCWlzUGxheWluZw==');
 
 @$core.Deprecated('Use createRoomRequestDescriptor instead')
 const CreateRoomRequest$json = {

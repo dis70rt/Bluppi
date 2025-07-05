@@ -1,38 +1,14 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:bluppi/Provider/RoomProvider/grpc_channel_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:grpc/grpc.dart';
 import 'package:bluppi/generated/protobuf/room.pbgrpc.dart';
-import 'package:bluppi/generated/protobuf/streaming.pbgrpc.dart';
 import 'package:bluppi/generated/protobuf/common.pbenum.dart';
 import 'package:bluppi/generated/protobuf/playback.pb.dart';
-
-
-final grpcChannelProvider = Provider<ClientChannel>((ref) {
-  final channel = ClientChannel(
-    '127.0.0.1',
-    port: 50051,
-    options: const ChannelOptions(
-      credentials: ChannelCredentials.insecure(),
-      idleTimeout: Duration(minutes: 5),
-    ),
-  );
-
-  ref.onDispose(() {
-    log('Shutting down gRPC channel');
-    channel.shutdown();
-  });
-  return channel;
-});
 
 final roomServiceProvider = Provider<RoomServiceClient>((ref) {
   final channel = ref.watch(grpcChannelProvider);
   return RoomServiceClient(channel);
-});
-
-final roomStreamServiceProvider = Provider<RoomStreamServiceClient>((ref) {
-  final channel = ref.watch(grpcChannelProvider);
-  return RoomStreamServiceClient(channel);
 });
 
 class RoomState {
@@ -82,10 +58,8 @@ class RoomState {
 
 class RoomNotifier extends StateNotifier<RoomState> {
   final RoomServiceClient _roomService;
-  final RoomStreamServiceClient _streamService;
-  StreamSubscription<RoomStreamUpdate>? _streamSubscription;
 
-  RoomNotifier(this._roomService, this._streamService) : super(RoomState()) {
+  RoomNotifier(this._roomService) : super(RoomState()) {
     fetchAvailableRooms();
   }
 
@@ -132,7 +106,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
         isLoading: false,
       );
       
-      await joinRoomStream(newRoom.id, hostUserId);
+      // await joinRoomStream(newRoom.id, hostUserId);
       return newRoom;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -140,140 +114,140 @@ class RoomNotifier extends StateNotifier<RoomState> {
     }
   }
 
-  Future<bool> joinRoomStream(String roomId, String userId) async {
-    state = state.copyWith(isLoading: true, clearErrorMessage: true);
+  // Future<bool> joinRoomStream(String roomId, String userId) async {
+  //   state = state.copyWith(isLoading: true, clearErrorMessage: true);
     
-    try {
-      final joinRequest = JoinRoomStreamRequest(
-        roomId: roomId,
-        userId: userId,
-      );
+  //   try {
+  //     final joinRequest = JoinRoomStreamRequest(
+  //       roomId: roomId,
+  //       userId: userId,
+  //     );
       
-      final snapshot = await _streamService.joinRoomStream(joinRequest);
+  //     final snapshot = await _streamService.joinRoomStream(joinRequest);
       
-      state = state.copyWith(
-        currentRoom: snapshot.roomInfo,
-        currentPlayback: snapshot.currentPlayback,
-        memberCount: snapshot.memberCount,
-        isLoading: false,
-      );
+  //     state = state.copyWith(
+  //       currentRoom: snapshot.roomInfo,
+  //       currentPlayback: snapshot.currentPlayback,
+  //       memberCount: snapshot.memberCount,
+  //       isLoading: false,
+  //     );
       
-      return await _setupRoomStreamConnection(roomId, userId);
-    } catch (e) {
-      log('Error joining room stream: $e');
-      state = state.copyWith(
-        isLoading: false, 
-        errorMessage: 'Failed to join room stream: ${e.toString()}'
-      );
-      return false;
-    }
-  }
+  //     return await _setupRoomStreamConnection(roomId, userId);
+  //   } catch (e) {
+  //     log('Error joining room stream: $e');
+  //     state = state.copyWith(
+  //       isLoading: false, 
+  //       errorMessage: 'Failed to join room stream: ${e.toString()}'
+  //     );
+  //     return false;
+  //   }
+  // }
 
-  Future<bool> _setupRoomStreamConnection(String roomId, String userId) async {
-    try {
-      _closeCurrentStream();
+  // Future<bool> _setupRoomStreamConnection(String roomId, String userId) async {
+  //   try {
+  //     _closeCurrentStream();
       
-      final streamRequest = StreamRoomUpdatesRequest(
-        roomId: roomId,
-        userId: userId,
-      );
+  //     final streamRequest = StreamRoomUpdatesRequest(
+  //       roomId: roomId,
+  //       userId: userId,
+  //     );
       
-      final stream = _streamService.streamRoomUpdates(streamRequest);
-      _streamSubscription = stream.listen(
-        _handleRoomUpdate,
-        onError: _handleStreamError,
-        onDone: _handleStreamClosed,
-      );
+  //     final stream = _streamService.streamRoomUpdates(streamRequest);
+  //     _streamSubscription = stream.listen(
+  //       _handleRoomUpdate,
+  //       onError: _handleStreamError,
+  //       onDone: _handleStreamClosed,
+  //     );
       
-      state = state.copyWith(isConnectedToStream: true);
-      return true;
-    } catch (e) {
-      log('Failed to setup room stream: $e');
-      state = state.copyWith(
-        isConnectedToStream: false, 
-        errorMessage: 'Failed to connect to room stream: ${e.toString()}'
-      );
-      return false;
-    }
-  }
+  //     state = state.copyWith(isConnectedToStream: true);
+  //     return true;
+  //   } catch (e) {
+  //     log('Failed to setup room stream: $e');
+  //     state = state.copyWith(
+  //       isConnectedToStream: false, 
+  //       errorMessage: 'Failed to connect to room stream: ${e.toString()}'
+  //     );
+  //     return false;
+  //   }
+  // }
 
-  void _handleRoomUpdate(RoomStreamUpdate update) {
-    if (update.hasMemberUpdate()) {
-      _handleMemberUpdate(update.memberUpdate);
-    } else if (update.hasPlaybackUpdate()) {
-      _handlePlaybackUpdate(update.playbackUpdate);
-    } else if (update.hasRoomStatusUpdate()) {
-      _handleRoomStatusUpdate(update.roomStatusUpdate);
-    }
-  }
+  // void _handleRoomUpdate(RoomStreamUpdate update) {
+  //   if (update.hasMemberUpdate()) {
+  //     _handleMemberUpdate(update.memberUpdate);
+  //   } else if (update.hasPlaybackUpdate()) {
+  //     _handlePlaybackUpdate(update.playbackUpdate);
+  //   } else if (update.hasRoomStatusUpdate()) {
+  //     _handleRoomStatusUpdate(update.roomStatusUpdate);
+  //   }
+  // }
 
-  void _handleMemberUpdate(MemberUpdate update) {
-    if (update.hasMemberJoin()) {
-      state = state.copyWith(
-        memberCount: state.memberCount + 1,
-      );
-    } else if (update.hasMemberLeave()) {
-      state = state.copyWith(
-        memberCount: state.memberCount - 1 >= 0 ? state.memberCount - 1 : 0,
-      );
-    }
-  }
+  // void _handleMemberUpdate(MemberUpdate update) {
+  //   if (update.hasMemberJoin()) {
+  //     state = state.copyWith(
+  //       memberCount: state.memberCount + 1,
+  //     );
+  //   } else if (update.hasMemberLeave()) {
+  //     state = state.copyWith(
+  //       memberCount: state.memberCount - 1 >= 0 ? state.memberCount - 1 : 0,
+  //     );
+  //   }
+  // }
 
-  void _handlePlaybackUpdate(PlaybackUpdate update) {
-    PlaybackState? newPlayback = state.currentPlayback;
+  // void _handlePlaybackUpdate(PlaybackUpdate update) {
+  //   PlaybackState? newPlayback = state.currentPlayback;
     
-    if (update.hasTrackChange()) {
-      final change = update.trackChange;
-      newPlayback = PlaybackState(
-        roomId: state.currentRoom!.id,
-        currentTrackId: change.currentTrack.trackId,
-        positionMs: change.positionMs,
-        status: state.currentPlayback?.status ?? PlaybackStatus.PLAYING,
-      );
-    } else if (update.hasPlayState()) {
-      final playState = update.playState;
-      newPlayback = PlaybackState(
-        roomId: state.currentRoom!.id,
-        currentTrackId: state.currentPlayback?.currentTrackId ?? '',
-        positionMs: playState.positionMs,
-        status: playState.status,
-      );
-    } else if (update.hasSeek() && state.currentPlayback != null) {
-      newPlayback = PlaybackState(
-        roomId: state.currentRoom!.id,
-        currentTrackId: state.currentPlayback!.currentTrackId,
-        positionMs: update.seek.positionMs,
-        status: state.currentPlayback!.status,
-      );
-    }
+  //   if (update.hasTrackChange()) {
+  //     final change = update.trackChange;
+  //     newPlayback = PlaybackState(
+  //       roomId: state.currentRoom!.id,
+  //       currentTrackId: change.currentTrack.trackId,
+  //       positionMs: change.positionMs,
+  //       status: state.currentPlayback?.status ?? PlaybackStatus.PLAYING,
+  //     );
+  //   } else if (update.hasPlayState()) {
+  //     final playState = update.playState;
+  //     newPlayback = PlaybackState(
+  //       roomId: state.currentRoom!.id,
+  //       currentTrackId: state.currentPlayback?.currentTrackId ?? '',
+  //       positionMs: playState.positionMs,
+  //       status: playState.status,
+  //     );
+  //   } else if (update.hasSeek() && state.currentPlayback != null) {
+  //     newPlayback = PlaybackState(
+  //       roomId: state.currentRoom!.id,
+  //       currentTrackId: state.currentPlayback!.currentTrackId,
+  //       positionMs: update.seek.positionMs,
+  //       status: state.currentPlayback!.status,
+  //     );
+  //   }
     
-    if (newPlayback != null) {
-      state = state.copyWith(currentPlayback: newPlayback);
-    }
-  }
+  //   if (newPlayback != null) {
+  //     state = state.copyWith(currentPlayback: newPlayback);
+  //   }
+  // }
 
-  void _handleRoomStatusUpdate(RoomStatusUpdate update) {
-    if (update.status == RoomStatus.INACTIVE) {
-      log('Room became inactive: ${update.reason}');
-      leaveRoom();
-      state = state.copyWith(
-        errorMessage: 'Room closed: ${update.reason}',
-      );
-    }
-  }
+  // void _handleRoomStatusUpdate(RoomStatusUpdate update) {
+  //   if (update.status == RoomStatus.INACTIVE) {
+  //     log('Room became inactive: ${update.reason}');
+  //     leaveRoom();
+  //     state = state.copyWith(
+  //       errorMessage: 'Room closed: ${update.reason}',
+  //     );
+  //   }
+  // }
 
-  void _handleStreamError(String error) {
-    log('Stream error: $error');
-    state = state.copyWith(
-      isConnectedToStream: false,
-      errorMessage: 'Stream error: ${error.toString()}',
-    );
-  }
+  // void _handleStreamError(String error) {
+  //   log('Stream error: $error');
+  //   state = state.copyWith(
+  //     isConnectedToStream: false,
+  //     errorMessage: 'Stream error: ${error.toString()}',
+  //   );
+  // }
 
-  void _handleStreamClosed() {
-    log('Room stream closed');
-    state = state.copyWith(isConnectedToStream: false);
-  }
+  // void _handleStreamClosed() {
+  //   log('Room stream closed');
+  //   state = state.copyWith(isConnectedToStream: false);
+  // }
 
   Future<Room?> joinRoom(String roomId, String userId) async {
     if (state.currentRoom?.id == roomId) return state.currentRoom;
@@ -293,7 +267,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
         isLoading: false,
       );
       
-      await joinRoomStream(roomId, userId);
+      // await joinRoomStream(roomId, userId);
       return joinedRoom;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -332,10 +306,10 @@ class RoomNotifier extends StateNotifier<RoomState> {
   }
   
   void _closeCurrentStream() {
-    if (_streamSubscription != null) {
-      _streamSubscription!.cancel();
-      _streamSubscription = null;
-    }
+    // if (_streamSubscription != null) {
+    //   _streamSubscription!.cancel();
+    //   _streamSubscription = null;
+    // }
   }
   
   void clearError() {
@@ -343,6 +317,29 @@ class RoomNotifier extends StateNotifier<RoomState> {
       state = state.copyWith(clearErrorMessage: true);
     }
   }
+
+  void toggleRoom() {
+  if (state.currentRoom == null) {
+    final debugRoom = Room(
+      id: 'debug-room',
+      name: 'Debug Room',
+      description: 'Room for testing only',
+      inviteOnly: false,
+      visibility: RoomVisibility.PUBLIC,
+      hostUserId: 'debug-user',
+    );
+
+    state = state.copyWith(
+      currentRoom: debugRoom,
+      isLoading: false,
+    );
+  } else {
+    state = state.copyWith(
+      clearCurrentRoom: true,
+      isLoading: false,
+    );
+  }
+}
 
   @override
   void dispose() {
@@ -353,6 +350,6 @@ class RoomNotifier extends StateNotifier<RoomState> {
 
 final roomProvider = StateNotifierProvider<RoomNotifier, RoomState>((ref) {
   final roomService = ref.watch(roomServiceProvider);
-  final streamService = ref.watch(roomStreamServiceProvider);
-  return RoomNotifier(roomService, streamService);
+  // final streamService = ref.watch(roomStreamServiceProvider);
+  return RoomNotifier(roomService);
 });
