@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/Data/Models/track_model.dart';
 
 enum TrackEventType {
@@ -21,20 +20,29 @@ class TrackEvent {
   });
 }
 
-final trackEventBusProvider = Provider<TrackEventBus>((ref) {
-  return TrackEventBus();
-});
+// final trackEventBusProvider = Provider<TrackEventBus>((ref) {
+//   return TrackEventBus();
+// });
+
+// class TrackEventBus {
+//   final _controller = StreamController<TrackEvent>.broadcast();
+  
+//   Stream<TrackEvent> get stream => _controller.stream;
+  
+//   void publish(TrackEvent event) {
+//     _controller.add(event);
+//   }
+  
+//   void dispose() {
+//     _controller.close();
+//   }
+// }
 
 class TrackEventBus {
+  TrackEventBus._();  
+  static final TrackEventBus instance = TrackEventBus._();
   final _controller = StreamController<TrackEvent>.broadcast();
-  
   Stream<TrackEvent> get stream => _controller.stream;
-  
-  void publish(TrackEvent event) {
-    _controller.add(event);
-  }
-  
-  void dispose() {
-    _controller.close();
-  }
+  void publish(TrackEvent e) => _controller.add(e);
+  void dispose() => _controller.close();
 }

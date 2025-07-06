@@ -28,6 +28,7 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
   static const int _descriptionMaxLength = 80;
 
   void _handleButtonPress() async {
+    if (!mounted) return;
     if (!_isExpanded) {
       setState(() {
         _isExpanded = true;
@@ -41,6 +42,7 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
   }
 
   Future<void> _createRoom() async {
+    if (!mounted) return;
     setState(() {
       _isCreating = true;
     });
@@ -58,21 +60,20 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
         hostUserId: currentUserId,
       );
 
-      if (createdRoom != null) {
-        // Room created successfully
-        setState(() {
-          _isExpanded = false;
-          _isCreating = false;
-        });
+      if (createdRoom != null && mounted) {
+        if (mounted) {
+          setState(() {
+            _isExpanded = false;
+            _isCreating = false;
+          });
+        }
         
-        // Reset form
         _formKey.currentState?.reset();
         _roomName = '';
         _roomDescription = '';
         _isPublic = true;
         _roomVisibility = RoomVisibility.PUBLIC;
         
-        // Show success message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -83,10 +84,11 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
           );
         }
       } else {
-        // Handle creation failure (error will be in roomProvider state)
-        setState(() {
-          _isCreating = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isCreating = false;
+          });
+        }
         
         final roomState = ref.read(roomProvider);
         if (roomState.errorMessage != null && mounted) {
@@ -100,9 +102,11 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
         }
       }
     } catch (e) {
-      setState(() {
-        _isCreating = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isCreating = false;
+        });
+      }
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -117,6 +121,7 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
   }
 
   void _closeForm() {
+    if (!mounted) return;
     setState(() {
       _isExpanded = false;
     });
@@ -264,7 +269,6 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
                           ),
                           const SizedBox(height: 15),
                           
-                          // Animated Toggle Switch for Public/Private
                           Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -307,12 +311,14 @@ class _CreateRoomWidgetState extends ConsumerState<CreateRoomWidget> {
                                     ),
                                   ),
                                   onChanged: _isCreating ? null : (value) {
-                                    setState(() {
-                                      _isPublic = value;
-                                      _roomVisibility = value 
-                                          ? RoomVisibility.PUBLIC 
-                                          : RoomVisibility.PRIVATE;
-                                    });
+                                    if (mounted) {
+                                      setState(() {
+                                        _isPublic = value;
+                                        _roomVisibility = value 
+                                            ? RoomVisibility.PUBLIC 
+                                            : RoomVisibility.PRIVATE;
+                                      });
+                                    }
                                   },
                                   height: 40,
                                 ),

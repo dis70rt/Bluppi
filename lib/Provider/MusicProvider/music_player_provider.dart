@@ -26,6 +26,12 @@ final musicPlayerProvider =
     ref.watch(mediaServiceProvider),
   );
 
+  Future.microtask(() {
+    ref.read(trackDatabaseSubscriberProvider);
+    ref.read(trackHistorySubscriberProvider);
+    ref.read(trackSyncSubscriberProvider);
+  });
+
   ref.onDispose(() {
     notifier._disposed = true;
   });
@@ -84,10 +90,24 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   ) : super(const MusicPlayerState()) {
     _initPlaybackHandling();
     _restorePlayHistory();
-
-    _ref.read(trackDatabaseSubscriberProvider);
-    _ref.read(trackHistorySubscriberProvider);
   }
+
+  // void _publishTrackEvent(Track track, TrackEventType type, {int? durationSeconds}) {
+  //   try {
+  //     final eventBus = _ref.read(trackEventBusProvider);
+  //     log('Publishing ${type.name} event for track: ${track.trackName}', name: 'MusicPlayerNotifier');
+      
+  //     eventBus.publish(TrackEvent(
+  //       track: track,
+  //       type: type,
+  //       durationSeconds: durationSeconds,
+  //     ));
+      
+  //     log('Event published successfully', name: 'MusicPlayerNotifier');
+  //   } catch (e) {
+  //     log('Error publishing track event: $e', name: 'MusicPlayerNotifier');
+  //   }
+  // }
 
   Future<void> _restorePlayHistory() async {
     try {
@@ -306,9 +326,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         // await _database.writeTrack(
         //     queueState.current!, state.duration?.inSeconds ?? 0);
         // await _userServics.historyTrack(queueState.current!.trackId);
-
-        final eventBus = _ref.read(trackEventBusProvider);
-        eventBus.publish(TrackEvent(
+        TrackEventBus.instance.publish(TrackEvent(
           track: queueState.current!,
           type: TrackEventType.play,
           durationSeconds: state.duration?.inSeconds ?? 0,
@@ -541,6 +559,7 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
         return;
       }
 
+      Track trackToPlay = currentTrack;
       if (currentTrack.audioUrl == null || currentTrack.audioUrl!.isEmpty) {
         final enrichedTrack = await _fetchAndEnsureAudioUrl(currentTrack);
         if (enrichedTrack == null) {
@@ -548,22 +567,21 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
               false, "No audio available for this track", null);
           return;
         }
+        trackToPlay = enrichedTrack;
         _ref.read(currentTrackProvider.notifier).state = enrichedTrack;
-        await _mediaService.play(track: enrichedTrack);
-      } else {
-        await _mediaService.play(track: currentTrack);
       }
 
+      await _mediaService.play(track: trackToPlay);
       state = state.copyWith(status: PlayerStatus.playing);
 
       // ignore: unnecessary_null_comparison
       if (state.status == PlayerStatus.playing && currentTrack != null) {
-      final eventBus = _ref.read(trackEventBusProvider);
-      eventBus.publish(TrackEvent(
-        track: currentTrack,
-        type: TrackEventType.play,
-        durationSeconds: state.duration?.inSeconds ?? 0,
-      ));
+        TrackEventBus.instance.publish(TrackEvent(
+          track: trackToPlay,
+          type: TrackEventType.play,
+          durationSeconds: state.duration?.inSeconds ?? 0
+        ),
+      );
     }
     } catch (e) {
       state = state.copyWith(
@@ -577,6 +595,15 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
     try {
       await _mediaService.pause();
       state = state.copyWith(status: PlayerStatus.paused);
+
+      final currentTrack = _ref.read(currentTrackProvider);
+      if (currentTrack != null) {
+        TrackEventBus.instance.publish(TrackEvent(
+          track: currentTrack,
+          type: TrackEventType.pause,
+        ));
+      }
+
     } catch (e) {
       _updateOperationState(false, "Failed to pause: $e", "pause");
     }
@@ -733,6 +760,14 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
       await _mediaService.seek(position);
       if (!state.isSeeking) {
         state = state.copyWith(position: position);
+      }
+
+      final currentTrack = _ref.read(currentTrackProvider);
+      if (currentTrack != null) {
+        TrackEventBus.instance.publish(TrackEvent(
+          track: currentTrack,
+          type: TrackEventType.seek,
+        ));
       }
     } catch (e) {
       _updateOperationState(false, "Failed to seek: $e", "seek");

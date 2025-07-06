@@ -20,14 +20,19 @@ void main() async {
   //   anonKey: dotenv.env["SUPABASE_ANON_KEY"]!,
   // );
 
-  ProviderContainer().read(syncProvider);
+  // final container = ProviderContainer();
+  // container.read(trackDatabaseSubscriberProvider);
+  // container.read(trackHistorySubscriberProvider);
+  // container.read(trackSyncSubscriberProvider);
 
   runApp(ProviderScope(
-    observers: [],
-    overrides: [
-      trackDatabaseSubscriberProvider,
-      trackHistorySubscriberProvider
-    ],
+    // container: container,
+    // observers: [],
+    // overrides: [
+    //   trackDatabaseSubscriberProvider,
+    //   trackHistorySubscriberProvider,
+    //   trackSyncSubscriberProvider,
+    // ],
     child: MyApp()));
 }
 
@@ -45,6 +50,12 @@ class _MyAppState extends ConsumerState<MyApp> {
   void initState() {
     super.initState();
     _handleIncomingDeepLinks();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(trackDatabaseSubscriberProvider);
+      ref.read(trackHistorySubscriberProvider);
+      ref.read(trackSyncSubscriberProvider);
+    });
   }
 
   void _handleIncomingDeepLinks() async {

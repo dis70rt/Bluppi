@@ -111,6 +111,6 @@ class SyncNotifier extends StateNotifier<SyncState> {
 }
 
 final syncProvider = StateNotifierProvider<SyncNotifier, SyncState>((ref) {
-  final client = ref.watch(syncService);
+  final client = ref.read(syncService);
   return SyncNotifier(client, ref);
 });
