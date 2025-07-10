@@ -1,7 +1,4 @@
-import 'package:bluppi/Data/Models/track_model.dart';
-import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
-import 'package:bluppi/Provider/RoomProvider/room_sync_provider.dart';
-import 'package:bluppi/Provider/RoomProvider/sync_provider.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/recently_played.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,12 +24,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         return Scaffold(
           backgroundColor: Colors.black,
           appBar: homeAppBar(context, ref),
-          body: Center(
-            child: 
-              FilledButton(onPressed: () {
-                
-              }, child: Text("Sync Test"))
-            ,
+          body: Column(
+            children: [
+              RecentlyPlayedWidget()
+            ],
           )
         );
       },

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
 
 class JoinRoomDeepLinkScreen extends ConsumerStatefulWidget {
   final String roomCode;
@@ -29,13 +29,10 @@ class _JoinRoomDeepLinkScreenState extends ConsumerState<JoinRoomDeepLinkScreen>
       final currentUserId = FirebaseAuth.instance.currentUser!.uid;
       final roomNotifier = ref.read(roomProvider.notifier);
       
-      // TODO: GetRoom by ROOM CODE implementation remains
       final joinedRoom = await roomNotifier.joinRoom(widget.roomCode, currentUserId);
       
       if (joinedRoom != null) {
         if (mounted) {
-          // Navigation will happen through MainScreenWidget's listener
-          // Just return to main screen and it will detect room state
           context.go('/main');
         }
       } else {

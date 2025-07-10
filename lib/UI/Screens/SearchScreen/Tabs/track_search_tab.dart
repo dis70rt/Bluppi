@@ -30,7 +30,9 @@ class _TracksSearchTabState extends ConsumerState<TracksSearchTab> {
   void didUpdateWidget(TracksSearchTab oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.query != widget.query) {
-      ref.read(paginatedSearchProvider.notifier).searchTracks(widget.query, refresh: true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(paginatedSearchProvider.notifier).searchTracks(widget.query, refresh: true);
+      });
     }
   }
   

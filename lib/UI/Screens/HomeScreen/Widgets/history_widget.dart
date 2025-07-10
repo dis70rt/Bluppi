@@ -1,20 +1,13 @@
 import 'dart:ui';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/recent_tracks_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bluppi/Data/Models/track_model.dart';
 import 'package:bluppi/Data/Services/user_services.dart';
 import 'package:bluppi/Provider/MusicProvider/music_player_provider.dart';
 import 'package:bluppi/UI/Widgets/main_screen.dart';
 import 'package:bluppi/Utils/datetime.dart';
 import 'package:bluppi/Utils/snackbar.dart';
-
-class HistoryTrack {
-  final Track track;
-  final DateTime playedAt;
-
-  HistoryTrack({required this.track, required this.playedAt});
-}
 
 class HistoryOverlay extends ConsumerStatefulWidget {
   const HistoryOverlay({

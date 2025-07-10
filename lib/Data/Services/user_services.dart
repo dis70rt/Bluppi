@@ -97,7 +97,7 @@ class UserServices {
     }
   }
 
-  Future<void> historyTrack(String trackId) async {
+  Future<void> addHistoryTrack(String trackId) async {
     try {
       final user = auth.currentUser;
       if (user == null) {

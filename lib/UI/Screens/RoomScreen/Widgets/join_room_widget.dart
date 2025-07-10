@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/Constants/colors.dart';
-import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
 
 class JoinRoomWidget extends ConsumerStatefulWidget {
   const JoinRoomWidget({super.key});

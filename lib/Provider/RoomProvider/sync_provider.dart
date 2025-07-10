@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bluppi/Provider/RoomProvider/grpc_channel_provider.dart';
-import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
 import 'package:bluppi/generated/protobuf/streaming.pbgrpc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fixnum/fixnum.dart';

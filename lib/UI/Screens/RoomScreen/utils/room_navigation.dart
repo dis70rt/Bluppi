@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
 import 'package:bluppi/UI/Screens/RoomScreen/listening_room.dart';
 import 'package:bluppi/UI/Screens/RoomScreen/room_screen.dart';
 

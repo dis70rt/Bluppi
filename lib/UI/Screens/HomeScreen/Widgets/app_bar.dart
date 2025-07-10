@@ -1,63 +1,14 @@
-import 'dart:developer';
 
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/history_widget.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/recent_tracks_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:bluppi/Data/Models/track_model.dart';
-import 'package:bluppi/Data/Services/database_services.dart';
-import 'package:bluppi/Data/Services/user_services.dart';
 
 import 'package:bluppi/Provider/UserProvider/user_provider.dart';
-import 'package:bluppi/UI/Screens/HomeScreen/Widgets/history_widget.dart';
 import 'package:bluppi/UI/Widgets/main_screen.dart';
-
-final userServices = UserServices();
-final database = Database();
-
-Future<List<HistoryTrack>> getHistoryTracks() async {
-  try {
-    final historyEntries = await userServices.getHistoryTracks();
-    if (historyEntries.isEmpty) {
-      return [];
-    }
-
-    final List<Future<HistoryTrack?>> historyTrackFutures = historyEntries.map((historyEntry) {
-      final trackId = historyEntry['trackId'];
-      final playedAt = historyEntry['playedAt'];
-
-      return Future<HistoryTrack?>(() async {
-        final trackJson = await database.getTrack(trackId.toString());
-        final track = Track.fromJson(trackJson['track']);
-        // log("Tracks: $trackJson");
-        return HistoryTrack(track: track, playedAt: playedAt);
-      });
-    }).toList();
-
-    final List<HistoryTrack?> results = await Future.wait(historyTrackFutures);
-    final List<HistoryTrack> validHistoryTracks = results.whereType<HistoryTrack>().toList();
-
-    return validHistoryTracks;
-
-    // final List<HistoryTrack?> historyTracks = [];
-    // for(var historyEntry in historyEntries) {
-    //   final trackId = historyEntry['trackId'];
-    //   final playedAt = historyEntry['playedAt'];
-
-    //   final _track = await database.getTrack(trackId);
-    //   final track = Track.fromJson(_track);
-    //   historyTracks.add(HistoryTrack(track: track, playedAt: playedAt));
-    // }
-
-    // return historyTracks;
-
-  } catch (e, stackTrace) {
-    log('Error fetching history tracks: $e');
-    debugPrint('StackTrace: $stackTrace');
-    return [];
-  }
-}
 
 Widget iconButton(
     {required void Function() onPressed,
@@ -183,17 +134,17 @@ PreferredSizeWidget homeAppBar(BuildContext context, WidgetRef ref) {
                 icon: Icons.search,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: horizontalPadding - 4.0, left: 4.0),
-              child: iconButton(
-                onPressed: () async {
-                  final historyTracks = await getHistoryTracks();
-                  showHistoryOverlay(context, historyTracks);
-                },
-                icon: Icons.history,
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(
+            //       right: horizontalPadding - 4.0, left: 4.0),
+            //   child: iconButton(
+            //     onPressed: () async {
+            //       final recentlyPlayed = ref.read(recentlyPlayedProvider);
+            //       showHistoryOverlay(context, recentlyPlayed.tracks);
+            //     },
+            //     icon: Icons.history,
+            //   ),
+            // ),
           ],
         );
       },

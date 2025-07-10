@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:bluppi/Data/Models/track_model.dart';
@@ -29,7 +30,8 @@ class Database {
       'popularity': 0,
     };
 
-    await dio.post(
+    try {
+      await dio.post(
       '/write-track',
       data: jsonEncode(postData),
       options: Options(
@@ -39,6 +41,9 @@ class Database {
         },
       ),
     );
+    } catch (e) {
+      log("Error: $e",name: "Write Track");
+    }
   }
 
   Future<Map<String, dynamic>> getTrack(String trackId) async {

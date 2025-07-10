@@ -1,8 +1,10 @@
 import 'dart:developer';
 
+import 'package:bluppi/Data/Models/track_model.dart';
 import 'package:bluppi/Data/Services/database_services.dart';
 import 'package:bluppi/Data/Services/user_services.dart';
 import 'package:bluppi/Provider/RoomProvider/room_sync_provider.dart';
+import 'package:bluppi/UI/Screens/HomeScreen/Widgets/recent_tracks_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/PubSub/publisher.dart';
 
@@ -22,11 +24,12 @@ final trackDatabaseSubscriberProvider = Provider<void>((ref) {
 
 final trackHistorySubscriberProvider = Provider<void>((ref) {
   final eventBus = TrackEventBus.instance;
-  final userServices = UserServices();
+  final recentlyPlayed = ref.read(recentlyPlayedProvider.notifier);
 
   final sub = eventBus.stream.listen((event) {
     if (event.type == TrackEventType.play) {
-      userServices.historyTrack(event.track.trackId);
+      // userServices.addHistoryTrack(event.track.trackId);
+      recentlyPlayed.addTrack(event.track);
       log("Track history updated for: ${event.track.trackName}", name: "Subscriber");
     }
   });

@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:bluppi/Data/Models/track_model.dart' as t;
 import 'package:bluppi/Provider/RoomProvider/host_sync_state.dart';
-import 'package:bluppi/Provider/RoomProvider/room_service_provider.dart';
+import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
 import 'package:bluppi/Provider/RoomProvider/sync_provider.dart';
 import 'package:bluppi/generated/protobuf/streaming.pbgrpc.dart';
 import 'package:bluppi/generated/protobuf/track.pb.dart';

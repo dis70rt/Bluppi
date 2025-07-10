@@ -109,6 +109,15 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   //   }
   // }
 
+  void statePlay(Track track) {
+    _ref.read(currentTrackProvider.notifier).state = track;
+    state = state.copyWith(
+        status: PlayerStatus.playing,
+        position: Duration.zero,
+        track: track,
+      );
+  }
+
   Future<void> _restorePlayHistory() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -466,12 +475,12 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
   Future<void> loadTrack(Track track) async {
     // if (_disposed) return;
     if (await _acquireLock('load_track')) return;
+    state = state.copyWith(status: PlayerStatus.loading, track: track);
 
     try {
       _updateOperationState(true, null, "loading track");
 
       _ref.read(currentTrackProvider.notifier).state = track;
-      state = state.copyWith(status: PlayerStatus.loading, track: track);
 
       await _mediaService.stop();
       _ref.read(queueProvider.notifier).clear();
