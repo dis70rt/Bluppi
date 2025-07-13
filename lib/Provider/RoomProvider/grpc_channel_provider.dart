@@ -5,10 +5,14 @@ import 'package:grpc/grpc.dart';
 
 final grpcChannelProvider = Provider<ClientChannel>((ref) {
   final channel = ClientChannel(
-    '127.0.0.1',
-    port: 50051,
-    options: const ChannelOptions(
-      credentials: ChannelCredentials.insecure(),
+    'bluppi-grpc.saikat.in',
+    port: 443,
+    options: ChannelOptions(
+      credentials: ChannelCredentials.secure(
+        certificates: null,
+        authority: 'bluppi-grpc.saikat.in',
+        onBadCertificate: (_, __) => true,
+      ),
       idleTimeout: Duration(minutes: 5),
     ),
   );

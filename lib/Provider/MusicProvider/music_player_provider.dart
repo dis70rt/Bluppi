@@ -474,8 +474,9 @@ class MusicPlayerNotifier extends StateNotifier<MusicPlayerState> {
 
   Future<void> loadTrack(Track track) async {
     // if (_disposed) return;
-    if (await _acquireLock('load_track')) return;
     state = state.copyWith(status: PlayerStatus.loading, track: track);
+    if (await _acquireLock('load_track')) return;
+    // state = state.copyWith(status: PlayerStatus.loading, track: track);
 
     try {
       _updateOperationState(true, null, "loading track");

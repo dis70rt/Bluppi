@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:app_links/app_links.dart';
 import 'package:bluppi/Provider/RoomProvider/sync_provider.dart';
@@ -12,6 +13,7 @@ import 'package:bluppi/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 

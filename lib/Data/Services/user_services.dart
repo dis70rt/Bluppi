@@ -221,7 +221,7 @@ class UserServices {
       final response = await dio.get('/user/$uid');
 
       if (response.statusCode == 200) {
-        return UserModel.fromMap(response.data);
+        return UserModel.fromMap(response.data['user']);
       } else {
         log("No user found with UID: $uid");
         return null;
@@ -237,7 +237,7 @@ class UserServices {
       final response = await dio.get('/user/username/$username');
 
       if (response.statusCode == 200) {
-        return UserModel.fromMap(response.data);
+        return UserModel.fromMap(response.data['user']);
       } else {
         throw Exception('User not found');
       }

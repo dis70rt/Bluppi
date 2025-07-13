@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
+import 'package:bluppi/UI/Widgets/playback_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -132,23 +134,27 @@ Widget trackListItem(BuildContext context, Track track, WidgetRef ref) {
       ),
       // trailing: Icon(Icons.favorite_border, color: Colors.white.withValues(alpha: 0.8)),
       onTap: () async {
-        if (track.audioUrl == null || track.audioUrl!.isEmpty) {
-          final streamService = ref.read(audioStreamingServiceProvider);
-          try {
-            final streamData = await streamService.getAudioStreamData(track);
-            if (streamData['audioUrl'] != null) {
-              final enrichedTrack = track.copyWith(
-                audioUrl: streamData['audioUrl'],
-                videoId: streamData['videoId'] ?? track.videoId,
-              );
-              playerNotifier.loadTrack(enrichedTrack);
-              return;
+        if(!ref.read(roomProvider).canCommand) {
+          showPlaybackDialog(context);
+        } else {
+            if (track.audioUrl == null || track.audioUrl!.isEmpty) {
+            final streamService = ref.read(audioStreamingServiceProvider);
+            try {
+              final streamData = await streamService.getAudioStreamData(track);
+              if (streamData['audioUrl'] != null) {
+                final enrichedTrack = track.copyWith(
+                  audioUrl: streamData['audioUrl'],
+                  videoId: streamData['videoId'] ?? track.videoId,
+                );
+                playerNotifier.loadTrack(enrichedTrack);
+                return;
+              }
+            } catch (e) {
+              log("Failed to get audio URL: $e");
             }
-          } catch (e) {
-            log("Failed to get audio URL: $e");
           }
+          playerNotifier.loadTrack(track);
         }
-        playerNotifier.loadTrack(track);
       },
     ),
   );

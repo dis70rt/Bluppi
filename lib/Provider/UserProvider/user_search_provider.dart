@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 import 'package:bluppi/config.dart';
@@ -43,11 +45,10 @@ final userSearchProvider =
       users: response.data["users"] is List
           ? List<Map<String, dynamic>>.from(response.data["users"])
           : [],
-      count: response.data["count"] ?? 0,
+      count: response.data["total"] ?? 0,
       limit: 10,
       offset: 0,
     );
-
     return result;
   } on DioException catch (e) {
     throw 'Failed to search users: ${e.message}';

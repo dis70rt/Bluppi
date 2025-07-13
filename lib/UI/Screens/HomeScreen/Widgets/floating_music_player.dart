@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison
 
+import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -286,7 +287,8 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                                       color: Colors.white.withValues(alpha: 0.6),
                                                       fontSize: 12),
                                                 ),
-                                                IconButton(
+                                                ref.read(roomProvider).canCommand
+                                                ? IconButton(
                                                   icon: const Icon(Icons.skip_previous,
                                                       color: Colors.white),
                                                   iconSize: 40.0,
@@ -295,12 +297,23 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                                   onPressed: () => ref
                                                       .read(musicPlayerProvider.notifier)
                                                       .skipToPrevious(),
+                                                ) : IconButton(
+                                                  icon: const Icon(Icons.thumb_up_off_alt_outlined,
+                                                      color: Colors.white),
+                                                  iconSize: 30.0,
+                                                  padding: EdgeInsets.zero,
+                                                  tooltip: 'Vote-Up',
+                                                  onPressed: () {}
                                                 ),
                                                 const SizedBox(width: 8),
-                                                _buildPlayPauseButton(context, playerState,
-                                                    playerNotifier, currentTrack != null),
+                                                AbsorbPointer(
+                                                  absorbing: !ref.read(roomProvider).canCommand,
+                                                  child: _buildPlayPauseButton(context, playerState,
+                                                      playerNotifier, currentTrack != null),
+                                                ),
                                                 const SizedBox(width: 8),
-                                                IconButton(
+                                                ref.read(roomProvider).canCommand
+                                                ? IconButton(
                                                   icon: const Icon(Icons.skip_next,
                                                       color: Colors.white),
                                                   iconSize: 40.0,
@@ -309,6 +322,13 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                                   onPressed: () => ref
                                                       .read(musicPlayerProvider.notifier)
                                                       .skipToNext(),
+                                                ) : IconButton(
+                                                  icon: const Icon(Icons.thumb_down_off_alt_outlined,
+                                                      color: Colors.white),
+                                                  iconSize: 30.0,
+                                                  padding: EdgeInsets.zero,
+                                                  tooltip: 'Vote-Down',
+                                                  onPressed: () {}
                                                 ),
                                                 Text(
                                                   _formatDuration(duration),

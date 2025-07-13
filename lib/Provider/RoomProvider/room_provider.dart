@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:bluppi/Data/Models/track_model.dart';
 import 'package:bluppi/Data/Services/notification_method_channel.dart';
+import 'package:bluppi/Provider/MqttProvider/mqtt_provider.dart';
 import 'package:bluppi/Provider/MusicProvider/music_player_provider.dart';
 import 'package:bluppi/Provider/RoomProvider/grpc_channel_provider.dart';
 import 'package:bluppi/Provider/RoomProvider/sync_provider.dart';
@@ -29,6 +30,7 @@ class RoomState {
   final int memberCount;
 
   bool get isInRoom => currentRoom != null && !isLoading;
+  bool get canCommand => (isInRoom && currentRoom?.hostUserId == FirebaseAuth.instance.currentUser?.uid) || !isInRoom;
 
   RoomState({
     this.currentRoom,
@@ -147,6 +149,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
       );
 
       startListeningForBroadcasts(joinedRoom.id, userId);
+      ref.read(liveChatServiceProvider.notifier).connect(roomId);
       return joinedRoom;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -256,6 +259,7 @@ Control Command Received:
 
         try {
           await _roomService.leaveRoom(request);
+          ref.read(liveChatServiceProvider.notifier).disconnect();
         } catch (e) {
           log('Error leaving room: $e');
         }
