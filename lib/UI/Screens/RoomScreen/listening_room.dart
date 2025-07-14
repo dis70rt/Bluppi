@@ -1,3 +1,7 @@
+import 'package:bluppi/Data/Models/live_chat_model.dart';
+import 'package:bluppi/Provider/UserProvider/user_provider.dart';
+import 'package:bluppi/UI/Screens/RoomScreen/Widgets/live_chat_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/Constants/colors.dart';
@@ -11,6 +15,8 @@ class ListeningScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final roomState = ref.watch(roomProvider);
     final room = roomState.currentRoom!;
+    final currentUser = ref.read(userProvider).value!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(room.name),
@@ -129,64 +135,68 @@ class ListeningScreen extends ConsumerWidget {
               ),
             ),
           ),
+          // Expanded(
+          //   child: Center(
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(16.0),
+          //       child: Column(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           Icon(
+          //             Icons.waves,
+          //             size: 60,
+          //             color: AppColors.accent.withValues(alpha: 0.3),
+          //           ),
+          //           const SizedBox(height: 10),
+          //           Text(
+          //             "Enjoy the vibe!",
+          //             style: TextStyle(
+          //               fontSize: 18,
+          //               color: Colors.grey[500],
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.waves,
-                      size: 60,
-                      color: AppColors.accent.withValues(alpha: 0.3),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      "Enjoy the vibe!",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: LiveChatScreen(roomId: roomState.currentRoom!.id, currentUser: ChatUser(id: 
+            currentUser.id, name: currentUser.name, username: currentUser.username, profileUrl: currentUser.profilePic!))
           ),
-          Container(
-            height: 70,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[900],
-              border: Border(top: BorderSide(color: Colors.grey[700]!))
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[800],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Live chat placeholder...",
-                      style: TextStyle(color: Colors.grey[500]),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.send, color: AppColors.accent),
-                  onPressed: () {
-                  },
-                )
-              ],
-            ),
-          ),
+          // Container(
+          //   height: 70,
+          //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          //   decoration: BoxDecoration(
+          //     color: Colors.grey[900],
+          //     border: Border(top: BorderSide(color: Colors.grey[700]!))
+          //   ),
+          //   child: Row(
+          //     children: [
+          //       Expanded(
+          //         child: Container(
+          //           padding: const EdgeInsets.symmetric(horizontal: 12),
+          //           height: 40,
+          //           decoration: BoxDecoration(
+          //             color: Colors.grey[800],
+          //             borderRadius: BorderRadius.circular(20),
+          //           ),
+          //           alignment: Alignment.centerLeft,
+          //           child: Text(
+          //             "Live chat placeholder...",
+          //             style: TextStyle(color: Colors.grey[500]),
+          //           ),
+          //         ),
+          //       ),
+          //       const SizedBox(width: 8),
+          //       IconButton(
+          //         icon: const Icon(Icons.send, color: AppColors.accent),
+          //         onPressed: () {
+          //         },
+          //       )
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

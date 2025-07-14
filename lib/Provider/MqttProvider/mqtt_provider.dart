@@ -61,16 +61,24 @@ class LiveChatService extends StateNotifier<LiveChatState> {
         return true;
       }
 
-      final clientId = await getMqttClientId();
-      final brokerUrl = dotenv.env["API_URL"]!;
-      final username = dotenv.env["MQTT_USERNAME"]!;
-      final password = dotenv.env["MQTT_PASSWORD"]!;
+      final clientId = "flutter_${DateTime.now().millisecondsSinceEpoch}";
+      final brokerUrl = dotenv.env["BROKER_ADDRESS"];
+      final username = dotenv.env["MQTT_USERNAME"];
+      final password = dotenv.env["MQTT_PASSWORD"];
 
-      _client = MqttServerClient(brokerUrl, clientId);
+      if (brokerUrl == null || username == null || password == null) {
+        log('Missing MQTT configuration in .env file', name: "MQTT ERROR");
+        state = state.copyWith(isConnected: false);
+        return false;
+      }
+
+      _client = MqttServerClient.withPort(brokerUrl, clientId, 443);
+      _client!.useWebSocket = true;
+      _client!.websocketProtocols = ['mqttv3.1'];
       _client!.logging(on: false);
       _client!.setProtocolV311();
       _client!.keepAlivePeriod = 20;
-      _client!.connectTimeoutPeriod = 2000;
+      _client!.connectTimeoutPeriod = 10000;
       _client!.autoReconnect = true;
       _client!.resubscribeOnAutoReconnect = true;
 
@@ -93,20 +101,27 @@ class LiveChatService extends StateNotifier<LiveChatState> {
 
       _client!.onSubscribed = (String topic) {
         log('Subscribed to $topic', name: "MQTT");
-      };
 
-      _client!.updates!
-          .listen((List<MqttReceivedMessage<MqttMessage>> messages) {
+        _client!.updates?.listen((List<MqttReceivedMessage<MqttMessage>> messages) {
+        log("Got the message $messages", name: "MQTT");
         for (final message in messages) {
           _handleIncomingMessage(message);
         }
       });
+      };
+
+      // _client!.updates?.listen((List<MqttReceivedMessage<MqttMessage>> messages) {
+      //   log("Got the message $messages", name: "MQTT");
+      //   for (final message in messages) {
+      //     _handleIncomingMessage(message);
+      //   }
+      // });
 
       await _client!.connect();
 
       return state.isConnected;
-    } catch (e) {
-      log('Connection error: $e', name: "MQTT ERROR");
+    } catch (e, stackTrace) {
+      log('Connection error: $e\n Stash: $stackTrace', name: "MQTT ERROR");
       state = state.copyWith(isConnected: false);
       return false;
     }

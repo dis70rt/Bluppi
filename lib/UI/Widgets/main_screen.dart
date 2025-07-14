@@ -30,10 +30,11 @@ class MainScreenWidget extends ConsumerWidget {
     final selectedIndex = ref.watch(mainScreenIndexProvider);
     final currentTrack = ref.watch(currentTrackProvider);
     final roomState = ref.watch(roomProvider);
+    final isInRoomScreen = selectedIndex == 1;
 
     return Scaffold(
       extendBody: true,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: isInRoomScreen,
       body: Stack(
         children: [
           IndexedStack(

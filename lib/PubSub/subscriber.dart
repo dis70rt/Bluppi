@@ -1,8 +1,6 @@
 import 'dart:developer';
 
-import 'package:bluppi/Data/Models/track_model.dart';
 import 'package:bluppi/Data/Services/database_services.dart';
-import 'package:bluppi/Data/Services/user_services.dart';
 import 'package:bluppi/Provider/RoomProvider/room_sync_provider.dart';
 import 'package:bluppi/UI/Screens/HomeScreen/Widgets/recent_tracks_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
