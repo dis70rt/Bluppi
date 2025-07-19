@@ -77,7 +77,7 @@ class SyncNotifier extends StateNotifier<SyncState> {
     final clientReceiveMs = DateTime.now().millisecondsSinceEpoch;
 
     final offsetSample = ((response.serverReceiveMs.toInt() - clientSendMs) + (clientReceiveMs - response.serverSendMs.toInt())) / 2;
-    final rtt = clientReceiveMs - clientSendMs;
+    // final rtt = clientReceiveMs - clientSendMs;
 
     final offset = WEIGHT * offsetSample + (1 - WEIGHT) * state.offset;
 

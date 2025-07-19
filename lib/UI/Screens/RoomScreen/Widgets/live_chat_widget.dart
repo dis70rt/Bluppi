@@ -1,10 +1,8 @@
-import 'dart:developer';
 import 'dart:ui';
 import 'package:bluppi/Constants/colors.dart';
 import 'package:bluppi/Data/Models/live_chat_model.dart';
 import 'package:bluppi/Provider/MqttProvider/mqtt_provider.dart';
 import 'package:bluppi/Provider/MusicProvider/current_track_provider.dart';
-import 'package:bluppi/config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +25,6 @@ class LiveChatScreen extends ConsumerStatefulWidget {
 class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  String? _previousImage;
 
   @override
   void initState() {

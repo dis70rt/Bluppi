@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:bluppi/Data/Models/live_chat_model.dart';
-import 'package:bluppi/Utils/get_mqtt_client_id.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
