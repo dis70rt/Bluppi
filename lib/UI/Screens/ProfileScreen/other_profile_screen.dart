@@ -23,21 +23,21 @@ class OtherProfileScreen extends ConsumerWidget {
       data: (user) {
         return Scaffold(
       backgroundColor: const Color(0XFF181818),
-      appBar: user!.username != username ? AppBar(
-        backgroundColor: AppColors.backgroundDark,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: onBack,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert_rounded),
-            onPressed: () => context.push('/settings'),
-          ),
-        ],
-        title: username != null ?  Text(username!, style: const TextStyle(fontSize: 16, color: AppColors.textSecondary),) : null,
-      ) : null,
+      // appBar: user!.username != username ? AppBar(
+      //   backgroundColor: AppColors.backgroundDark,
+      //   elevation: 0,
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back),
+      //     onPressed: onBack,
+      //   ),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.more_vert_rounded),
+      //       onPressed: () => context.push('/settings'),
+      //     ),
+      //   ],
+      //   title: username != null ?  Text(username!, style: const TextStyle(fontSize: 16, color: AppColors.textSecondary),) : null,
+      // ) : null,
       body: username == null 
         ? const Center(child: Text('No username provided'))
         : FutureBuilder(

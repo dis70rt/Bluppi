@@ -1,4 +1,5 @@
 import 'package:bluppi/Data/Models/live_chat_model.dart';
+import 'package:bluppi/Data/Services/user_services.dart';
 import 'package:bluppi/Provider/UserProvider/user_provider.dart';
 import 'package:bluppi/UI/Screens/RoomScreen/Widgets/live_chat_widget.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/Constants/colors.dart';
 import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
 import 'package:bluppi/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ListeningScreen extends ConsumerWidget {
   const ListeningScreen({super.key});
@@ -15,6 +17,7 @@ class ListeningScreen extends ConsumerWidget {
     final roomState = ref.watch(roomProvider);
     final room = roomState.currentRoom!;
     final currentUser = ref.read(userProvider).value!;
+    final futureHost = UserServices().getUserByID(room.hostUserId);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,9 +43,10 @@ class ListeningScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [               
+              children: [
+                if(room.description.isNotEmpty)      
                 Text(
-                  room.description.isNotEmpty ? room.description : 'No description provided for this room.',
+                  room.description,
                   style: TextStyle(
                     color: Colors.grey[400],
                     fontSize: 14,
@@ -67,12 +71,39 @@ class ListeningScreen extends ConsumerWidget {
                       ),
                     ),
                     const Spacer(),
-                    Text(
-                      'Host: ${room.hostUserId.substring(0,6)}...',
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 14,
-                      ),
+                    FutureBuilder(
+                      future: futureHost,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Skeletonizer(
+                            child: Text(
+                              'Loading host...',
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                                fontSize: 14,
+                              ),
+                            ),
+                          );
+                        }
+                        if (snapshot.hasError || !snapshot.hasData) {
+                          return const Text('Host not found');
+                        }
+                        final hostUser = snapshot.data!;
+                        return Text(
+                          'Host: @${hostUser.username}',
+                          style: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 14,
+                          ),
+                        );
+                      }
+                      // child: Text(
+                      //   'Host: ${room.hostUserId.substring(0,6)}...',
+                      //   style: TextStyle(
+                      //     color: Colors.grey[400],
+                      //     fontSize: 14,
+                      //   ),
+                      // ),
                     ),
                   ],
                 ),
@@ -83,9 +114,9 @@ class ListeningScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: Colors.grey[850],
+                color: Colors.black.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -97,38 +128,47 @@ class ListeningScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Text("${roomState.memberCount} Listening", style: TextStyle(color: Colors.grey[300], fontSize: 14)),
                       const SizedBox(width: 10),
-                      SizedBox(
-                        height: 28,
-                        width: 64.0, 
-                        child: Stack(
-                          children: List.generate(3, (index) {
-                            return Positioned(
-                              left: index * 18.0,
-                              child: CircleAvatar(
-                                radius: 14,
-                                backgroundColor: AppColors.primary.withAlpha(100 + index * 50),
-                                child: Icon(Icons.person, size: 16, color: Colors.white.withValues(alpha: 0.8)),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
+                      // SizedBox(
+                      //   height: 28,
+                      //   width: 64.0, 
+                      //   child: Stack(
+                      //     children: List.generate(3, (index) {
+                      //       return Positioned(
+                      //         left: index * 18.0,
+                      //         child: CircleAvatar(
+                      //           radius: 14,
+                      //           backgroundColor: AppColors.primary.withAlpha(100 + index * 50),
+                      //           child: Icon(Icons.person, size: 16, color: Colors.white.withValues(alpha: 0.8)),
+                      //         ),
+                      //       );
+                      //     }),
+                      //   ),
+                      // ),
                     ],
                   ),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.person_add_alt_1, size: 18),
-                    label: const Text("Invite"),
-                    onPressed: () {
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.accent,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                  MaterialButton(
+                    child: Row(
+                      children: [
+                        Icon(Icons.person_add_alt_1, size: 18, color: AppColors.accent,),
+                        const SizedBox(width: 8),
+                        Text("Invite", style: TextStyle(color: AppColors.accent, fontSize: 14)),
+                      ],
                     ),
+                    // icon: const Icon(Icons.person_add_alt_1, size: 18),
+                    // label: const Text("Invite"),
+                    onPressed: () {
+                      // TODO: Implement invite functionality
+                    },
+                    // style: ElevatedButton.styleFrom(
+
+                    //   backgroundColor: AppColors.accent,
+                    //   foregroundColor: Colors.white,
+                    //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                    //   textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                    //   shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.circular(8),
+                    //   ),
+                    // ),
                   ),
                 ],
               ),

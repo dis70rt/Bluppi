@@ -64,7 +64,7 @@ class MediaService {
               'title': track.trackName,
               'artist': track.artistName,
               'imageUrl': track.imageUrl.replaceFirstMapped(
-                  RegExp(r'(\d+x\d+bb)'), (match) => '1000x1000bb')
+                  RegExp(r"w\d+-h\d+"), (match) => 'w512-h512')
             };
           })
           .whereType<Map<String, dynamic>>()
@@ -129,7 +129,7 @@ class MediaService {
       rethrow;
     }
   }
-
+  // TODO: Uncomment this method after development is done;
   Future<Duration?> getPosition() async {
     try {
       final result = await _channel.invokeMethod<int>('getPosition');
@@ -152,7 +152,7 @@ class MediaService {
         'title': track.trackName,
         'artist': track.artistName,
         'imageUrl': track.imageUrl.replaceFirstMapped(
-            RegExp(r'(\d+x\d+bb)'), (match) => '1000x1000bb')
+            RegExp(r"w\d+-h\d+"), (match) => 'w512-h512')
       });
 
       return result ?? false;

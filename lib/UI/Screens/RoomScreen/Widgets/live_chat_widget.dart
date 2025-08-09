@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:ui';
 import 'package:bluppi/Constants/colors.dart';
 import 'package:bluppi/Data/Models/live_chat_model.dart';
@@ -63,119 +64,128 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
   }
 
   Widget _buildBackgroundImage(String? currentImage) {
-  if (currentImage == null) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Theme.of(context).scaffoldBackgroundColor, AppColors.backgroundDark],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    if (currentImage == null) {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).scaffoldBackgroundColor,
+              AppColors.backgroundDark
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
+      );
+    }
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 800),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+      child: Stack(
+        children: [
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+            child: Container(
+              key: ValueKey(currentImage),
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(currentImage),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.6),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.of(context).scaffoldBackgroundColor,
+                  Colors.transparent
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
-
-  return AnimatedSwitcher(
-    duration: const Duration(milliseconds: 800),
-    transitionBuilder: (Widget child, Animation<double> animation) {
-      return FadeTransition(
-        opacity: animation,
-        child: child,
-      );
-    },
-    child: Stack(
-  children: [
-    ImageFiltered(
-      imageFilter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-      child: Container(
-        key: ValueKey(currentImage),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: CachedNetworkImageProvider(currentImage),
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    ),
-    Container(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.6),
-      ),
-    ),
-    Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).scaffoldBackgroundColor,
-            Colors.transparent
-          ],
-        ),
-      ),
-    ),
-    
-  ],
-),
-  );
-}
 
   @override
   Widget build(BuildContext context) {
     final chatState = ref.watch(liveChatServiceProvider);
     final messages = ref.watch(chatMessagesProvider);
-    final currentImage = ref.watch(currentTrackProvider)?.imageUrl;
+    final currentImage = ref
+        .watch(currentTrackProvider)
+        ?.imageUrl
+        .replaceFirstMapped(RegExp(r"w\d+-h\d+"), (match) => 'w512-h512');
+    
+    log('Current Image: $currentImage');
 
     return Stack(
-        children: [
-          _buildBackgroundImage(currentImage),
-          Column(
-            children: [
-              Expanded(
-                child: messages.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No messages yet',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                      )
-                    : ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.all(16),
-                        itemCount: messages.length,
-                        itemBuilder: (context, index) {
-                          final message = messages[index];
-                          final isMyMessage = message.sender.id == widget.currentUser.id;
+      children: [
+        _buildBackgroundImage(currentImage),
+        Column(
+          children: [
+            Expanded(
+              child: messages.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No messages yet',
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                    )
+                  : ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isMyMessage =
+                            message.sender.id == widget.currentUser.id;
 
-                          return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 350),
-                            child: SlideAnimation(
-                              horizontalOffset: isMyMessage ? 20.0 : -20.0,
-                              curve: Curves.elasticOut,
-                              child: FadeInAnimation(
-                                child: ScaleAnimation(
-                                  scale: 0.9,
-                                  child: _buildMessageItem(message, isMyMessage),
-                                ),
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 350),
+                          child: SlideAnimation(
+                            horizontalOffset: isMyMessage ? 20.0 : -20.0,
+                            curve: Curves.elasticOut,
+                            child: FadeInAnimation(
+                              child: ScaleAnimation(
+                                scale: 0.9,
+                                child: _buildMessageItem(message, isMyMessage),
                               ),
                             ),
-                          );
-                        },
-                      ),
-              ),
-              _buildMessageInput(chatState.isConnected),
-            ],
-          ),
-        ],
-      );
+                          ),
+                        );
+                      },
+                    ),
+            ),
+            _buildMessageInput(chatState.isConnected),
+          ],
+        ),
+      ],
+    );
   }
 
   Widget _buildMessageItem(LiveChatModel message, bool isMyMessage) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
-        mainAxisAlignment: isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMyMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (!isMyMessage) ...[
@@ -193,7 +203,9 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment: isMyMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isMyMessage
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 if (!isMyMessage)
                   Padding(
@@ -208,14 +220,15 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
                     ),
                   ),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
                   constraints: BoxConstraints(
                     maxWidth: MediaQuery.of(context).size.width * 0.7,
                   ),
                   decoration: BoxDecoration(
                     color: isMyMessage
-                        ? Colors.blue.shade600.withValues(alpha:0.9)
-                        : Colors.grey.shade800.withValues(alpha:0.9),
+                        ? AppColors.accent.withValues(alpha: 0.9)
+                        : Colors.grey.shade800.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(18),
                   ),
                   child: Column(
@@ -233,7 +246,7 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
                         '${message.timestamp.hour}:${message.timestamp.minute.toString().padLeft(2, '0')}',
                         style: TextStyle(
                           fontSize: 10,
-                          color: Colors.white.withValues(alpha:0.7),
+                          color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -243,17 +256,17 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
             ),
           ),
           if (isMyMessage) ...[
-            const SizedBox(width: 8),
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.grey.shade700,
-              backgroundImage: widget.currentUser.profileUrl.isNotEmpty
-                  ? CachedNetworkImageProvider(widget.currentUser.profileUrl)
-                  : null,
-              child: widget.currentUser.profileUrl.isEmpty
-                  ? const Icon(Icons.person, color: Colors.white, size: 16)
-                  : null,
-            ),
+            // const SizedBox(width: 8),
+            // CircleAvatar(
+            //   radius: 16,
+            //   backgroundColor: Colors.grey.shade700,
+            //   backgroundImage: widget.currentUser.profileUrl.isNotEmpty
+            //       ? CachedNetworkImageProvider(widget.currentUser.profileUrl)
+            //       : null,
+            //   child: widget.currentUser.profileUrl.isEmpty
+            //       ? const Icon(Icons.person, color: Colors.white, size: 16)
+            //       : null,
+            // ),
           ],
         ],
       ),
@@ -261,14 +274,14 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
   }
 
   Widget _buildMessageInput(bool isConnected) {
-      final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
     return Container(
       padding: EdgeInsets.only(
-      left: 16,
-      right: 16,
-      top: 16,
-      bottom: bottomPadding > 0 ? bottomPadding : 16,
-    ),
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: bottomPadding > 0 ? bottomPadding : 16,
+      ),
       decoration: BoxDecoration(
         color: Colors.transparent,
         // border: Border(
@@ -286,7 +299,7 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
                 decoration: InputDecoration(
                   hintText: isConnected ? 'Type a message...' : 'Connecting...',
                   hintStyle: const TextStyle(color: Colors.white60),
-                  fillColor: Colors.white.withValues(alpha:0.1),
+                  fillColor: Colors.white.withValues(alpha: 0.1),
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
@@ -303,7 +316,8 @@ class _LiveChatScreenState extends ConsumerState<LiveChatScreen> {
             const SizedBox(width: 12),
             Container(
               decoration: BoxDecoration(
-                color: isConnected ? Colors.blue.shade600 : Colors.grey.shade600,
+                color:
+                    isConnected ? AppColors.accent : Colors.grey.shade600,
                 shape: BoxShape.circle,
               ),
               child: IconButton(

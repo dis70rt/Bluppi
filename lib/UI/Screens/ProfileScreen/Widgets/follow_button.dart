@@ -147,10 +147,10 @@ class _FollowButtonState extends ConsumerState<FollowButton> with SingleTickerPr
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        MessageButton(otherUser: widget.otherUser),
-        const SizedBox(width: 18),
+        // MessageButton(otherUser: widget.otherUser),
+        // const SizedBox(width: 18),
         _buildFollowButton(),
-        const SizedBox(width: 18),
+        const SizedBox(width: 10),
         _buildCircularButton(Icons.share),
       ],
     );
@@ -195,7 +195,7 @@ class _FollowButtonState extends ConsumerState<FollowButton> with SingleTickerPr
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 35),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 25),
             decoration: BoxDecoration(
               border: Border.all(
                 color: isFollowing ? AppColors.accent : Colors.transparent,
@@ -208,7 +208,7 @@ class _FollowButtonState extends ConsumerState<FollowButton> with SingleTickerPr
                   duration: const Duration(milliseconds: 300),
                   style: TextStyle(
                     color: isFollowing ? AppColors.accent : Colors.white,
-                    fontSize: 16,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
                   child: Text(isFollowing ? "Following" : "Follow"),

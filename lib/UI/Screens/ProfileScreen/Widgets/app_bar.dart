@@ -21,10 +21,13 @@ Widget profileAppBar(String? profilePic, BuildContext context, WidgetRef ref, bo
                 fit: BoxFit.cover,
               )
             : Container(color: Colors.grey.shade900),
-        BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            color: Colors.black.withValues(alpha: 0),
+    
+        ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withValues(alpha: 0),
+            ),
           ),
         ),
         Container(
@@ -37,12 +40,12 @@ Widget profileAppBar(String? profilePic, BuildContext context, WidgetRef ref, bo
           left: 8,
           right: 8,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                onPressed: () => ref.read(mainScreenIndexProvider.notifier).state = 0,
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+              //   onPressed: () => ref.read(mainScreenIndexProvider.notifier).state = 0,
+              // ),
               IconButton(
                 icon:
                     const Icon(FontAwesomeIcons.ellipsis, color: Colors.white),

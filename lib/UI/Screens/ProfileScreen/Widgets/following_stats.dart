@@ -79,20 +79,20 @@ class FollowingStatsWidget extends ConsumerWidget {
     final stats = ref.watch(followStatsProvider(userId));
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-      child: IntrinsicHeight(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _statColumn("Followers", stats.followers, context, ref),
-            const VerticalDivider(
-                color: Colors.white30, width: 1, indent: 10, endIndent: 10),
-            _statColumn("Following", stats.following, context, ref),
-            const VerticalDivider(
-                color: Colors.white30, width: 1, indent: 10, endIndent: 10),
-            _statColumn("Playlists", stats.playlists, context, ref),
-          ],
-        ),
+      padding: const EdgeInsets.only(left: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _statColumn("Followers", stats.followers, context, ref),
+          SizedBox(width: 20),
+          // const VerticalDivider(
+          //     color: Colors.white30, width: 1, indent: 10, endIndent: 10),
+          _statColumn("Following", stats.following, context, ref),
+          SizedBox(width: 20),
+          // const VerticalDivider(
+          //     color: Colors.white30, width: 1, indent: 10, endIndent: 10),
+          _statColumn("Playlists", stats.playlists, context, ref),
+        ],
       ),
     );
   }
@@ -143,17 +143,19 @@ class FollowingStatsWidget extends ConsumerWidget {
           // Handle other cases if needed
         }
       },
-      child: Column(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
             count.toString(),
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(width: 5),
           Text(
             title,
-            style: const TextStyle(fontSize: 12, color: Colors.white54),
+            style: const TextStyle(fontSize: 14, color: Colors.white54),
           ),
         ],
       ),

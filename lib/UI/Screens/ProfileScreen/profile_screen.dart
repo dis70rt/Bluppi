@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:ui';
 
+import 'package:bluppi/UI/Screens/ProfileScreen/Widgets/tab_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,12 +75,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
         return Scaffold(
           backgroundColor: AppColors.backgroundDark,
+          // appBar: PreferredSize(
+          //   preferredSize: const Size.fromHeight(80),
+          //   child: profileAppBar(
+          //       displayedUser.profilePic, context, ref, isOwnProfile),
+          // ),
           body: Stack(
+            // crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               profileAppBar(
                   displayedUser.profilePic, context, ref, isOwnProfile),
               _buildProfileBackground(context),
-              _buildProfilePicture(displayedUser, context),
+              // _buildProfilePicture(displayedUser, context),
               _buildProfileContent(displayedUser, isOwnProfile, currentUser.id),
             ],
           ),
@@ -100,64 +107,64 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(15),
-            bottomRight: Radius.circular(15),
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
+          // borderRadius: const BorderRadius.only(
+          //   bottomLeft: Radius.circular(15),
+          //   bottomRight: Radius.circular(15),
+          //   topLeft: Radius.circular(30),
+          //   topRight: Radius.circular(30),
+          // ),
         ),
       ),
     );
   }
 
-  Widget _buildProfilePicture(UserModel user, BuildContext context) {
-    return Positioned(
-      top: 50,
-      left: 0,
-      right: 0,
-      child: Center(
-        child: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: Theme.of(context).primaryColor, width: 4),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                spreadRadius: 2,
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: user.profilePic != null
-                ? CachedNetworkImage(
-                    imageUrl: user.profilePic!,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Container(
-                      color: Colors.grey.shade800,
-                      child: const Icon(Icons.error,
-                          size: 50, color: Colors.white70),
-                    ),
-                  )
-                : Container(
-                    color: Colors.grey.shade800,
-                    child: const Icon(Icons.person,
-                        size: 50, color: Colors.white70),
-                  ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildProfilePicture(UserModel user, BuildContext context) {
+  //   return Positioned(
+  //     top: 50,
+  //     left: - MediaQuery.of(context).size.width + 150,
+  //     right: 0,
+  //     child: Center(
+  //       child: Container(
+  //         width: 100,
+  //         height: 100,
+  //         decoration: BoxDecoration(
+  //           shape: BoxShape.circle,
+  //           border: Border.all(color: Theme.of(context).primaryColor, width: 4),
+  //           boxShadow: [
+  //             BoxShadow(
+  //               color: Colors.black.withValues(alpha: 0.3),
+  //               spreadRadius: 2,
+  //               blurRadius: 5,
+  //             ),
+  //           ],
+  //         ),
+  //         child: ClipRRect(
+  //           borderRadius: BorderRadius.circular(50),
+  //           child: user.profilePic != null
+  //               ? CachedNetworkImage(
+  //                   imageUrl: user.profilePic!,
+  //                   fit: BoxFit.cover,
+  //                   errorWidget: (context, url, error) => Container(
+  //                     color: Colors.grey.shade800,
+  //                     child: const Icon(Icons.error,
+  //                         size: 50, color: Colors.white70),
+  //                   ),
+  //                 )
+  //               : Container(
+  //                   color: Colors.grey.shade800,
+  //                   child: const Icon(Icons.person,
+  //                       size: 50, color: Colors.white70),
+  //                 ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildProfileContent(
       UserModel user, bool isOwnProfile, String currentUserId) {
     return Positioned(
-      top: 130,
+      top: 60,
       left: 0,
       right: 0,
       bottom: 0,
@@ -167,22 +174,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              profileBio(user.name, user.bio, user.username, isOwnProfile),
-              const SizedBox(height: 20),
-              Center(
-                  child: isOwnProfile
-                      ? editRow()
-                      : FollowButton(otherUser: user)),
-              const SizedBox(height: 20),
+              Row(
+                // mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  profileBio(user.name, user.username, isOwnProfile, user.profilePic),
+                  // const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: isOwnProfile
+                        ? editRow()
+                        : FollowButton(otherUser: user),
+                  ),
+                ],
+              ),
+              // const SizedBox(height: 20),
+              // Center(
+              //     child: isOwnProfile
+              //         ? editRow()
+              //         : FollowButton(otherUser: user)),
+              const SizedBox(height: 10),
               // followingStats(user.followers, user.following, user.following),
               FollowingStatsWidget(userId: user.id),
-              const SizedBox(height: 40),
+              const SizedBox(height: 10),
+              if (user.bio != null && user.bio!.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    user.bio!,
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+              const SizedBox(height: 20),
               _buildLastPlayed(user.id),
-              const SizedBox(height: 100),
+              TabBarContents(),
             ],
           ),
         ),
