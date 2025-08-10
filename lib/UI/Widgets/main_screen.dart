@@ -1,10 +1,9 @@
+import 'package:bluppi/Constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bluppi/Constants/colors.dart';
 import 'package:bluppi/Provider/MusicProvider/current_track_provider.dart';
 import 'package:bluppi/Provider/RoomProvider/room_provider.dart';
-import 'package:bluppi/UI/Screens/ChatScreen/chats_screen.dart';
 import 'package:bluppi/UI/Screens/HomeScreen/Widgets/floating_music_player.dart';
 import 'package:bluppi/UI/Screens/RoomScreen/utils/room_navigation.dart';
 import 'package:bluppi/UI/Screens/SearchScreen/search_navigation_screen.dart';
@@ -53,27 +52,10 @@ class MainScreenWidget extends ConsumerWidget {
             ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(side: BorderSide(color: AppColors.darkSurfaceBlack, width: 1)),
-        onPressed: () {
-          if (selectedIndex == 1) {
-            ref.read(roomProvider.notifier).leaveRoom();
-          } else {
-            ref.read(mainScreenIndexProvider.notifier).state = 1;
-          }
-        },
-        backgroundColor: AppColors.accent,
-        child: Icon(
-          selectedIndex == 1 ? Icons.add_circle_outline_rounded : Icons.add,
-          color: Colors.white,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
       bottomNavigationBar: BottomAppBar(
         height: 50,
+        color: AppColors.backgroundDark,
         padding: EdgeInsets.zero,
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 10.0,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -91,7 +73,7 @@ class MainScreenWidget extends ConsumerWidget {
               onTap: () =>
                   ref.read(mainScreenIndexProvider.notifier).state = 1,
             ),
-            const SizedBox(width: 48),
+            // const SizedBox(width: 48),
             NavIcon(
               icon: FontAwesomeIcons.magnifyingGlass,
               index: 2,
@@ -134,7 +116,7 @@ class NavIcon extends StatelessWidget {
       onPressed: onTap,
       iconSize: 22,
       icon: FaIcon(icon),
-      color: isSelected ? Colors.white : Colors.white38,
+      color: isSelected ? AppColors.textSecondary : AppColors.divider,
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
     );

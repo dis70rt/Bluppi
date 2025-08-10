@@ -4,7 +4,9 @@ import 'package:bluppi/UI/Screens/HomeScreen/Widgets/recent_tracks_provider.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:bluppi/Provider/UserProvider/user_provider.dart';
@@ -127,11 +129,25 @@ PreferredSizeWidget homeAppBar(BuildContext context, WidgetRef ref) {
             ],
           ),
           actions: [
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            //   child: InkWell(
+            //     onTap: () {},
+            //     child: Image.asset('assets/icons/splash_icon.png', width: 40, height: 40, color: Colors.white,)
+            //   ),
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: iconButton(
-                onPressed: () => ref.read(mainScreenIndexProvider.notifier).state = 2,
-                icon: Icons.search,
+                onPressed: () {},
+                icon: FontAwesomeIcons.plus,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: iconButton(
+                onPressed: () => context.push('/chat-screen'),
+                icon: FontAwesomeIcons.comment,
               ),
             ),
             // Padding(

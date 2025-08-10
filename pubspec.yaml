@@ -54,6 +54,7 @@ dependencies:
   ntp: ^2.0.0
   fl_chart: ^1.0.0
   flutter_native_splash: ^2.4.6
+  flutter_svg: ^2.2.0
   # hive: ^2.2.3
   # collection: ^1.17.0
 
@@ -75,6 +76,7 @@ flutter:
     - assets/icons/google.png
     - assets/images/avengers_endgame.jpg
     - assets/images/love.jpg
+    - assets/icons/splash_icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

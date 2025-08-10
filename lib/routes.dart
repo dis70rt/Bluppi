@@ -1,3 +1,4 @@
+import 'package:bluppi/UI/Screens/ChatScreen/chats_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:bluppi/Data/Models/user_model.dart';
@@ -63,6 +64,11 @@ final GoRouter router = GoRouter(
           user: user,
         );
       },
+    ),
+    GoRoute(
+      name: 'chat-screen',
+      path: '/chat-screen',
+      builder: (context, state) => ChatsScreen(),
     ),
     GoRoute(
       name: 'room',
