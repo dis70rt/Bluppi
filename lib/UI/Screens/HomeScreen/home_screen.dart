@@ -1,3 +1,4 @@
+import 'package:bluppi/UI/Screens/HomeScreen/BlupFeed/blup_feed.dart';
 import 'package:bluppi/UI/Screens/HomeScreen/Widgets/recently_played.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,8 +26,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           backgroundColor: Colors.black,
           appBar: homeAppBar(context, ref),
           body: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RecentlyPlayedWidget()
+              RecentlyPlayedWidget(),
+              BlupFeed()
             ],
           )
         );

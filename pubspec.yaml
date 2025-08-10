@@ -52,6 +52,7 @@ dependencies:
   fixnum: ^1.1.1
   mqtt_client: ^10.10.0
   ntp: ^2.0.0
+  fl_chart: ^1.0.0
   # hive: ^2.2.3
   # collection: ^1.17.0
 
