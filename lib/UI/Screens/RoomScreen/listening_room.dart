@@ -126,7 +126,7 @@ class ListeningScreen extends ConsumerWidget {
                     children: [
                       const Icon(Icons.headset_mic_outlined, color: AppColors.accent, size: 20),
                       const SizedBox(width: 8),
-                      Text("${roomState.memberCount} Listening", style: TextStyle(color: Colors.grey[300], fontSize: 14)),
+                      Text("${roomState.currentRoom?.members.length.toString()} Listening", style: TextStyle(color: Colors.grey[300], fontSize: 14)),
                       const SizedBox(width: 10),
                       // SizedBox(
                       //   height: 28,

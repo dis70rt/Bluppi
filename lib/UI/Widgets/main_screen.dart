@@ -21,7 +21,7 @@ class MainScreenWidget extends ConsumerWidget {
     HomeScreen(),
     RoomNavigationContainer(),
     SearchNavigationScreen(),
-    ChatsScreen(),
+    // ChatsScreen(),
     ProfileScreen(),
   ];
 
@@ -41,75 +41,102 @@ class MainScreenWidget extends ConsumerWidget {
             index: selectedIndex,
             children: _pages.map((page) => page ?? Container()).toList(),
           ),
-
           if (currentTrack != null)
-          Visibility(
-            visible: !roomState.isInRoom || selectedIndex != 1,
-            child: Positioned(
-              left: 0,
-              right: 0,
-              bottom:  70,
-              child: FloatingMusicPlayer(),
+            Visibility(
+              visible: !roomState.isInRoom || selectedIndex != 1,
+              child: Positioned(
+                left: 0,
+                right: 0,
+                bottom: 70,
+                child: FloatingMusicPlayer(),
+              ),
             ),
-          ),
         ],
       ),
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            canvasColor: Colors.transparent,
-            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-              backgroundColor: Colors.black,
-              elevation: 0,
-            )),
-        child: Container(
-          
-          color: AppColors.darkSurfaceBlack,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              BottomNavigationBar(
-                backgroundColor: Colors.transparent,
-                iconSize: 22,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.house),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.wallet),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.magnifyingGlass),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.comment),
-                    label: '',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.user),
-                    label: '',
-                  ),
-                ],
-                currentIndex: selectedIndex,
-                selectedItemColor: Colors.white,
-                unselectedItemColor: Colors.white38,
-                showUnselectedLabels: false,
-                showSelectedLabels: false,
-                type: BottomNavigationBarType.fixed,
-                onTap: (index) {
-                  ref.read(mainScreenIndexProvider.notifier).state = index;
-                },
-                elevation: 0,
-              ),
-            ],
-          ),
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(side: BorderSide(color: AppColors.darkSurfaceBlack, width: 1)),
+        onPressed: () {
+          if (selectedIndex == 1) {
+            ref.read(roomProvider.notifier).leaveRoom();
+          } else {
+            ref.read(mainScreenIndexProvider.notifier).state = 1;
+          }
+        },
+        backgroundColor: AppColors.accent,
+        child: Icon(
+          selectedIndex == 1 ? Icons.add_circle_outline_rounded : Icons.add,
+          color: Colors.white,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+      bottomNavigationBar: BottomAppBar(
+        height: 50,
+        padding: EdgeInsets.zero,
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 10.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            NavIcon(
+              icon: FontAwesomeIcons.house,
+              index: 0,
+              selectedIndex: selectedIndex,
+              onTap: () =>
+                  ref.read(mainScreenIndexProvider.notifier).state = 0,
+            ),
+            NavIcon(
+              icon: FontAwesomeIcons.wallet,
+              index: 1,
+              selectedIndex: selectedIndex,
+              onTap: () =>
+                  ref.read(mainScreenIndexProvider.notifier).state = 1,
+            ),
+            const SizedBox(width: 48),
+            NavIcon(
+              icon: FontAwesomeIcons.magnifyingGlass,
+              index: 2,
+              selectedIndex: selectedIndex,
+              onTap: () =>
+                  ref.read(mainScreenIndexProvider.notifier).state = 2,
+            ),
+            NavIcon(
+              icon: FontAwesomeIcons.user,
+              index: 3,
+              selectedIndex: selectedIndex,
+              onTap: () =>
+                  ref.read(mainScreenIndexProvider.notifier).state = 3,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NavIcon extends StatelessWidget {
+  final IconData icon;
+  final int index;
+  final int selectedIndex;
+  final VoidCallback onTap;
+
+  const NavIcon({
+    super.key,
+    required this.icon,
+    required this.index,
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSelected = index == selectedIndex;
+    return IconButton(
+      onPressed: onTap,
+      iconSize: 22,
+      icon: FaIcon(icon),
+      color: isSelected ? Colors.white : Colors.white38,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
     );
   }
 }

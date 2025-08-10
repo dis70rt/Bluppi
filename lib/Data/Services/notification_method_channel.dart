@@ -132,8 +132,8 @@ class MediaService {
   // TODO: Uncomment this method after development is done;
   Future<Duration?> getPosition() async {
     try {
-      // final result = await _channel.invokeMethod<int>('getPosition');
-      // return result != null ? Duration(milliseconds: result) : null;
+      final result = await _channel.invokeMethod<int>('getPosition');
+      return result != null ? Duration(milliseconds: result) : null;
     } on PlatformException catch (e) {
       log('Error getting position: $e');
       return null;

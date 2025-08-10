@@ -94,6 +94,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
         availableRooms: response.rooms,
         isLoading: false,
       );
+      log('Available rooms fetched: ${response.rooms}');
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
