@@ -1,5 +1,4 @@
 import 'package:bluppi/application/providers/auth_provider.dart';
-import 'package:bluppi/application/providers/create_profile_provider.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

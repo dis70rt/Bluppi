@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
-import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/ui/screens/CreateProfileScreen/create_profile_screen.dart';
 import 'package:bluppi/ui/screens/HomeScreen/home_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/auth_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
