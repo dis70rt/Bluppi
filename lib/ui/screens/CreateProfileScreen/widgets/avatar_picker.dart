@@ -118,7 +118,7 @@ class AvatarPicker extends ConsumerWidget {
               color: BluppiColors.surfaceRaised,
               shape: BoxShape.circle,
               border: Border.all(color: BluppiColors.divider, width: 2),
-              image: profilePicPath != null
+              image: profilePicPath != null && profilePicPath!.isNotEmpty
                   ? DecorationImage(
                       image: FileImage(File(profilePicPath!)),
                       fit: BoxFit.cover,

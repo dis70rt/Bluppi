@@ -118,7 +118,9 @@ class _IdentityStepState extends ConsumerState<IdentityStep> {
               Expanded(
                 child: DateOfBirthPicker(
                   dateOfBirth: data.dateOfBirth,
-                  age: data.age,
+                  age: data.dateOfBirth != null
+                      ? DateTime.now().difference(data.dateOfBirth!).inDays ~/ 365
+                      : null,
                 ),
               ),
               const SizedBox(width: 16),

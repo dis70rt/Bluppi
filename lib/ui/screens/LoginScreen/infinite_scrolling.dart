@@ -26,6 +26,7 @@ class _InfiniteScrollingState extends ConsumerState<InfiniteScrolling>
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       if (!ref.read(imagesPreloadedProvider)) {
         ref.read(imagesPreloadedProvider.notifier).preloadImages(context);
       } else {

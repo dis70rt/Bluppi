@@ -16,7 +16,7 @@ class DateOfBirthPicker extends ConsumerWidget {
 
   Future<void> _showDatePicker(BuildContext context, WidgetRef ref) async {
     final now = DateTime.now();
-    final minAge = 13; // Minimum age requirement
+    final minAge = 13;
     final maxAge = 100;
 
     final initialDate = dateOfBirth ?? DateTime(now.year - 18, now.month, now.day);
@@ -39,8 +39,7 @@ class DateOfBirthPicker extends ConsumerWidget {
               onPrimary: BluppiColors.background,
               surface: BluppiColors.surface,
               onSurface: BluppiColors.textPrimary,
-            ),
-            dialogBackgroundColor: BluppiColors.surface,
+            ), dialogTheme: DialogThemeData(backgroundColor: BluppiColors.surface),
           ),
           child: child!,
         );

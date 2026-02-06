@@ -1,8 +1,5 @@
+import 'package:bluppi/domain/models/create_user_model.dart';
 import 'package:riverpod/riverpod.dart';
-
-// -----------------------------------------------------------------------------
-// STEP STATE
-// -----------------------------------------------------------------------------
 
 final createProfileStepProvider =
     NotifierProvider<CreateProfileStepNotifier, int>(
@@ -24,18 +21,14 @@ class CreateProfileStepNotifier extends Notifier<int> {
   }
 }
 
-// -----------------------------------------------------------------------------
-// PROFILE DATA STATE (IMMUTABLE)
-// -----------------------------------------------------------------------------
-
 final createProfileDataProvider =
-    NotifierProvider<CreateProfileDataNotifier, CreateProfileData>(
+    NotifierProvider<CreateProfileDataNotifier, CreateUserModel>(
   CreateProfileDataNotifier.new,
 );
 
-class CreateProfileDataNotifier extends Notifier<CreateProfileData> {
+class CreateProfileDataNotifier extends Notifier<CreateUserModel> {
   @override
-  CreateProfileData build() => const CreateProfileData();
+  CreateUserModel build() => const CreateUserModel();
 
   void updateName(String value) {
     state = state.copyWith(name: value);
@@ -71,61 +64,5 @@ class CreateProfileDataNotifier extends Notifier<CreateProfileData> {
 
   void updateProfilePic(String path) {
     state = state.copyWith(profilePicPath: path);
-  }
-}
-
-// -----------------------------------------------------------------------------
-// DATA MODEL
-// -----------------------------------------------------------------------------
-
-class CreateProfileData {
-  final String name;
-  final String username;
-  final String bio;
-  final DateTime? dateOfBirth;
-  final String? gender;
-  final List<String> selectedGenres;
-  final String? profilePicPath;
-
-  const CreateProfileData({
-    this.name = '',
-    this.username = '',
-    this.bio = '',
-    this.dateOfBirth,
-    this.gender,
-    this.selectedGenres = const [],
-    this.profilePicPath,
-  });
-
-  /// Calculate age from date of birth
-  int? get age {
-    if (dateOfBirth == null) return null;
-    final now = DateTime.now();
-    int age = now.year - dateOfBirth!.year;
-    if (now.month < dateOfBirth!.month ||
-        (now.month == dateOfBirth!.month && now.day < dateOfBirth!.day)) {
-      age--;
-    }
-    return age;
-  }
-
-  CreateProfileData copyWith({
-    String? name,
-    String? username,
-    String? bio,
-    DateTime? dateOfBirth,
-    String? gender,
-    List<String>? selectedGenres,
-    String? profilePicPath,
-  }) {
-    return CreateProfileData(
-      name: name ?? this.name,
-      username: username ?? this.username,
-      bio: bio ?? this.bio,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      gender: gender ?? this.gender,
-      selectedGenres: selectedGenres ?? this.selectedGenres,
-      profilePicPath: profilePicPath ?? this.profilePicPath,
-    );
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:bluppi/core/utils/snackbar.dart';
+import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/ui/screens/LoginScreen/infinite_scrolling.dart';
 import 'package:bluppi/ui/screens/LoginScreen/onboarding_carousel.dart';
 import 'package:bluppi/ui/screens/LoginScreen/slide_to_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

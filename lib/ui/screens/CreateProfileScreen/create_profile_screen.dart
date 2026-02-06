@@ -1,28 +1,60 @@
+import 'package:bluppi/application/providers/auth_provider.dart';
 import 'package:bluppi/application/providers/create_profile_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
+import 'package:bluppi/core/utils/snackbar.dart';
+import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/ui/screens/CreateProfileScreen/genre_widget.dart';
 import 'package:bluppi/ui/screens/CreateProfileScreen/indentiy_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CreateProfileScreen extends ConsumerWidget {
   const CreateProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = FirebaseAuth.instance.currentUser;
     final currentStep = ref.watch(createProfileStepProvider);
-    final totalSteps = 3;
+    final totalSteps = 2;
 
     final steps = [const IdentityStep(), const GenreStep()];
 
-    void onNext() {
+    void onNext() async {
       if (currentStep < totalSteps - 1) {
         ref.read(createProfileStepProvider.notifier).next();
-      } else {
-        // TODO: Call CreateUser API via gRPC
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Creating Profile...")));
+        return;
+      }
+      final data = ref.read(createProfileDataProvider);
+
+      final updatedData = data.copyWith(
+        email: user?.email ?? '',
+        id: user!.uid,
+      );
+
+      try {
+        await ref
+            .read(userServiceClientRepositoryProvider)
+            .createUser(updatedData);
+
+        if (!context.mounted) return;
+
+        showSnackBar(
+          context: context,
+          message: "Profile Created Successfully!",
+          icon: const Icon(Icons.check_circle, color: Colors.greenAccent),
+        );
+
+        context.go("/");
+      } catch (error) {
+        if (!context.mounted) return;
+
+        showSnackBar(
+          context: context,
+          message: "Error creating profile: $error",
+          icon: const Icon(Icons.error, color: Colors.redAccent),
+        );
       }
     }
 
@@ -30,7 +62,7 @@ class CreateProfileScreen extends ConsumerWidget {
       if (currentStep > 0) {
         ref.read(createProfileStepProvider.notifier).back();
       } else {
-        Navigator.of(context).pop();
+        ref.read(authRepositoryProvider).logOut();
       }
     }
 
