@@ -22,7 +22,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const HomeScreen(),
+        // TODO: Replace with your actual HomeScreen
+        builder: (context, state) => const CreateProfileScreen(),
       ),
       GoRoute(
         path: '/login',
