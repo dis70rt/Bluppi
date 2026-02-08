@@ -5,6 +5,7 @@ import 'package:bluppi/domain/repositories/user_repository.dart';
 import 'package:bluppi/generated/users.pbgrpc.dart' as proto;
 import 'package:bluppi/domain/models/user_model.dart';
 import 'package:bluppi/data/grpc/channels/grpc_channel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userServiceClientRepositoryProvider = Provider<UserServiceClientRepository>((ref) {
@@ -38,10 +39,45 @@ class UserServiceClientRepository implements UserRepository {
 
   @override
   Future<bool> checkUserExists(String id) async {
-    log("Checking if user exists with ID: $id");
     final request = proto.CheckUserRequest(id: id);
     final response = await _client.checkUserExists(request);
-    log("User exists: ${response.exists}");
     return response.exists;
+  }
+
+  @override
+  Future<UserModel> getCurrentUser() async {
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    final request = proto.GetUserByIdRequest(userId: currentUser.uid);
+    final response = await _client.getUserById(request);
+    return UserModel.fromProto(response.user);
+  }
+
+  @override
+  Future<UserModel> getUserByUsername(String username) async {
+    final request = proto.GetUserByUsernameRequest(username: username);
+    final response = await _client.getUserByUsername(request);
+    return UserModel.fromProto(response.user);
+  }
+
+  @override
+  Future<void> followUser(String userId) async {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final request = proto.FollowUserRequest(followerId: userId, followeeId: currentUserId);
+    await _client.followUser(request);
+  }
+
+  @override
+  Future<void> unfollowUser(String userId) async {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final request = proto.UnfollowUserRequest(followerId: userId, followeeId: currentUserId);
+    await _client.unfollowUser(request);
+  }
+
+  @override
+  Future<bool> isFollowing(String followeeId) async {
+    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+    final request = proto.IsFollowingRequest(followerId: currentUserId, followeeId: followeeId);
+    final response = await _client.isFollowing(request);
+    return response.isFollowing;
   }
 }

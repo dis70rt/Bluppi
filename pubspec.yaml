@@ -49,6 +49,7 @@ dependencies:
   protobuf: ^6.0.0
   riverpod: ^3.2.1
   fixnum: ^1.1.1
+  skeletonizer: ^2.1.2
 
 dev_dependencies:
   flutter_test:

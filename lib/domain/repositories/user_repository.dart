@@ -4,5 +4,10 @@ import 'package:bluppi/domain/models/user_model.dart';
 abstract class UserRepository {
   Future<UserModel> createUser(CreateUserModel user);
   Future<UserModel> getUserById(String id);
+  Future<UserModel> getCurrentUser();
+  Future<UserModel> getUserByUsername(String username);
   Future<bool> checkUserExists(String id);
+  Future<void> followUser(String userId);
+  Future<void> unfollowUser(String userId);
+  Future<bool> isFollowing(String followeeId);
 }

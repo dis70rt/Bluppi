@@ -7,18 +7,26 @@ class GenreStep extends ConsumerWidget {
   const GenreStep({super.key});
 
   static const List<String> _availableGenres = [
-    "Sci-Fi",
-    "Fantasy",
-    "Mystery",
-    "Romance",
-    "Horror",
-    "Thriller",
-    "History",
-    "Biography",
-    "Comedy",
-    "Drama",
-    "Poetry",
-    "Self-Help",
+    "Pop",
+    "Hip Hop",
+    "Trap",
+    "Drill",
+    "R&B",
+    "Afrobeats",
+    "K-Pop",
+    "Latin Pop",
+    "Reggaeton",
+    "Indie Pop",
+    "Indie Rock",
+    "Electronic",
+    "EDM",
+    "House",
+    "Techno",
+    "Lo-Fi",
+    "Phonk",
+    "Hyperpop",
+    "Punjabi",
+    "Ambient",
   ];
 
   @override
@@ -37,9 +45,9 @@ class GenreStep extends ConsumerWidget {
         const SizedBox(height: 20),
         Text(
           "What do you like?",
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontSize: 28,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineLarge?.copyWith(fontSize: 28),
         ),
         const SizedBox(height: 8),
         Text(
@@ -58,7 +66,9 @@ class GenreStep extends ConsumerWidget {
                 return GestureDetector(
                   onTap: () {
                     // Use the notifier method to toggle genre
-                    ref.read(createProfileDataProvider.notifier).toggleGenre(genre);
+                    ref
+                        .read(createProfileDataProvider.notifier)
+                        .toggleGenre(genre);
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),

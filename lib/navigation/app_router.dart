@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:bluppi/ui/screens/CreateProfileScreen/create_profile_screen.dart';
 import 'package:bluppi/ui/screens/HomeScreen/home_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
 import 'package:bluppi/ui/screens/auth_screen.dart';
+import 'package:bluppi/ui/screens/main_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,11 +22,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
     routes: [
       GoRoute(
-        path: '/',
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
-      ),
-      GoRoute(
         path: '/login',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
@@ -34,17 +31,34 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'auth',
         builder: (context, state) => const AuthScreen(),
       ),
-      GoRoute(
-        path: '/create-profile',
-        name: 'create_profile',
-        builder: (context, state) => const CreateProfileScreen(),
-      ),
-      GoRoute(
-        path: '/u/:username',
-        builder: (context, state) {
-          final username = state.pathParameters['username'];
-          return Scaffold(body: Center(child: Text('Profile: $username')));
-        },
+
+      ShellRoute(
+        builder: (context, state, child) => MainScreen(child: child),
+        routes: [
+          GoRoute(
+            path: '/',
+            name: 'home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/create-profile',
+            name: 'create_profile',
+            builder: (context, state) => const CreateProfileScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            name: 'profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/u/:username',
+            builder: (context, state) {
+              final username = state.pathParameters['username'];
+              return ProfileScreen(username: username);
+            },
+          ),
+          
+        ],
       ),
     ],
 
