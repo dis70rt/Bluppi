@@ -93,33 +93,42 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
   }
 
   Future<void> loadMore() async {
-    final current = state.value;
-    if (current == null) return;
-    if (!current.hasMore || current.isLoadingMore) return;
+    final before = state.value;
+    if (before == null) return;
+    if (!before.hasMore || before.isLoadingMore) return;
+    if (before.nextCursor == null) return;
 
-    state = AsyncValue.data(
-      current.copyWith(isLoadingMore: true),
-    );
+    final requestedQuery = before.query;
+    final requestedCursor = before.nextCursor;
+
+    state = AsyncValue.data(before.copyWith(isLoadingMore: true));
 
     try {
       final repo = ref.read(trackServiceProvider);
       final response = await repo.searchTrack(
-        current.query,
-        cursor: current.nextCursor,
+        requestedQuery,
+        cursor: requestedCursor,
       );
 
       if (!ref.mounted) return;
 
+      final current = state.value;
+      if (current == null || current.query != requestedQuery) return;
+
+      final mergedResults = [...current.results, ...response.results];
+
       state = AsyncValue.data(
         current.copyWith(
           isLoadingMore: false,
-          results: [...current.results, ...response.results],
+          results: mergedResults,
           nextCursor: response.nextCursor,
           hasMore: response.nextCursor != null,
         ),
       );
     } catch (e, st) {
       if (!ref.mounted) return;
+      final current = state.value;
+      if (current == null || current.query != requestedQuery) return;
       state = AsyncValue.error(e, st);
     }
   }
