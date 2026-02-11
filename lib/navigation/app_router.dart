@@ -3,6 +3,7 @@ import 'package:bluppi/ui/screens/CreateProfileScreen/create_profile_screen.dart
 import 'package:bluppi/ui/screens/HomeScreen/home_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
+import 'package:bluppi/ui/screens/SearchScreen/search_screen.dart';
 import 'package:bluppi/ui/screens/auth_screen.dart';
 import 'package:bluppi/ui/screens/main_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: '/profile',
             name: 'profile',
             builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/search',
+            name: 'search',
+            builder: (context, state) => const SearchScreen(),
           ),
           GoRoute(
             path: '/u/:username',

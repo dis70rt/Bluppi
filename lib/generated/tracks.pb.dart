@@ -213,61 +213,61 @@ class Track extends $pb.GeneratedMessage {
   $1.Timestamp ensureCreatedAt() => $_ensure(12);
 }
 
-class TrackSummary extends $pb.GeneratedMessage {
-  factory TrackSummary({
+class SearchTrack extends $pb.GeneratedMessage {
+  factory SearchTrack({
     $core.String? id,
     $core.String? title,
     $core.String? artist,
     $core.String? imageSmall,
-    $core.int? durationMs,
+    $core.String? previewUrl,
   }) {
     final result = create();
     if (id != null) result.id = id;
     if (title != null) result.title = title;
     if (artist != null) result.artist = artist;
     if (imageSmall != null) result.imageSmall = imageSmall;
-    if (durationMs != null) result.durationMs = durationMs;
+    if (previewUrl != null) result.previewUrl = previewUrl;
     return result;
   }
 
-  TrackSummary._();
+  SearchTrack._();
 
-  factory TrackSummary.fromBuffer($core.List<$core.int> data,
+  factory SearchTrack.fromBuffer($core.List<$core.int> data,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromBuffer(data, registry);
-  factory TrackSummary.fromJson($core.String json,
+  factory SearchTrack.fromJson($core.String json,
           [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
       create()..mergeFromJson(json, registry);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(
-      _omitMessageNames ? '' : 'TrackSummary',
+      _omitMessageNames ? '' : 'SearchTrack',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'id')
     ..aOS(2, _omitFieldNames ? '' : 'title')
     ..aOS(3, _omitFieldNames ? '' : 'artist')
     ..aOS(5, _omitFieldNames ? '' : 'imageSmall')
-    ..aI(6, _omitFieldNames ? '' : 'durationMs')
+    ..aOS(6, _omitFieldNames ? '' : 'previewUrl')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  TrackSummary clone() => deepCopy();
+  SearchTrack clone() => deepCopy();
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
-  TrackSummary copyWith(void Function(TrackSummary) updates) =>
-      super.copyWith((message) => updates(message as TrackSummary))
-          as TrackSummary;
+  SearchTrack copyWith(void Function(SearchTrack) updates) =>
+      super.copyWith((message) => updates(message as SearchTrack))
+          as SearchTrack;
 
   @$core.override
   $pb.BuilderInfo get info_ => _i;
 
   @$core.pragma('dart2js:noInline')
-  static TrackSummary create() => TrackSummary._();
+  static SearchTrack create() => SearchTrack._();
   @$core.override
-  TrackSummary createEmptyInstance() => create();
+  SearchTrack createEmptyInstance() => create();
   @$core.pragma('dart2js:noInline')
-  static TrackSummary getDefault() => _defaultInstance ??=
-      $pb.GeneratedMessage.$_defaultFor<TrackSummary>(create);
-  static TrackSummary? _defaultInstance;
+  static SearchTrack getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SearchTrack>(create);
+  static SearchTrack? _defaultInstance;
 
   @$pb.TagNumber(1)
   $core.String get id => $_getSZ(0);
@@ -306,13 +306,13 @@ class TrackSummary extends $pb.GeneratedMessage {
   void clearImageSmall() => $_clearField(5);
 
   @$pb.TagNumber(6)
-  $core.int get durationMs => $_getIZ(4);
+  $core.String get previewUrl => $_getSZ(4);
   @$pb.TagNumber(6)
-  set durationMs($core.int value) => $_setSignedInt32(4, value);
+  set previewUrl($core.String value) => $_setString(4, value);
   @$pb.TagNumber(6)
-  $core.bool hasDurationMs() => $_has(4);
+  $core.bool hasPreviewUrl() => $_has(4);
   @$pb.TagNumber(6)
-  void clearDurationMs() => $_clearField(6);
+  void clearPreviewUrl() => $_clearField(6);
 }
 
 class TrackResponse extends $pb.GeneratedMessage {
@@ -429,12 +429,12 @@ class SearchTracksRequest extends $pb.GeneratedMessage {
   factory SearchTracksRequest({
     $core.String? query,
     $core.int? limit,
-    $core.int? offset,
+    $core.String? cursor,
   }) {
     final result = create();
     if (query != null) result.query = query;
     if (limit != null) result.limit = limit;
-    if (offset != null) result.offset = offset;
+    if (cursor != null) result.cursor = cursor;
     return result;
   }
 
@@ -453,7 +453,7 @@ class SearchTracksRequest extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'query')
     ..aI(2, _omitFieldNames ? '' : 'limit')
-    ..aI(3, _omitFieldNames ? '' : 'offset')
+    ..aOS(3, _omitFieldNames ? '' : 'cursor')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -494,29 +494,27 @@ class SearchTracksRequest extends $pb.GeneratedMessage {
   void clearLimit() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get offset => $_getIZ(2);
+  $core.String get cursor => $_getSZ(2);
   @$pb.TagNumber(3)
-  set offset($core.int value) => $_setSignedInt32(2, value);
+  set cursor($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasOffset() => $_has(2);
+  $core.bool hasCursor() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOffset() => $_clearField(3);
+  void clearCursor() => $_clearField(3);
 }
 
 class SearchTracksResponse extends $pb.GeneratedMessage {
   factory SearchTracksResponse({
-    $core.Iterable<Track>? tracks,
-    $fixnum.Int64? total,
+    $core.Iterable<SearchTrack>? tracks,
     $core.String? query,
     $core.int? limit,
-    $core.int? offset,
+    $core.String? nextCursor,
   }) {
     final result = create();
     if (tracks != null) result.tracks.addAll(tracks);
-    if (total != null) result.total = total;
     if (query != null) result.query = query;
     if (limit != null) result.limit = limit;
-    if (offset != null) result.offset = offset;
+    if (nextCursor != null) result.nextCursor = nextCursor;
     return result;
   }
 
@@ -533,11 +531,11 @@ class SearchTracksResponse extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'SearchTracksResponse',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..pPM<Track>(1, _omitFieldNames ? '' : 'tracks', subBuilder: Track.create)
-    ..aInt64(2, _omitFieldNames ? '' : 'total')
-    ..aOS(3, _omitFieldNames ? '' : 'query')
-    ..aI(4, _omitFieldNames ? '' : 'limit')
-    ..aI(5, _omitFieldNames ? '' : 'offset')
+    ..pPM<SearchTrack>(1, _omitFieldNames ? '' : 'tracks',
+        subBuilder: SearchTrack.create)
+    ..aOS(2, _omitFieldNames ? '' : 'query')
+    ..aI(3, _omitFieldNames ? '' : 'limit')
+    ..aOS(4, _omitFieldNames ? '' : 'nextCursor')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -560,43 +558,34 @@ class SearchTracksResponse extends $pb.GeneratedMessage {
   static SearchTracksResponse? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $pb.PbList<Track> get tracks => $_getList(0);
+  $pb.PbList<SearchTrack> get tracks => $_getList(0);
 
   @$pb.TagNumber(2)
-  $fixnum.Int64 get total => $_getI64(1);
+  $core.String get query => $_getSZ(1);
   @$pb.TagNumber(2)
-  set total($fixnum.Int64 value) => $_setInt64(1, value);
+  set query($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
-  $core.bool hasTotal() => $_has(1);
+  $core.bool hasQuery() => $_has(1);
   @$pb.TagNumber(2)
-  void clearTotal() => $_clearField(2);
+  void clearQuery() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get query => $_getSZ(2);
+  $core.int get limit => $_getIZ(2);
   @$pb.TagNumber(3)
-  set query($core.String value) => $_setString(2, value);
+  set limit($core.int value) => $_setSignedInt32(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasQuery() => $_has(2);
+  $core.bool hasLimit() => $_has(2);
   @$pb.TagNumber(3)
-  void clearQuery() => $_clearField(3);
+  void clearLimit() => $_clearField(3);
 
   @$pb.TagNumber(4)
-  $core.int get limit => $_getIZ(3);
+  $core.String get nextCursor => $_getSZ(3);
   @$pb.TagNumber(4)
-  set limit($core.int value) => $_setSignedInt32(3, value);
+  set nextCursor($core.String value) => $_setString(3, value);
   @$pb.TagNumber(4)
-  $core.bool hasLimit() => $_has(3);
+  $core.bool hasNextCursor() => $_has(3);
   @$pb.TagNumber(4)
-  void clearLimit() => $_clearField(4);
-
-  @$pb.TagNumber(5)
-  $core.int get offset => $_getIZ(4);
-  @$pb.TagNumber(5)
-  set offset($core.int value) => $_setSignedInt32(4, value);
-  @$pb.TagNumber(5)
-  $core.bool hasOffset() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearOffset() => $_clearField(5);
+  void clearNextCursor() => $_clearField(4);
 }
 
 class GetPopularTracksRequest extends $pb.GeneratedMessage {

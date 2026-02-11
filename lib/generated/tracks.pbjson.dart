@@ -53,23 +53,23 @@ final $typed_data.Uint8List trackDescriptor = $convert.base64Decode(
     'Ugpwb3B1bGFyaXR5EjkKCmNyZWF0ZWRfYXQYDiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZX'
     'N0YW1wUgljcmVhdGVkQXQ=');
 
-@$core.Deprecated('Use trackSummaryDescriptor instead')
-const TrackSummary$json = {
-  '1': 'TrackSummary',
+@$core.Deprecated('Use searchTrackDescriptor instead')
+const SearchTrack$json = {
+  '1': 'SearchTrack',
   '2': [
     {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
     {'1': 'title', '3': 2, '4': 1, '5': 9, '10': 'title'},
     {'1': 'artist', '3': 3, '4': 1, '5': 9, '10': 'artist'},
     {'1': 'image_small', '3': 5, '4': 1, '5': 9, '10': 'imageSmall'},
-    {'1': 'duration_ms', '3': 6, '4': 1, '5': 5, '10': 'durationMs'},
+    {'1': 'preview_url', '3': 6, '4': 1, '5': 9, '10': 'previewUrl'},
   ],
 };
 
-/// Descriptor for `TrackSummary`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List trackSummaryDescriptor = $convert.base64Decode(
-    'CgxUcmFja1N1bW1hcnkSDgoCaWQYASABKAlSAmlkEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIWCg'
-    'ZhcnRpc3QYAyABKAlSBmFydGlzdBIfCgtpbWFnZV9zbWFsbBgFIAEoCVIKaW1hZ2VTbWFsbBIf'
-    'CgtkdXJhdGlvbl9tcxgGIAEoBVIKZHVyYXRpb25Ncw==');
+/// Descriptor for `SearchTrack`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List searchTrackDescriptor = $convert.base64Decode(
+    'CgtTZWFyY2hUcmFjaxIOCgJpZBgBIAEoCVICaWQSFAoFdGl0bGUYAiABKAlSBXRpdGxlEhYKBm'
+    'FydGlzdBgDIAEoCVIGYXJ0aXN0Eh8KC2ltYWdlX3NtYWxsGAUgASgJUgppbWFnZVNtYWxsEh8K'
+    'C3ByZXZpZXdfdXJsGAYgASgJUgpwcmV2aWV3VXJs');
 
 @$core.Deprecated('Use trackResponseDescriptor instead')
 const TrackResponse$json = {
@@ -108,14 +108,14 @@ const SearchTracksRequest$json = {
   '2': [
     {'1': 'query', '3': 1, '4': 1, '5': 9, '10': 'query'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
-    {'1': 'offset', '3': 3, '4': 1, '5': 5, '10': 'offset'},
+    {'1': 'cursor', '3': 3, '4': 1, '5': 9, '10': 'cursor'},
   ],
 };
 
 /// Descriptor for `SearchTracksRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List searchTracksRequestDescriptor = $convert.base64Decode(
     'ChNTZWFyY2hUcmFja3NSZXF1ZXN0EhQKBXF1ZXJ5GAEgASgJUgVxdWVyeRIUCgVsaW1pdBgCIA'
-    'EoBVIFbGltaXQSFgoGb2Zmc2V0GAMgASgFUgZvZmZzZXQ=');
+    'EoBVIFbGltaXQSFgoGY3Vyc29yGAMgASgJUgZjdXJzb3I=');
 
 @$core.Deprecated('Use searchTracksResponseDescriptor instead')
 const SearchTracksResponse$json = {
@@ -126,21 +126,20 @@ const SearchTracksResponse$json = {
       '3': 1,
       '4': 3,
       '5': 11,
-      '6': '.tracks.Track',
+      '6': '.tracks.SearchTrack',
       '10': 'tracks'
     },
-    {'1': 'total', '3': 2, '4': 1, '5': 3, '10': 'total'},
-    {'1': 'query', '3': 3, '4': 1, '5': 9, '10': 'query'},
-    {'1': 'limit', '3': 4, '4': 1, '5': 5, '10': 'limit'},
-    {'1': 'offset', '3': 5, '4': 1, '5': 5, '10': 'offset'},
+    {'1': 'query', '3': 2, '4': 1, '5': 9, '10': 'query'},
+    {'1': 'limit', '3': 3, '4': 1, '5': 5, '10': 'limit'},
+    {'1': 'next_cursor', '3': 4, '4': 1, '5': 9, '10': 'nextCursor'},
   ],
 };
 
 /// Descriptor for `SearchTracksResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List searchTracksResponseDescriptor = $convert.base64Decode(
-    'ChRTZWFyY2hUcmFja3NSZXNwb25zZRIlCgZ0cmFja3MYASADKAsyDS50cmFja3MuVHJhY2tSBn'
-    'RyYWNrcxIUCgV0b3RhbBgCIAEoA1IFdG90YWwSFAoFcXVlcnkYAyABKAlSBXF1ZXJ5EhQKBWxp'
-    'bWl0GAQgASgFUgVsaW1pdBIWCgZvZmZzZXQYBSABKAVSBm9mZnNldA==');
+    'ChRTZWFyY2hUcmFja3NSZXNwb25zZRIrCgZ0cmFja3MYASADKAsyEy50cmFja3MuU2VhcmNoVH'
+    'JhY2tSBnRyYWNrcxIUCgVxdWVyeRgCIAEoCVIFcXVlcnkSFAoFbGltaXQYAyABKAVSBWxpbWl0'
+    'Eh8KC25leHRfY3Vyc29yGAQgASgJUgpuZXh0Q3Vyc29y');
 
 @$core.Deprecated('Use getPopularTracksRequestDescriptor instead')
 const GetPopularTracksRequest$json = {

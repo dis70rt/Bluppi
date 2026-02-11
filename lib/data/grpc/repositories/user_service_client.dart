@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bluppi/domain/models/create_user_model.dart';
 import 'package:bluppi/domain/repositories/user_repository.dart';
 import 'package:bluppi/generated/users.pbgrpc.dart' as proto;
