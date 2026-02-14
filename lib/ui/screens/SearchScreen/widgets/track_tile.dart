@@ -1,5 +1,7 @@
+import 'package:bluppi/application/providers/track_provider.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
 import 'package:bluppi/application/providers/playback_provider.dart';
+import 'package:bluppi/domain/models/track_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,25 +11,46 @@ class TrackTile extends ConsumerWidget {
   final SearchTrackModel track;
   const TrackTile({super.key, required this.track});
 
+  Future<void> _onTap(WidgetRef ref, PlayerState player) async {
+    final notifier = ref.read(playerProvider.notifier);
+    final isCurrentTrack = player.currentTrack?.id == track.id;
+
+
+    if (!isCurrentTrack) {
+      final TrackModel fullTrack = await ref.read(trackProvider(track.id).future);
+
+      notifier.setQueue([fullTrack]);
+      notifier.playIndex(0);
+      return;
+    }
+
+    if (player.status == PlaybackStatus.playing) {
+      notifier.pause();
+    } else {
+      notifier.play();
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final playback = ref.watch(playbackProvider);
-    final isPlaying = playback.playingTrackId == track.id;
+    final player = ref.watch(playerProvider);
+
+    final isCurrentTrack = player.currentTrack?.id == track.id;
+    final isPlaying = isCurrentTrack && player.status == PlaybackStatus.playing;
+    final isLoading =
+        isCurrentTrack &&
+        (player.status == PlaybackStatus.loading ||
+            player.status == PlaybackStatus.buffering);
 
     return InkWell(
-      onTap: () {
-        ref.read(playbackProvider.notifier).toggle(track.id);
-      },
+      onTap: () => _onTap(ref, player),
       splashColor: theme.colorScheme.primary.withAlpha(30),
       borderRadius: BorderRadius.circular(12),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-        decoration: BoxDecoration(
-          
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
         child: Row(
           children: [
             Stack(
@@ -62,17 +85,17 @@ class TrackTile extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      if (isPlaying)
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: Lottie.asset(
-                      'assets/animations/music_playing.json',
-                      repeat: true,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  SizedBox(width: isPlaying ? 6 : 0),
+                      if (isPlaying || isLoading)
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Lottie.asset(
+                            'assets/animations/music_playing.json',
+                            repeat: true,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      SizedBox(width: isPlaying ? 6 : 0),
                       Text(
                         track.title,
                         maxLines: 1,
