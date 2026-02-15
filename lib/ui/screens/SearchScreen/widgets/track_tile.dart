@@ -1,7 +1,10 @@
+import 'package:audio_service/audio_service.dart';
+import 'package:bluppi/application/providers/stream_provider.dart';
 import 'package:bluppi/application/providers/track_provider.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
 import 'package:bluppi/application/providers/playback_provider.dart';
 import 'package:bluppi/domain/models/track_model.dart';
+import 'package:bluppi/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,9 +21,27 @@ class TrackTile extends ConsumerWidget {
 
     if (!isCurrentTrack) {
       final TrackModel fullTrack = await ref.read(trackProvider(track.id).future);
+      final streamRepo = ref.read(streamRepositoryProvider);
 
-      notifier.setQueue([fullTrack]);
-      notifier.playIndex(0);
+      final audioUrl = await streamRepo.getStreamURL(
+        fullTrack.artist,
+        fullTrack.title,
+        fullTrack.id,
+      );
+      // TODO: Maybe put more data in the extras, like the full track info, to avoid fetching it again in the player screen
+      // TODO: Implementation for getting the full audio url is remaining;
+      final mediaItem = MediaItem(
+      id: fullTrack.id,
+      title: fullTrack.title,
+      artist: fullTrack.artist,
+      artUri: Uri.parse(fullTrack.imageLarge),
+      duration: Duration(milliseconds: fullTrack.durationMs),
+      extras: {
+        'audioUrl': audioUrl,
+      },
+    );
+
+    await audioHandler.playMediaItem(mediaItem);
       return;
     }
 

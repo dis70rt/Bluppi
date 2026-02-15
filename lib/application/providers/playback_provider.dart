@@ -1,6 +1,6 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:bluppi/domain/models/track_model.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+import 'package:bluppi/main.dart';
 import 'package:riverpod/riverpod.dart';
 
 enum PlaybackStatus {
@@ -44,13 +44,11 @@ class PlayerState {
 }
 
 class PlaybackNotifier extends Notifier<PlayerState> {
-  late final AudioPlayer _player;
+  AudioHandler get _handler => audioHandler;
 
   @override
   PlayerState build() {
-    _player = AudioPlayer();
-
-    _listenToEngine();
+    _listen();
     return const PlayerState(
       queue: [],
       currentIndex: 0,
@@ -58,16 +56,12 @@ class PlaybackNotifier extends Notifier<PlayerState> {
     );
   }
 
-  void _listenToEngine() {
-    _player.playerStateStream.listen((ps) {
-      final processing = ps.processingState;
-
-      if (processing == ProcessingState.loading) {
+  void _listen() {
+    _handler.playbackState.listen((ps) {
+      if (ps.processingState == AudioProcessingState.loading) {
         state = state.copyWith(status: PlaybackStatus.loading);
-      } else if (processing == ProcessingState.buffering) {
+      } else if (ps.processingState == AudioProcessingState.buffering) {
         state = state.copyWith(status: PlaybackStatus.buffering);
-      } else if (processing == ProcessingState.completed) {
-        state = state.copyWith(status: PlaybackStatus.completed);
       } else if (ps.playing) {
         state = state.copyWith(status: PlaybackStatus.playing);
       } else {
@@ -75,58 +69,33 @@ class PlaybackNotifier extends Notifier<PlayerState> {
       }
     });
 
-    _player.currentIndexStream.listen((index) {
-      if (index != null) {
-        state = state.copyWith(currentIndex: index);
-      }
+    _handler.mediaItem.listen((mediaItem) {
+      if (mediaItem == null) return;
+
+      final track = TrackModel(
+        id: mediaItem.extras?['trackId'] ?? mediaItem.id,
+        title: mediaItem.title,
+        artist: mediaItem.artist ?? '',
+        imageLarge: mediaItem.artUri.toString(),
+        previewUrl: mediaItem.extras?['audioUrl'] ?? mediaItem.id,
+        durationMs: mediaItem.duration?.inMilliseconds ?? 0,
+        genres: [],
+        imageSmall: '',
+        videoId: '',
+        listeners: 0,
+        playCount: 0,
+        popularity: 0,
+        createdAt: DateTime.now(),
+      );
+
+      state = state.copyWith(queue: [track], currentIndex: 0);
     });
   }
 
-  Future<void> setQueue(List<TrackModel> tracks, {int startIndex = 0}) async {
-    state = state.copyWith(
-      queue: tracks,
-      currentIndex: startIndex,
-      status: PlaybackStatus.loading,
-    );
-
-    final sources = tracks.map((track) {
-      return AudioSource.uri(
-        Uri.parse(track.previewUrl), // or resolved later
-        tag: MediaItem(id: track.id, title: track.title, artist: track.artist),
-      );
-    }).toList();
-
-    await _player.setAudioSource(
-      ConcatenatingAudioSource(children: sources),
-      initialIndex: startIndex,
-    );
-  }
-
-  Future<void> playIndex(int index) async {
-    try {
-      state = state.copyWith(
-        currentIndex: index,
-        status: PlaybackStatus.loading,
-      );
-
-      await _player.seek(Duration.zero, index: index);
-      await _player.play();
-    } catch (e) {
-      state = state.copyWith(status: PlaybackStatus.error, error: e.toString());
-    }
-  }
-
-  Future<void> play() => _player.play();
-  Future<void> pause() => _player.pause();
-  Future<void> stop() => _player.stop();
-
-  Future<void> next() async {
-    if (_player.hasNext) await _player.seekToNext();
-  }
-
-  Future<void> previous() async {
-    if (_player.hasPrevious) await _player.seekToPrevious();
-  }
+  Future<void> play() => _handler.play();
+  Future<void> pause() => _handler.pause();
+  Future<void> next() => _handler.skipToNext();
+  Future<void> previous() => _handler.skipToPrevious();
 }
 
 final playerProvider = NotifierProvider<PlaybackNotifier, PlayerState>(
