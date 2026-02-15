@@ -32,7 +32,7 @@ class TrackTileSkeleton extends StatelessWidget {
                 Skeleton.leaf(
                   child: Container(
                     height: 14,
-                    width: double.infinity,
+                    width: 200,
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(4),
@@ -69,6 +69,7 @@ class TrackListSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeletonizer(
       enabled: true,
+      containersColor: Colors.grey[300]!,
       child: ListView.builder(
         itemCount: 10,
         itemBuilder: (_, _) => const TrackTileSkeleton(),
