@@ -1,8 +1,8 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:bluppi/application/providers/stream_provider.dart';
-import 'package:bluppi/application/providers/track_provider.dart';
+import 'package:bluppi/application/providers/music/stream_provider.dart';
+import 'package:bluppi/application/providers/music/track_provider.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
-import 'package:bluppi/application/providers/playback_provider.dart';
+import 'package:bluppi/application/providers/music/playback_provider.dart';
 import 'package:bluppi/domain/models/track_model.dart';
 import 'package:bluppi/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';

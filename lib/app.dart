@@ -1,5 +1,5 @@
 // app.dart
-import 'package:bluppi/application/providers/onboarding_provider.dart';
+import 'package:bluppi/application/providers/auth/onboarding_provider.dart';
 import 'package:bluppi/application/providers/theme_provider.dart';
 import 'package:bluppi/data/auth/auth_life_cycle.dart';
 import 'package:bluppi/navigation/app_router.dart';

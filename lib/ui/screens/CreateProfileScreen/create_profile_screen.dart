@@ -1,5 +1,5 @@
-import 'package:bluppi/application/providers/auth_provider.dart';
-import 'package:bluppi/application/providers/create_profile_provider.dart';
+import 'package:bluppi/application/providers/auth/auth_provider.dart';
+import 'package:bluppi/application/providers/user/create_profile_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/core/utils/snackbar.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';

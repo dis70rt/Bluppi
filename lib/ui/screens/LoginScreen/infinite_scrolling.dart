@@ -1,5 +1,5 @@
 import 'dart:math' as math;
-import 'package:bluppi/application/providers/onboarding_provider.dart';
+import 'package:bluppi/application/providers/auth/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

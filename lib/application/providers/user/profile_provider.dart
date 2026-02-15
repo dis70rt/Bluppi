@@ -1,4 +1,4 @@
-import 'package:bluppi/application/providers/user_provider.dart';
+import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/domain/models/user_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

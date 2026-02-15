@@ -1,4 +1,4 @@
-import 'package:bluppi/application/providers/create_profile_provider.dart';
+import 'package:bluppi/application/providers/user/create_profile_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/ui/screens/CreateProfileScreen/widgets/avatar_picker.dart';
 import 'package:bluppi/ui/screens/CreateProfileScreen/widgets/date_of_birth.dart';

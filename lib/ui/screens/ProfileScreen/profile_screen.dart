@@ -1,4 +1,4 @@
-import 'package:bluppi/application/providers/profile_provider.dart';
+import 'package:bluppi/application/providers/user/profile_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_app_bar.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_content.dart';

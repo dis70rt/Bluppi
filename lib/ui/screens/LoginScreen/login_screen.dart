@@ -7,7 +7,7 @@ import 'package:bluppi/ui/screens/LoginScreen/slide_to_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bluppi/application/providers/auth_provider.dart';
+import 'package:bluppi/application/providers/auth/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});

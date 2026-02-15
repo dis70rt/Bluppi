@@ -1,5 +1,5 @@
-import 'package:bluppi/application/providers/follow_provider.dart';
-import 'package:bluppi/application/providers/profile_provider.dart';
+import 'package:bluppi/application/providers/user/follow_provider.dart';
+import 'package:bluppi/application/providers/user/profile_provider.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_button.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_stats.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_header.dart';

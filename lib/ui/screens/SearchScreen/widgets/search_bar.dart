@@ -1,4 +1,4 @@
-import 'package:bluppi/application/providers/search_provider.dart';
+import 'package:bluppi/application/providers/music/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

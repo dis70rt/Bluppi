@@ -9,7 +9,7 @@ import 'package:bluppi/ui/screens/main_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bluppi/application/providers/auth_provider.dart';
+import 'package:bluppi/application/providers/auth/auth_provider.dart';
 import 'package:bluppi/domain/repositories/auth_repository.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {

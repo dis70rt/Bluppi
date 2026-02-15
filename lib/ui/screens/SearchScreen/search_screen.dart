@@ -1,5 +1,5 @@
-import 'package:bluppi/application/providers/search_provider.dart';
-import 'package:bluppi/application/providers/user_provider.dart';
+import 'package:bluppi/application/providers/music/search_provider.dart';
+import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/ui/screens/SearchScreen/widgets/search_bar.dart';
 import 'package:bluppi/ui/screens/SearchScreen/widgets/track_tile.dart';
 import 'package:cached_network_image/cached_network_image.dart';

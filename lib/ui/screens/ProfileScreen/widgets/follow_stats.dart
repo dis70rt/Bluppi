@@ -1,4 +1,4 @@
-import 'package:bluppi/application/providers/follow_provider.dart';
+import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:bluppi/application/providers/create_profile_provider.dart';
+import 'package:bluppi/application/providers/user/create_profile_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

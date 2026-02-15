@@ -1,5 +1,5 @@
-import 'package:bluppi/application/providers/auth_provider.dart';
-import 'package:bluppi/application/providers/user_provider.dart';
+import 'package:bluppi/application/providers/auth/auth_provider.dart';
+import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/app_bar.dart';
