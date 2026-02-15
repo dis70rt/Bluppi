@@ -1,3 +1,5 @@
+import 'package:bluppi/application/providers/music/playback_provider.dart';
+import 'package:bluppi/ui/widgets/floating_media_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,7 +13,8 @@ class MainScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouter.of(context).state.uri.path;
     final selectedIndex = _indexFromLocation(location);
-    // final currentTrack = ref.watch(currentTrackProvider);
+    final playerState = ref.watch(playerProvider);
+    final hasTrack = playerState.currentTrack != null;
     // final roomState = ref.watch(roomProvider);
     // final isInRoomScreen = selectedIndex == 1;
 
@@ -21,17 +24,12 @@ class MainScreen extends ConsumerWidget {
       body: Stack(
         children: [
           child,
-
-          // if (currentTrack != null)
-          // Visibility(
-          //   visible: !roomState.isInRoom || selectedIndex != 1,
-          //   child: Positioned(
-          //     left: 0,
-          //     right: 0,
-          //     bottom:  70,
-          //     child: FloatingMusicPlayer(),
-          //   ),
-          // ),
+          if (hasTrack)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 70,
+            child: FloatingMusicPlayer())
         ],
       ),
       bottomNavigationBar: Theme(

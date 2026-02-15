@@ -6,6 +6,7 @@ class PlayerHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler {
 
   final AudioPlayer _player = AudioPlayer();
+  Stream<Duration> get positionStream => _player.positionStream;
 
   PlayerHandler() {
     _init();

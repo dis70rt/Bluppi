@@ -1,7 +1,9 @@
 import 'package:bluppi/application/providers/music/search_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
+import 'package:bluppi/ui/screens/SearchScreen/widgets/recently_search.dart';
 import 'package:bluppi/ui/screens/SearchScreen/widgets/search_bar.dart';
 import 'package:bluppi/ui/screens/SearchScreen/widgets/track_tile.dart';
+import 'package:bluppi/ui/screens/SearchScreen/widgets/track_tile_loading.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,7 +100,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             Expanded(
               child: searchAsync.when(
                 loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                    const TrackListSkeleton(),
 
                 error: (e, _) => Center(
                   child: Text(
@@ -109,9 +111,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
                 data: (state) {
                   if (state.query.isEmpty) {
-                    return const Center(
-                      child: Text('Start typing to search'),
-                    );
+                    return RecentlySearch();
                   }
 
                   if (state.results.isEmpty) {

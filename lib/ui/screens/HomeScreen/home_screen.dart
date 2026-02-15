@@ -4,6 +4,7 @@ import 'package:bluppi/core/utils/error_scaffold.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/app_bar.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/loading_home.dart';
+import 'package:bluppi/ui/widgets/floating_media_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

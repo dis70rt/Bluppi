@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:bluppi/domain/models/track_model.dart';
 import 'package:bluppi/main.dart';
@@ -18,6 +20,7 @@ class PlayerState {
   final int currentIndex;
   final PlaybackStatus status;
   final String? error;
+  final Duration position;
 
   TrackModel? get currentTrack => queue.isEmpty ? null : queue[currentIndex];
 
@@ -26,6 +29,7 @@ class PlayerState {
     required this.currentIndex,
     required this.status,
     this.error,
+    this.position = Duration.zero,
   });
 
   PlayerState copyWith({
@@ -33,22 +37,28 @@ class PlayerState {
     int? currentIndex,
     PlaybackStatus? status,
     String? error,
+    Duration? position,
   }) {
     return PlayerState(
       queue: queue ?? this.queue,
       currentIndex: currentIndex ?? this.currentIndex,
       status: status ?? this.status,
       error: error,
+      position: position ?? this.position,
     );
   }
 }
 
 class PlaybackNotifier extends Notifier<PlayerState> {
   AudioHandler get _handler => audioHandler;
+  StreamSubscription<Duration>? _positionSub;
 
   @override
   PlayerState build() {
     _listen();
+    ref.onDispose(() {
+      _positionSub?.cancel();
+    });
     return const PlayerState(
       queue: [],
       currentIndex: 0,
@@ -90,6 +100,12 @@ class PlaybackNotifier extends Notifier<PlayerState> {
 
       state = state.copyWith(queue: [track], currentIndex: 0);
     });
+    if (_positionSub == null) {
+      final positionStream = (_handler as dynamic).positionStream as Stream<Duration>;
+      _positionSub = positionStream.listen((position) {
+        state = state.copyWith(position: position);
+      });
+    }
   }
 
   Future<void> play() => _handler.play();

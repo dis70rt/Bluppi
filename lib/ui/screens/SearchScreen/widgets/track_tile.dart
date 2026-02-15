@@ -28,8 +28,7 @@ class TrackTile extends ConsumerWidget {
         fullTrack.title,
         fullTrack.id,
       );
-      // TODO: Maybe put more data in the extras, like the full track info, to avoid fetching it again in the player screen
-      // TODO: Implementation for getting the full audio url is remaining;
+
       final mediaItem = MediaItem(
       id: fullTrack.id,
       title: fullTrack.title,
@@ -73,31 +72,27 @@ class TrackTile extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: track.imageSmall,
-                    width: 44,
-                    height: 44,
-                    fit: BoxFit.cover,
-                    placeholder: (_, _) => Container(
-                      width: 44,
-                      height: 44,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                    ),
-                    errorWidget: (_, _, _) => Container(
-                      width: 44,
-                      height: 44,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: const Icon(Icons.music_note),
-                    ),
-                  ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: track.imageSmall,
+                width: 44,
+                height: 44,
+                fit: BoxFit.cover,
+                placeholder: (_, _) => Container(
+                  width: 44,
+                  height: 44,
+                  color: theme.colorScheme.surfaceContainerHighest,
                 ),
-              ],
+                errorWidget: (_, _, _) => Container(
+                  width: 44,
+                  height: 44,
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: const Icon(Icons.music_note),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -117,15 +112,18 @@ class TrackTile extends ConsumerWidget {
                           ),
                         ),
                       SizedBox(width: isPlaying ? 6 : 0),
-                      Text(
-                        track.title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isPlaying
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text(
+                          track.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: isPlaying
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ],

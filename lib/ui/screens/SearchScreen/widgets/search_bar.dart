@@ -1,3 +1,4 @@
+import 'package:bluppi/application/providers/music/recently_search_provider.dart';
 import 'package:bluppi/application/providers/music/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,12 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget> {
 
   void _onChanged(String value) {
     ref.read(searchTrackProvider.notifier).setQuery(value);
+  }
+
+  void _onSubmitted(String value) {
+    if (value.trim().isEmpty) return;
+    ref.read(searchTrackProvider.notifier).setQuery(value);
+    ref.read(recentlySearchProvider.notifier).add(value);
   }
 
   @override
@@ -67,6 +74,7 @@ class _SearchBarWidgetState extends ConsumerState<SearchBarWidget> {
             ),
         ],
         onChanged: _onChanged,
+        onSubmitted: _onSubmitted,
       ),
     );
   }

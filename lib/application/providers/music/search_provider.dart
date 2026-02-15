@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import 'package:bluppi/data/grpc/repositories/track_service_client.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
 import 'package:riverpod/riverpod.dart';
 
 class SearchTrackState {
   final String query;
-  final bool isLoading;
   final bool isLoadingMore;
   final List<SearchTrackModel> results;
   final String? nextCursor;
@@ -14,7 +12,6 @@ class SearchTrackState {
 
   const SearchTrackState({
     this.query = '',
-    this.isLoading = false,
     this.isLoadingMore = false,
     this.results = const [],
     this.nextCursor,
@@ -23,7 +20,6 @@ class SearchTrackState {
 
   SearchTrackState copyWith({
     String? query,
-    bool? isLoading,
     bool? isLoadingMore,
     List<SearchTrackModel>? results,
     String? nextCursor,
@@ -31,7 +27,6 @@ class SearchTrackState {
   }) {
     return SearchTrackState(
       query: query ?? this.query,
-      isLoading: isLoading ?? this.isLoading,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       results: results ?? this.results,
       nextCursor: nextCursor ?? this.nextCursor,
@@ -39,7 +34,6 @@ class SearchTrackState {
     );
   }
 }
-
 
 class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
   Timer? _debounce;
@@ -56,19 +50,11 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
     _debounce?.cancel();
 
     if (query.trim().isEmpty) {
-      state = const AsyncValue.data(SearchTrackState());
+      state = const AsyncData(SearchTrackState());
       return;
     }
 
-    state = AsyncValue.data(
-      SearchTrackState(
-        query: query,
-        isLoading: true,
-        results: const [],
-        nextCursor: null,
-        hasMore: true,
-      ),
-    );
+    state = const AsyncLoading();
 
     _debounce = Timer(const Duration(milliseconds: 400), () async {
       try {
@@ -77,9 +63,9 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
 
         if (!ref.mounted) return;
 
-        state = AsyncValue.data(
-          state.value!.copyWith(
-            isLoading: false,
+        state = AsyncData(
+          SearchTrackState(
+            query: query,
             results: response.results,
             nextCursor: response.nextCursor,
             hasMore: response.nextCursor != null,
@@ -87,7 +73,7 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
         );
       } catch (e, st) {
         if (!ref.mounted) return;
-        state = AsyncValue.error(e, st);
+        state = AsyncError(e, st);
       }
     });
   }
@@ -101,7 +87,7 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
     final requestedQuery = before.query;
     final requestedCursor = before.nextCursor;
 
-    state = AsyncValue.data(before.copyWith(isLoadingMore: true));
+    state = AsyncData(before.copyWith(isLoadingMore: true));
 
     try {
       final repo = ref.read(trackServiceProvider);
@@ -117,7 +103,7 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
 
       final mergedResults = [...current.results, ...response.results];
 
-      state = AsyncValue.data(
+      state = AsyncData(
         current.copyWith(
           isLoadingMore: false,
           results: mergedResults,
@@ -127,15 +113,12 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
       );
     } catch (e, st) {
       if (!ref.mounted) return;
-      final current = state.value;
-      if (current == null || current.query != requestedQuery) return;
-      state = AsyncValue.error(e, st);
+      state = AsyncError(e, st);
     }
   }
 }
 
-
 final searchTrackProvider =
     AsyncNotifierProvider.autoDispose<SearchTrackNotifier, SearchTrackState>(
-      SearchTrackNotifier.new,
-    );
+  SearchTrackNotifier.new,
+);
