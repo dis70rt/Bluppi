@@ -1,4 +1,4 @@
-import 'package:bluppi/application/providers/music/playback_provider.dart';
+import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:bluppi/ui/widgets/floating_media_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,8 +13,8 @@ class MainScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouter.of(context).state.uri.path;
     final selectedIndex = _indexFromLocation(location);
-    final playerState = ref.watch(playerProvider);
-    final hasTrack = playerState.currentTrack != null;
+    final queueState = ref.watch(queueProvider);
+    final hasTrack = queueState.currentTrack != null;
     // final roomState = ref.watch(roomProvider);
     // final isInRoomScreen = selectedIndex == 1;
 

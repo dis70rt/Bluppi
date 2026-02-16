@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,7 +25,8 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
   Widget build(BuildContext context) {
     final playerState = ref.watch(playerProvider);
     final playerNotifier = ref.read(playerProvider.notifier);
-    final track = playerState.currentTrack;
+    final queueState = ref.watch(queueProvider);
+    final track = queueState.currentTrack;
     if (track == null) return const SizedBox.shrink();
 
     final duration = Duration(milliseconds: track.durationMs);

@@ -1,10 +1,8 @@
-import 'package:audio_service/audio_service.dart';
-import 'package:bluppi/application/providers/music/stream_provider.dart';
+import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:bluppi/application/providers/music/track_provider.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
 import 'package:bluppi/application/providers/music/playback_provider.dart';
 import 'package:bluppi/domain/models/track_model.dart';
-import 'package:bluppi/main.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,49 +12,30 @@ class TrackTile extends ConsumerWidget {
   final SearchTrackModel track;
   const TrackTile({super.key, required this.track});
 
-  Future<void> _onTap(WidgetRef ref, PlayerState player) async {
-    final notifier = ref.read(playerProvider.notifier);
-    final isCurrentTrack = player.currentTrack?.id == track.id;
+  Future<void> _onTap(WidgetRef ref, PlayerState player, bool isCurrentTrack) async {
+  final playback = ref.read(playerProvider.notifier);
+  final queue = ref.read(queueProvider.notifier);
 
-
-    if (!isCurrentTrack) {
-      final TrackModel fullTrack = await ref.read(trackProvider(track.id).future);
-      final streamRepo = ref.read(streamRepositoryProvider);
-
-      final audioUrl = await streamRepo.getStreamURL(
-        fullTrack.artist,
-        fullTrack.title,
-        fullTrack.id,
-      );
-
-      final mediaItem = MediaItem(
-      id: fullTrack.id,
-      title: fullTrack.title,
-      artist: fullTrack.artist,
-      artUri: Uri.parse(fullTrack.imageLarge),
-      duration: Duration(milliseconds: fullTrack.durationMs),
-      extras: {
-        'audioUrl': audioUrl,
-      },
-    );
-
-    await audioHandler.playMediaItem(mediaItem);
-      return;
-    }
-
-    if (player.status == PlaybackStatus.playing) {
-      notifier.pause();
-    } else {
-      notifier.play();
-    }
+  if (!isCurrentTrack) {
+    final TrackModel fullTrack = await ref.read(trackProvider(track.id).future);
+    queue.setQueue([fullTrack], QueueSource.user);
+    return;
   }
+
+  if (player.status == PlaybackStatus.playing) {
+    playback.pause();
+  } else {
+    playback.play();
+  }
+}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final player = ref.watch(playerProvider);
+    final queue = ref.watch(queueProvider);
 
-    final isCurrentTrack = player.currentTrack?.id == track.id;
+    final isCurrentTrack = queue.currentTrack?.id == track.id;
     final isPlaying = isCurrentTrack && player.status == PlaybackStatus.playing;
     final isLoading =
         isCurrentTrack &&
@@ -64,7 +43,7 @@ class TrackTile extends ConsumerWidget {
             player.status == PlaybackStatus.buffering);
 
     return InkWell(
-      onTap: () => _onTap(ref, player),
+      onTap: () => _onTap(ref, player, isCurrentTrack),
       splashColor: theme.colorScheme.primary.withAlpha(30),
       borderRadius: BorderRadius.circular(12),
       child: AnimatedContainer(

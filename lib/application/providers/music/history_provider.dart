@@ -1,43 +1,42 @@
 import 'dart:convert';
+import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bluppi/domain/models/history_track_model.dart';
 import 'package:bluppi/data/grpc/repositories/track_service_client.dart';
-import 'package:bluppi/application/providers/music/playback_provider.dart';
 
 final historyProvider =
-    AsyncNotifierProvider.autoDispose<HistoryNotifier, List<HistoryTrackModel>>(
+    AsyncNotifierProvider<HistoryNotifier, List<HistoryTrackModel>>(
   HistoryNotifier.new,
 );
 
 class HistoryNotifier extends AsyncNotifier<List<HistoryTrackModel>> {
   static const _prefsKey = 'history_tracks';
   SharedPreferences? _prefs;
-  String? _lastTrackId;
 
   @override
   Future<List<HistoryTrackModel>> build() async {
     _prefs = await SharedPreferences.getInstance();
 
-    ref.listen<PlayerState>(playerProvider, (prev, next) {
-      final track = next.currentTrack;
-      if (next.status == PlaybackStatus.playing &&
-          track != null &&
-          track.id != _lastTrackId) {
-        _lastTrackId = track.id;
+    ref.listen<QueueState>(queueProvider, (prev, next) {
+      final prevTrackId = prev?.currentItem?.track.id;
+      final nextItem = next.currentItem;
+
+      if (nextItem != null && nextItem.track.id != prevTrackId) {
         add(
           HistoryTrackModel(
-            trackId: track.id,
-            title: track.title,
-            artist: track.artist,
-            imageLarge: track.imageLarge,
-            imageSmall: track.imageSmall,
+            trackId: nextItem.track.id,
+            title: nextItem.track.title,
+            artist: nextItem.track.artist,
+            imageLarge: nextItem.track.imageLarge,
+            imageSmall: nextItem.track.imageSmall,
             playedAt: DateTime.now(),
           ),
         );
       }
     });
+
 
     try {
       final cached = _prefs?.getString(_prefsKey);
