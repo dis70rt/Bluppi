@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:bluppi/application/providers/music/stream_provider.dart';
-import 'package:bluppi/domain/models/track_model.dart';
 import 'package:bluppi/main.dart';
 import 'package:riverpod/riverpod.dart';
 

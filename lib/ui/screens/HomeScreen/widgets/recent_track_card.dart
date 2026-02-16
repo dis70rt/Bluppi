@@ -1,5 +1,4 @@
 import 'package:bluppi/domain/models/history_track_model.dart';
-import 'package:bluppi/application/providers/music/playback_provider.dart';
 import 'package:bluppi/core/utils/time_ago.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ class RecentTrackCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final playerNotifier = ref.read(playerProvider.notifier);
     return SizedBox(
       width: 200,
       height: 100,
