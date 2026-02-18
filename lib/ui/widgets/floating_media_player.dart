@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:bluppi/application/providers/music/queue_provider.dart';
+import 'package:bluppi/ui/widgets/queue_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -132,7 +133,19 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                   child: isExpanded
                                       ? IconButton(
                                           onPressed: () {
-                                            // TODO: Show queue bottom sheet
+                                            showModalBottomSheet(
+                                              context: context,
+                                              useRootNavigator: false,
+                                              backgroundColor: Colors.transparent,
+                                              scrollControlDisabledMaxHeightRatio: 0.65,
+                                              sheetAnimationStyle: AnimationStyle(
+                                                curve: Curves.easeInOut,
+                                                duration: const Duration(milliseconds: 300),
+                                              ),
+                                              builder: (context) {
+                                                return QueueBottomSheet();
+                                              }
+                                            );
                                           },
                                           icon: const Icon(Icons.more_vert))
                                       : const SizedBox.shrink(),
