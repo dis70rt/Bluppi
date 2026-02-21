@@ -1,6 +1,5 @@
 import 'package:bluppi/application/providers/party/sync_history_provider.dart';
 import 'package:bluppi/application/providers/party/sync_provider.dart';
-import 'package:bluppi/ui/screens/RoomScreen/NetworkDiagnostics/network_diagnostics_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

@@ -87,6 +87,7 @@ class ClockDisciplineNotifier extends Notifier<ClockState> {
     }
 
     ref.read(clockHistoryProvider.notifier).addState(state);
+    log('Updated clock discipline: alpha=${state.alpha.toStringAsFixed(3)}, thetaUs=${state.thetaUs.toStringAsFixed(2)}µs, delay=${sample.delay.toStringAsFixed(2)}ms', name: 'Bluppi.Sync');
   }
 
   void _startPeriodic() {

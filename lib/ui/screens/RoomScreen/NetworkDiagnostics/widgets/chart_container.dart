@@ -22,7 +22,7 @@ class ChartContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF1C1C28),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.2)),
+        border: Border.all(color: color.withAlpha(51)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,12 +39,12 @@ class ChartContainer extends StatelessWidget {
                   letterSpacing: 1,
                 ),
               ),
-              Icon(Icons.monitor_heart, color: color.withOpacity(0.5), size: 14),
+              Icon(Icons.monitor_heart, color: color.withAlpha(128), size: 14),
             ],
           ),
           Text(
             subtitle,
-            style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 9),
+            style: TextStyle(color: Colors.white.withAlpha(102), fontSize: 9),
           ),
           const SizedBox(height: 16),
           Expanded(child: chart),

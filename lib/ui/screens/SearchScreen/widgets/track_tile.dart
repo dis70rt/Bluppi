@@ -62,6 +62,8 @@ class TrackTile extends ConsumerWidget {
     final trackRepo = ref.read(trackServiceProvider);
     final fullTrack = await trackRepo.getTrack(track.id);
 
+    if (!context.mounted) return false;
+
     ref.read(queueProvider.notifier).addToBack(fullTrack, QueueSource.user);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
