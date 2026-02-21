@@ -1,5 +1,4 @@
 import 'package:bluppi/application/providers/music/queue_provider.dart';
-import 'package:bluppi/application/providers/music/search_provider.dart';
 import 'package:bluppi/application/providers/music/track_provider.dart';
 import 'package:bluppi/data/grpc/repositories/track_service_client.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';

@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:bluppi/application/providers/party/sync_history_provider.dart';
+import 'package:bluppi/core/utils/clock_kalman_filter.dart';
 import 'package:bluppi/data/grpc/repositories/sync_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final clockDisciplineProvider =
     NotifierProvider<ClockDisciplineNotifier, ClockState>(
-        ClockDisciplineNotifier.new);
+      ClockDisciplineNotifier.new,
+    );
 
 class ClockState {
   final double alpha;
@@ -19,25 +23,19 @@ class SyncSample {
   final double delay;
   final int t1;
 
-  SyncSample({
-    required this.offset,
-    required this.delay,
-    required this.t1,
-  });
+  SyncSample({required this.offset, required this.delay, required this.t1});
 }
 
 class ClockDisciplineNotifier extends Notifier<ClockState> {
-  SyncSample? _last;
   Timer? _timer;
+  ClockKalmanFilter? _kalmanFilter;
+  bool _isSyncing = false;
 
   @override
   ClockState build() {
-     _initBurst();
+    _initBurst();
 
-    ref.onDispose(() {
-      _timer?.cancel();
-    });
-
+    ref.onDispose(() => _timer?.cancel());
     return ClockState(alpha: 1.0, thetaUs: 0);
   }
 
@@ -45,9 +43,7 @@ class ClockDisciplineNotifier extends Notifier<ClockState> {
     final repo = ref.read(syncServiceProvider);
 
     final t1 = DateTime.now().microsecondsSinceEpoch;
-
     final res = await repo.sync(t1);
-
     final t4 = DateTime.now().microsecondsSinceEpoch;
 
     final t2 = res.serverReceiveUs;
@@ -56,20 +52,17 @@ class ClockDisciplineNotifier extends Notifier<ClockState> {
     final delay = ((t2 - t1) + (t4 - t3)) / 2;
     final offset = ((t2 - t1) - (t4 - t3)) / 2;
 
-    return SyncSample(
-      offset: offset,
-      delay: delay,
-      t1: t1,
-    );
+    return SyncSample(offset: offset, delay: delay, t1: t1);
   }
 
   void _initBurst() async {
+    log('Starting sync burst (10 probes)...', name: 'Bluppi.Sync');
     final samples = <SyncSample>[];
+
     for (int i = 0; i < 10; i++) {
       final sample = await _probe();
-      if (sample != null) {
-        samples.add(sample);
-      }
+      if (sample != null) samples.add(sample);
+      await Future.delayed(const Duration(milliseconds: 50));
     }
 
     if (samples.isEmpty) return;
@@ -77,31 +70,25 @@ class ClockDisciplineNotifier extends Notifier<ClockState> {
     samples.sort((a, b) => a.delay.compareTo(b.delay));
     final best = samples.first;
 
-    _updateEstimator(best);
-
-    _startPeriodic();
-  }
-  
-  void _updateEstimator(SyncSample sample) {
-    double alpha = state.alpha;
-
-    if (_last != null) {
-      final dTheta = sample.offset - _last!.offset;
-      final dTime = sample.t1 - _last!.t1;
-
-      if (dTime != 0) {
-        alpha = 1.0 + (dTheta / dTime);
-      }
-    }
-
-    state = ClockState(
-      alpha: alpha,
-      thetaUs: sample.offset,
+    _kalmanFilter = ClockKalmanFilter(
+      initialOffset: best.offset,
+      initialTime: best.t1,
     );
 
-    _last = sample;
+    _updateKalmanEstimator(best, isInitial: true);
+    _startPeriodic();
   }
-  
+
+  void _updateKalmanEstimator(SyncSample sample, {bool isInitial = false}) {
+    if (isInitial || _kalmanFilter == null) {
+      state = ClockState(alpha: 1.0, thetaUs: sample.offset);
+    } else {
+      state = _kalmanFilter!.update(sample.offset, sample.t1);
+    }
+
+    ref.read(clockHistoryProvider.notifier).addState(state);
+  }
+
   void _startPeriodic() {
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       _sync();
@@ -109,9 +96,16 @@ class ClockDisciplineNotifier extends Notifier<ClockState> {
   }
 
   Future<void> _sync() async {
-    final sample = await _probe();
-    if (sample != null) {
-      _updateEstimator(sample);
+    if (_isSyncing) return;
+    _isSyncing = true;
+
+    try {
+      final sample = await _probe();
+      if (sample != null) {
+        _updateKalmanEstimator(sample);
+      }
+    } finally {
+      _isSyncing = false;
     }
   }
-} 
+}
