@@ -4,8 +4,9 @@ import 'package:bluppi/ui/screens/HomeScreen/home_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/NetworkDiagnostics/network_diagnostics_screen.dart';
+import 'package:bluppi/ui/screens/RoomScreen/Room/create_room_sheet.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/room_screen.dart';
-import 'package:bluppi/ui/screens/RoomScreen/room_screen.dart';
+import 'package:bluppi/ui/screens/RoomScreen/rooms_screen.dart';
 import 'package:bluppi/ui/screens/SearchScreen/search_screen.dart';
 import 'package:bluppi/ui/screens/auth_screen.dart';
 import 'package:bluppi/ui/screens/main_scaffold.dart';
@@ -62,13 +63,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/rooms',
             name: 'rooms',
-            builder: (context, state) => const RoomsScreen(),
+            builder: (context, state) => const RoomMainScreen(),
           ),
-          GoRoute(
-            path: '/room',
-            name: 'room',
-            builder: (context, state) => const Room(),
-          ),
+          // GoRoute(
+          //   path: '/create-room',
+          //   name: 'create_room',
+          //   builder: (context, state) => const CreateRoomScreen(),
+          // ),
           GoRoute(
             path: '/network-diagnostics',
             name: 'network_diagnostics',

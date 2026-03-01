@@ -17,8 +17,8 @@ class SyncServiceRepository implements SyncRepository {
   SyncServiceRepository(this._client);
 
   @override
-  Future<ServerResponse> sync(int clientSendNs) async {
-    final request = proto.SyncRequest(clientSendUs: Int64(clientSendNs));
+  Future<ServerResponse> sync(int clientSendNs, String roomId, String userId) async {
+    final request = proto.SyncRequest(clientSendUs: Int64(clientSendNs), roomId: roomId, userId: userId);
     final response = await _client.clockSync(request);
     return ServerResponse.fromProto(response);
   }

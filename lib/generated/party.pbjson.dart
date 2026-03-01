@@ -20,12 +20,15 @@ const SyncRequest$json = {
   '1': 'SyncRequest',
   '2': [
     {'1': 'client_send_us', '3': 1, '4': 1, '5': 3, '10': 'clientSendUs'},
+    {'1': 'room_id', '3': 2, '4': 1, '5': 9, '10': 'roomId'},
+    {'1': 'user_id', '3': 3, '4': 1, '5': 9, '10': 'userId'},
   ],
 };
 
 /// Descriptor for `SyncRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List syncRequestDescriptor = $convert.base64Decode(
-    'CgtTeW5jUmVxdWVzdBIkCg5jbGllbnRfc2VuZF91cxgBIAEoA1IMY2xpZW50U2VuZFVz');
+    'CgtTeW5jUmVxdWVzdBIkCg5jbGllbnRfc2VuZF91cxgBIAEoA1IMY2xpZW50U2VuZFVzEhcKB3'
+    'Jvb21faWQYAiABKAlSBnJvb21JZBIXCgd1c2VyX2lkGAMgASgJUgZ1c2VySWQ=');
 
 @$core.Deprecated('Use syncResponseDescriptor instead')
 const SyncResponse$json = {

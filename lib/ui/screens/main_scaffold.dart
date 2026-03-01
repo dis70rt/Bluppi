@@ -14,7 +14,7 @@ class MainScreen extends ConsumerWidget {
     final location = GoRouter.of(context).state.uri.path;
     final selectedIndex = _indexFromLocation(location);
     final queueState = ref.watch(queueProvider);
-    final hasTrack = queueState.currentTrack != null;
+    final showFMP = queueState.currentTrack != null && location != '/rooms';
     // final roomState = ref.watch(roomProvider);
     // final isInRoomScreen = selectedIndex == 1;
 
@@ -24,7 +24,7 @@ class MainScreen extends ConsumerWidget {
       body: Stack(
         children: [
           child,
-          if (hasTrack)
+          if (showFMP)
           Positioned(
             left: 0,
             right: 0,
@@ -57,7 +57,7 @@ class MainScreen extends ConsumerWidget {
                     label: '',
                   ),
                   BottomNavigationBarItem(
-                    icon: FaIcon(FontAwesomeIcons.wallet),
+                    icon: FaIcon(FontAwesomeIcons.peopleGroup),
                     label: '',
                   ),
                   BottomNavigationBarItem(
@@ -88,11 +88,10 @@ class MainScreen extends ConsumerWidget {
   }
 
   int _indexFromLocation(String location) {
-    if (location.startsWith('/')) return 0;
     if (location.startsWith('/rooms')) return 1;
     if (location.startsWith('/search')) return 2;
     if (location.startsWith('/profile')) return 3;
-    return 0;
+    return 0; // home
   }
 
   String _locationFromIndex(int index) {
