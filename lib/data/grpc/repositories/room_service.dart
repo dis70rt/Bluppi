@@ -1,4 +1,5 @@
 import 'package:bluppi/data/grpc/channels/grpc_channel.dart';
+import 'package:bluppi/domain/models/room_events_model.dart';
 import 'package:bluppi/domain/models/room_model.dart';
 import 'package:bluppi/domain/models/room_summary_model.dart';
 import 'package:bluppi/domain/repositories/room_repository.dart';
@@ -60,5 +61,11 @@ class RoomServiceRepository implements RoomRepository {
   Future<RoomModel> getRoom(String roomId) {
     final request = proto.GetRoomRequest(roomId: roomId);
     return _client.getRoom(request).then((response) => RoomModel.fromProto(response));
+  }
+
+  @override
+  Stream<RoomEventModel> subscribeToRoomEvents(String roomId, String userId) {
+    final request = proto.SubscribeRequest(roomId: roomId, userId: userId);
+    return _client.subscribeToRoomEvents(request).map(RoomEventModel.fromProto);
   }
 }

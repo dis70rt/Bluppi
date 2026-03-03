@@ -46,4 +46,8 @@ class CurrentRoomNotifier extends Notifier<RoomModel?> {
     } catch (_) {}
     state = null;
   }
+
+  Future<void> endRoom() async {
+    state = null;
+  }
 }

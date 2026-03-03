@@ -1,3 +1,4 @@
+import 'package:bluppi/domain/models/room_events_model.dart';
 import 'package:bluppi/domain/models/room_model.dart';
 import 'package:bluppi/domain/models/room_summary_model.dart';
 
@@ -8,4 +9,5 @@ abstract class RoomRepository {
   Future<void> joinRoomByCode(String roomCode, String userId);
   Future<(List<RoomSummaryModel>, String)> listRooms(bool visibility, int size, String token);
   Future<RoomModel> getRoom(String roomId);
+  Stream<RoomEventModel> subscribeToRoomEvents(String roomId, String userId);
 }

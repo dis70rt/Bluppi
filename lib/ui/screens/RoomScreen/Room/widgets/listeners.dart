@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RoomListeners extends ConsumerWidget {
-  const RoomListeners({super.key});
+  final String roomId;
+  const RoomListeners({super.key, required this.roomId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final listenerIds = ref.watch(roomListenersProvider);
+    final listenerIds = ref.watch(roomListenersProvider(roomId));
     final int count = listenerIds.length;
 
     return Padding(

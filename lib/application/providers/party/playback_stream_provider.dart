@@ -39,7 +39,6 @@ class PlaybackStreamNotifier extends Notifier<PlaybackStateModel?> {
     ref.onDispose(() {
       _serverSub?.cancel();
       _scheduledPlayTimer?.cancel();
-      _repo.leaveRoom();
     });
 
     _initRoom(roomId);

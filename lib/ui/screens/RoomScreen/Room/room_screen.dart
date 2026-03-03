@@ -1,6 +1,10 @@
+import 'dart:developer';
+
+import 'package:bluppi/application/providers/party/playback_stream_provider.dart';
 import 'package:bluppi/application/providers/party/sync_history_provider.dart';
 import 'package:bluppi/application/providers/party/sync_provider.dart';
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
+import 'package:bluppi/application/providers/room/room_listeners_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/listeners.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/live_chat_feed.dart';
@@ -46,10 +50,15 @@ class RoomScreen extends ConsumerWidget {
             padding: const EdgeInsets.only(left: 8.0),
             child: TextButton(
               onPressed: () {
-                // TODO: Leave Room Implementation
                 ref.invalidate(clockDisciplineProvider);
                 ref.invalidate(clockHistoryProvider);
-                ref.read(currentRoomProvider.notifier).leaveRoom();
+                ref.invalidate(playbackStreamProvider(currentRoom.id));
+                ref.invalidate(roomListenersProvider(currentRoom.id));
+                if(isHost) {
+                  ref.read(currentRoomProvider.notifier).leaveRoom();
+                } else {
+                  ref.read(currentRoomProvider.notifier).endRoom();
+                }
               },
               style: TextButton.styleFrom(
                 foregroundColor: Colors.redAccent,
@@ -80,7 +89,7 @@ class RoomScreen extends ConsumerWidget {
                 hostUserId: currentRoom.hostUserId,
               ),
               CurrentRoomTrack(isHost: isHost, roomId: currentRoom.id),
-              RoomListeners(),
+              RoomListeners(roomId: currentRoom.id),
               LiveChatFeed(),
             ],
           ),
