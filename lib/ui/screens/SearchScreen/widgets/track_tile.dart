@@ -1,5 +1,7 @@
 import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:bluppi/application/providers/music/track_provider.dart';
+import 'package:bluppi/application/providers/room/current_room_provider.dart';
+import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/data/grpc/repositories/track_service_client.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
 import 'package:bluppi/application/providers/music/playback_provider.dart';
@@ -16,21 +18,31 @@ class TrackTile extends ConsumerWidget {
   const TrackTile({super.key, required this.track});
 
   Future<void> _onTap(WidgetRef ref, PlayerState player, bool isCurrentTrack) async {
-  final playback = ref.read(playerProvider.notifier);
-  final queue = ref.read(queueProvider.notifier);
+    final currentRoom = ref.read(currentRoomProvider);
+    final currentUser = ref.read(userProvider).value;
 
-  if (!isCurrentTrack) {
-    final TrackModel fullTrack = await ref.read(trackProvider(track.id).future);
-    queue.setQueue([fullTrack], QueueSource.user);
-    return;
-  }
+    if (currentRoom != null && currentRoom.hostUserId != currentUser?.id) {
+      ScaffoldMessenger.of(ref.context).showSnackBar(
+        const SnackBar(content: Text("Only the host can change tracks.")),
+      );
+      return;
+    }
 
-  if (player.status == PlaybackStatus.playing) {
-    playback.pause();
-  } else {
-    playback.play();
+    final playback = ref.read(playerProvider.notifier);
+    final queue = ref.read(queueProvider.notifier);
+
+    if (!isCurrentTrack) {
+      final TrackModel fullTrack = await ref.read(trackProvider(track.id).future);
+      queue.setQueue([fullTrack], QueueSource.user);
+      return;
+    }
+
+    if (player.status == PlaybackStatus.playing) {
+      playback.pause();
+    } else {
+      playback.play();
+    }
   }
-}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

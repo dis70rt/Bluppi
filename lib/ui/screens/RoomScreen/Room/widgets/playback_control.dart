@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/application/providers/music/playback_provider.dart';
-import 'package:bluppi/application/providers/music/queue_provider.dart';
+import 'package:bluppi/application/providers/party/playback_stream_provider.dart';
+import 'package:bluppi/domain/models/playback_stream_model.dart';
 
 class RoomPlaybackControls extends ConsumerWidget {
   final bool isHost;
+  final String roomId; // ADDED: Needs to know which room to control
 
   const RoomPlaybackControls({
     super.key,
     required this.isHost,
+    required this.roomId,
   });
 
   String _formatDuration(Duration? d) {
@@ -20,15 +23,22 @@ class RoomPlaybackControls extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final playerState = ref.watch(playerProvider);
-    final playerNotifier = ref.read(playerProvider.notifier);
-    final queueState = ref.watch(queueProvider);
-    final track = queueState.currentTrack;
+    // 1. THE AUTHORITATIVE SERVER STATE (For the buttons and track info)
+    final serverState = ref.watch(playbackStreamProvider(roomId));
+    final serverNotifier = ref.read(playbackStreamProvider(roomId).notifier);
 
-    if (track == null) return const SizedBox.shrink();
+    // 2. THE LOCAL UI STATE (For the smooth 60fps progress bar and buffering spinner)
+    final localPlayerState = ref.watch(playerProvider);
 
+    if (serverState == null) return const SizedBox.shrink();
+
+    final track = serverState.track;
     final duration = Duration(milliseconds: track.durationMs);
-    final position = playerState.position;
+    
+    // We read the local audio player's position because it is already perfectly 
+    // synced by our Go server, and it updates smoothly for the UI slider.
+    final position = localPlayerState.position;
+    
     final hasDuration = duration.inMilliseconds > 0;
     double progress = hasDuration ? (position.inMilliseconds / duration.inMilliseconds) : 0.0;
     progress = progress.clamp(0.0, 1.0);
@@ -36,7 +46,7 @@ class RoomPlaybackControls extends ConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Smart Seeking Bar (Visible to everyone, interactive for host)
+        // --- SMART SEEKING BAR ---
         Row(
           children: [
             Text(
@@ -50,13 +60,13 @@ class RoomPlaybackControls extends ConsumerWidget {
                 child: SliderTheme(
                   data: SliderTheme.of(context).copyWith(
                     trackHeight: 4.0,
-                    // Hide thumb if not host to make it look like a pure progress bar
-                    thumbShape: RoundSliderThumbShape(
-                      enabledThumbRadius: isHost ? 6.0 : 0.0,
+                    // Note: Disabled dragging for everyone in party mode unless you add a SeekCommand to your Go Server
+                    thumbShape: const RoundSliderThumbShape(
+                      enabledThumbRadius: 0.0,
                       disabledThumbRadius: 0.0,
                     ),
-                    overlayShape: RoundSliderOverlayShape(
-                      overlayRadius: isHost ? 14.0 : 0.0,
+                    overlayShape: const RoundSliderOverlayShape(
+                      overlayRadius: 0.0,
                     ),
                     thumbColor: Colors.white,
                     activeTrackColor: Colors.white,
@@ -68,11 +78,7 @@ class RoomPlaybackControls extends ConsumerWidget {
                     value: progress,
                     min: 0.0,
                     max: 1.0,
-                    // Disable dragging if not host
-                    onChanged: (isHost && hasDuration) ? (value) {
-                      // Call your seek method here if available, e.g.:
-                      // playerNotifier.seek(Duration(milliseconds: (value * duration.inMilliseconds).toInt()));
-                    } : null,
+                    onChanged: null, // Seeking disabled in party mode by default
                   ),
                 ),
               ),
@@ -85,7 +91,7 @@ class RoomPlaybackControls extends ConsumerWidget {
           ],
         ),
         
-        // Playback Controls (Host Only)
+        // --- PLAYBACK CONTROLS (Host Only) ---
         if (isHost) ...[
           const SizedBox(height: 8),
           Row(
@@ -94,15 +100,19 @@ class RoomPlaybackControls extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.skip_previous_rounded, color: Colors.white),
                 iconSize: 44.0,
-                onPressed: playerNotifier.previous,
+                onPressed: () {
+                  ref.read(playerProvider.notifier).previous();
+                },
               ),
               const SizedBox(width: 16),
-              _buildPlayPauseButton(playerState, playerNotifier),
+              _buildPlayPauseButton(serverState, localPlayerState, serverNotifier),
               const SizedBox(width: 16),
               IconButton(
                 icon: const Icon(Icons.skip_next_rounded, color: Colors.white),
                 iconSize: 44.0,
-                onPressed: playerNotifier.next,
+                onPressed: () {
+                  ref.read(playerProvider.notifier).next();
+                },
               ),
             ],
           ),
@@ -111,38 +121,42 @@ class RoomPlaybackControls extends ConsumerWidget {
     );
   }
 
-  Widget _buildPlayPauseButton(PlayerState state, PlaybackNotifier notifier) {
-    switch (state.status) {
-      case PlaybackStatus.loading:
-      case PlaybackStatus.buffering:
-        return const SizedBox(
-          width: 60,
-          height: 60,
-          child: Padding(
-            padding: EdgeInsets.all(14.0),
-            child: CircularProgressIndicator(
-              strokeWidth: 3.0,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
+  Widget _buildPlayPauseButton(
+    PlaybackStateModel serverState, 
+    PlayerState localState, 
+    PlaybackStreamNotifier serverNotifier
+  ) {
+    // 1. Check local state first: If just_audio is downloading the buffer, show the spinner.
+    // The UI stays locked until the BufferReady command fires and the server responds.
+    if (localState.status == PlaybackStatus.loading || localState.status == PlaybackStatus.buffering) {
+      return const SizedBox(
+        width: 60,
+        height: 60,
+        child: Padding(
+          padding: EdgeInsets.all(14.0),
+          child: CircularProgressIndicator(
+            strokeWidth: 3.0,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
           ),
-        );
-      case PlaybackStatus.playing:
-        return IconButton(
-          icon: const Icon(Icons.pause_circle_filled_rounded, color: Colors.white),
-          iconSize: 60.0,
-          padding: EdgeInsets.zero,
-          onPressed: notifier.pause,
-        );
-      case PlaybackStatus.paused:
-      case PlaybackStatus.completed:
-      case PlaybackStatus.idle:
-      case PlaybackStatus.error:
-        return IconButton(
-          icon: const Icon(Icons.play_circle_filled_rounded, color: Colors.white),
-          iconSize: 60.0,
-          padding: EdgeInsets.zero,
-          onPressed: notifier.play,
-        );
+        ),
+      );
+    }
+
+    // 2. Check Authoritative Server State: Show Play or Pause based on the Go Server
+    if (serverState.isPlaying) {
+      return IconButton(
+        icon: const Icon(Icons.pause_circle_filled_rounded, color: Colors.white),
+        iconSize: 60.0,
+        padding: EdgeInsets.zero,
+        onPressed: serverNotifier.pause, // Push intent to server
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.play_circle_filled_rounded, color: Colors.white),
+        iconSize: 60.0,
+        padding: EdgeInsets.zero,
+        onPressed: serverNotifier.play, // Push intent to server
+      );
     }
   }
 }

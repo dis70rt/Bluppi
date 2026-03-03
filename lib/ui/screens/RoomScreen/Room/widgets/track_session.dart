@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'package:bluppi/application/providers/music/queue_provider.dart';
-import 'package:bluppi/application/providers/music/playback_provider.dart'; 
+// --- NEW IMPORTS ---
+import 'package:bluppi/application/providers/party/playback_stream_provider.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/playback_control.dart';
 
 class CurrentRoomTrack extends ConsumerStatefulWidget {
+  final String roomId; // ADDED: Needs to know which room to listen to
   final bool isHost;
 
   const CurrentRoomTrack({
     super.key,
+    required this.roomId,
     required this.isHost,
   });
 
@@ -22,14 +24,11 @@ class CurrentRoomTrack extends ConsumerStatefulWidget {
 class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
-  
-  // 1. Add a state variable to track if the card is expanded
   bool _isExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    // 10 seconds for a full 360-degree rotation (adjust as needed)
     _rotationController = AnimationController(
       duration: const Duration(seconds: 10),
       vsync: this,
@@ -44,11 +43,11 @@ class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
 
   @override
   Widget build(BuildContext context) {
-    final currentTrack = ref.watch(queueProvider).currentTrack;
-    final playerState = ref.watch(playerProvider);
+    // 1. WATCH THE SERVER STATE (Replacing queueProvider and playerProvider)
+    final playbackState = ref.watch(playbackStreamProvider(widget.roomId));
 
-    // Sync rotation with playback state
-    if (playerState.status == PlaybackStatus.playing) {
+    // 2. SYNC ROTATION WITH SERVER
+    if (playbackState?.isPlaying == true) {
       if (!_rotationController.isAnimating) {
         _rotationController.repeat();
       }
@@ -58,18 +57,24 @@ class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
       }
     }
 
-    if (currentTrack == null) {
-      return const _EmptyTrackState();
+    // 3. HANDLE EMPTY/LOADING STATE
+    if (playbackState == null) {
+      return const _EmptyTrackState(message: "Connecting to party...");
     }
 
-    final imageUrl = currentTrack.imageLarge.isNotEmpty
-        ? currentTrack.imageLarge
+    final currentTrack = playbackState.track;
+    
+    // Safety check in case the server sends an empty track on initialization
+    if (currentTrack.id.isEmpty) {
+      return const _EmptyTrackState(message: "No track playing");
+    }
+
+    final imageUrl = currentTrack.artworkUrl.isNotEmpty
+        ? currentTrack.artworkUrl
         : 'https://via.placeholder.com/400';
 
-    // 2. Wrap the entire card in a GestureDetector
     return GestureDetector(
       onTap: () {
-        // Toggle the expanded state on tap
         setState(() {
           _isExpanded = !_isExpanded;
         });
@@ -133,7 +138,7 @@ class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
                       ),
                       const SizedBox(width: 16),
                       
-                      // Middle/Right: Title and Artist aligned left
+                      // Middle/Right: Title and Artist
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +168,6 @@ class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
                         ),
                       ),
                       
-                      // Optional: A small chevron icon to indicate it's tappable
                       Icon(
                         _isExpanded 
                             ? Icons.keyboard_arrow_up_rounded 
@@ -173,7 +177,6 @@ class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
                     ],
                   ),
                   
-                  // 3. Wrap the Playback Controls in an AnimatedSize widget
                   AnimatedSize(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOutCubic,
@@ -182,13 +185,14 @@ class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const SizedBox(height: 16),
-                              RoomPlaybackControls(isHost: widget.isHost),
+                              // PASS ROOM ID DOWN TO CONTROLS
+                              RoomPlaybackControls(
+                                isHost: widget.isHost,
+                                roomId: widget.roomId, 
+                              ),
                             ],
                           )
-                        : const SizedBox(
-                            width: double.infinity, 
-                            height: 0,
-                          ), // Shrinks to 0 height when collapsed
+                        : const SizedBox(width: double.infinity, height: 0),
                   ),
                 ],
               ),
@@ -201,7 +205,8 @@ class _CurrentRoomTrackState extends ConsumerState<CurrentRoomTrack>
 }
 
 class _EmptyTrackState extends StatelessWidget {
-  const _EmptyTrackState();
+  final String message;
+  const _EmptyTrackState({this.message = "No track playing"});
 
   @override
   Widget build(BuildContext context) {
@@ -214,19 +219,12 @@ class _EmptyTrackState extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withAlpha(15),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withAlpha(20),
-              width: 1.0,
-            ),
+            border: Border.all(color: Colors.white.withAlpha(20), width: 1.0),
           ),
-          child: const Center(
+          child: Center(
             child: Text(
-              "No track playing",
-              style: TextStyle(
-                color: Colors.white54,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              message,
+              style: const TextStyle(color: Colors.white54, fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
         ),

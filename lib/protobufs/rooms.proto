@@ -10,7 +10,7 @@ service RoomService {
     rpc GetRoom(GetRoomRequest) returns (Room);
     // rpc DeleteRoom(DeleteRoomRequest) returns (google.protobuf.Empty);
 
-    // rpc ListRooms(ListRoomsRequest) returns (ListRoomsResponse);
+    rpc ListRooms(ListRoomsRequest) returns (ListRoomsResponse);
     // rpc SearchRooms(SearchRoomsRequest) returns (SearchRoomsResponse);
 
     rpc JoinRoom(JoinRoomRequest) returns (google.protobuf.Empty);
@@ -70,7 +70,7 @@ message RoomMember {
 message RoomSummary {
     string room_id = 1;
     string room_name = 2;
-
+    // string room_code = 12;
     string track_id = 3;
     string track_title = 4;
     string track_artist = 5;

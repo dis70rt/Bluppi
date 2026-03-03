@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:bluppi/application/providers/music/queue_provider.dart';
+import 'package:bluppi/application/providers/room/current_room_provider.dart';
+import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/ui/widgets/queue_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +16,23 @@ class FloatingMusicPlayer extends ConsumerStatefulWidget {
 
 class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
   bool isExpanded = false;
+
+  bool get _canControl {
+    final currentRoom = ref.read(currentRoomProvider);
+    final currentUser = ref.read(userProvider).value;
+    if (currentRoom == null) return true;
+    return currentRoom.hostUserId == currentUser?.id;
+  }
+
+  void _guardedAction(VoidCallback action) {
+    if (!_canControl) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Only the host can control playback.")),
+      );
+      return;
+    }
+    action();
+  }
 
   String _formatDuration(Duration? d) {
     if (d == null || d.inMilliseconds <= 0) return '00:00';
@@ -225,7 +244,7 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                                 iconSize: 40.0,
                                                 padding: EdgeInsets.zero,
                                                 tooltip: 'Previous',
-                                                onPressed: playerNotifier.previous,
+                                                onPressed: () => _guardedAction(playerNotifier.previous),
                                               ),
                                               const SizedBox(width: 8),
                                               _buildPlayPauseButton(playerState, playerNotifier),
@@ -235,7 +254,7 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                                 iconSize: 40.0,
                                                 padding: EdgeInsets.zero,
                                                 tooltip: 'Next',
-                                                onPressed: playerNotifier.next,
+                                                onPressed: () => _guardedAction(playerNotifier.next),
                                               ),
                                               Text(_formatDuration(duration),
                                                   style: TextStyle(color: Colors.white.withAlpha(153), fontSize: 12)), // 0.6 * 255 ≈ 153
@@ -279,7 +298,7 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
           iconSize: 40.0,
           padding: EdgeInsets.zero,
           tooltip: 'Pause',
-          onPressed: notifier.pause,
+          onPressed: () => _guardedAction(notifier.pause),
         );
       case PlaybackStatus.paused:
       case PlaybackStatus.completed:
@@ -290,7 +309,7 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
           iconSize: 40.0,
           padding: EdgeInsets.zero,
           tooltip: 'Play',
-          onPressed: notifier.play,
+          onPressed: () => _guardedAction(notifier.play),
         );
     }
   }

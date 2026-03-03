@@ -13,8 +13,21 @@ class CurrentRoomNotifier extends Notifier<RoomModel?> {
     return null;
   }
 
-  Future<void> joinRoom(RoomModel room) async {
+  void setCreatedRoom(RoomModel room) {
     state = room;
+  }
+
+  Future<void> joinRoom(String roomId) async {
+    final currentUser = ref.read(userProvider).value;
+    if (currentUser == null) {
+      throw Exception('User is not logged in. Cannot join room.');
+    }
+
+    final repo = ref.read(roomServiceProvider);
+    await repo.joinRoomByID(roomId, currentUser.id);
+
+    final fullRoom = await repo.getRoom(roomId);
+    state = fullRoom;
   }
 
   Future<void> leaveRoom() async {

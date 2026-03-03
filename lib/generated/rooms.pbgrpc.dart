@@ -47,6 +47,13 @@ class RoomServiceClient extends $grpc.Client {
     return $createUnaryCall(_$getRoom, request, options: options);
   }
 
+  $grpc.ResponseFuture<$0.ListRoomsResponse> listRooms(
+    $0.ListRoomsRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$listRooms, request, options: options);
+  }
+
   $grpc.ResponseFuture<$1.Empty> joinRoom(
     $0.JoinRoomRequest request, {
     $grpc.CallOptions? options,
@@ -80,6 +87,11 @@ class RoomServiceClient extends $grpc.Client {
       '/room.RoomService/GetRoom',
       ($0.GetRoomRequest value) => value.writeToBuffer(),
       $0.Room.fromBuffer);
+  static final _$listRooms =
+      $grpc.ClientMethod<$0.ListRoomsRequest, $0.ListRoomsResponse>(
+          '/room.RoomService/ListRooms',
+          ($0.ListRoomsRequest value) => value.writeToBuffer(),
+          $0.ListRoomsResponse.fromBuffer);
   static final _$joinRoom = $grpc.ClientMethod<$0.JoinRoomRequest, $1.Empty>(
       '/room.RoomService/JoinRoom',
       ($0.JoinRoomRequest value) => value.writeToBuffer(),
@@ -114,6 +126,13 @@ abstract class RoomServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $0.GetRoomRequest.fromBuffer(value),
         ($0.Room value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.ListRoomsRequest, $0.ListRoomsResponse>(
+        'ListRooms',
+        listRooms_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.ListRoomsRequest.fromBuffer(value),
+        ($0.ListRoomsResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.JoinRoomRequest, $1.Empty>(
         'JoinRoom',
         joinRoom_Pre,
@@ -152,6 +171,14 @@ abstract class RoomServiceBase extends $grpc.Service {
 
   $async.Future<$0.Room> getRoom(
       $grpc.ServiceCall call, $0.GetRoomRequest request);
+
+  $async.Future<$0.ListRoomsResponse> listRooms_Pre($grpc.ServiceCall $call,
+      $async.Future<$0.ListRoomsRequest> $request) async {
+    return listRooms($call, await $request);
+  }
+
+  $async.Future<$0.ListRoomsResponse> listRooms(
+      $grpc.ServiceCall call, $0.ListRoomsRequest request);
 
   $async.Future<$1.Empty> joinRoom_Pre($grpc.ServiceCall $call,
       $async.Future<$0.JoinRoomRequest> $request) async {

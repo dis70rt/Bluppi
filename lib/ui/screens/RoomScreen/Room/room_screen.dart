@@ -1,6 +1,7 @@
 import 'package:bluppi/application/providers/party/sync_history_provider.dart';
 import 'package:bluppi/application/providers/party/sync_provider.dart';
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
+import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/listeners.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/live_chat_feed.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/room_header.dart';
@@ -15,7 +16,10 @@ class RoomScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentRoom = ref.watch(currentRoomProvider);
+    final currentUser = ref.watch(userProvider).value;
+    final isHost = currentRoom?.hostUserId == currentUser?.id;
     ref.read(clockDisciplineProvider);
+    
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -75,7 +79,7 @@ class RoomScreen extends ConsumerWidget {
                 roomCode: currentRoom.code,
                 hostUserId: currentRoom.hostUserId,
               ),
-              CurrentRoomTrack(isHost: true),
+              CurrentRoomTrack(isHost: isHost, roomId: currentRoom.id),
               RoomListeners(),
               LiveChatFeed(),
             ],

@@ -88,7 +88,7 @@ class CreateRoomController extends Notifier<CreateRoomState> {
       final hostUserId = ref.read(userProvider).value?.id;
       final repo = ref.read(roomServiceProvider);
       final room = await repo.createRoom(state.name, state.isPublic, state.inviteOnly, hostUserId!);
-      ref.read(currentRoomProvider.notifier).joinRoom(room);
+      ref.read(currentRoomProvider.notifier).setCreatedRoom(room);
 
       state = state.copyWith(isLoading: false);
     } catch (e) {

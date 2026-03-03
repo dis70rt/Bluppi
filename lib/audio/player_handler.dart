@@ -56,6 +56,13 @@ class PlayerHandler extends BaseAudioHandler
     await _player.play();
   }
 
+  Future<void> loadMediaItem(MediaItem mediaItem) async {
+    this.mediaItem.add(mediaItem);
+    await _player.setAudioSource(
+      AudioSource.uri(Uri.parse(mediaItem.extras?['audioUrl'] ?? '')),
+    );
+  }
+
   @override
   Future<void> play() => _player.play();
 
