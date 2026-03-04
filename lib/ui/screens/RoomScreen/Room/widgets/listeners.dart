@@ -8,8 +8,8 @@ class RoomListeners extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final listenerIds = ref.watch(roomListenersProvider(roomId));
-    final int count = listenerIds.length;
+    final listenerState = ref.watch(roomEventsProvider(roomId));
+    final int count = listenerState.totalMembers;
 
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),

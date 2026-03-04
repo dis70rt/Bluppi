@@ -1168,18 +1168,344 @@ class SubscribeRequest extends $pb.GeneratedMessage {
   void clearUserId() => $_clearField(2);
 }
 
+class GetListenersRequest extends $pb.GeneratedMessage {
+  factory GetListenersRequest({
+    $core.String? roomId,
+  }) {
+    final result = create();
+    if (roomId != null) result.roomId = roomId;
+    return result;
+  }
+
+  GetListenersRequest._();
+
+  factory GetListenersRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory GetListenersRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'GetListenersRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'roomId')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetListenersRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetListenersRequest copyWith(void Function(GetListenersRequest) updates) =>
+      super.copyWith((message) => updates(message as GetListenersRequest))
+          as GetListenersRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static GetListenersRequest create() => GetListenersRequest._();
+  @$core.override
+  GetListenersRequest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static GetListenersRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetListenersRequest>(create);
+  static GetListenersRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get roomId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set roomId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasRoomId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearRoomId() => $_clearField(1);
+}
+
+class GetListenersResponse extends $pb.GeneratedMessage {
+  factory GetListenersResponse({
+    $core.Iterable<JoinedMember>? members,
+    $core.int? totalListeners,
+  }) {
+    final result = create();
+    if (members != null) result.members.addAll(members);
+    if (totalListeners != null) result.totalListeners = totalListeners;
+    return result;
+  }
+
+  GetListenersResponse._();
+
+  factory GetListenersResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory GetListenersResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'GetListenersResponse',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
+      createEmptyInstance: create)
+    ..pPM<JoinedMember>(1, _omitFieldNames ? '' : 'members',
+        subBuilder: JoinedMember.create)
+    ..aI(2, _omitFieldNames ? '' : 'totalListeners')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetListenersResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetListenersResponse copyWith(void Function(GetListenersResponse) updates) =>
+      super.copyWith((message) => updates(message as GetListenersResponse))
+          as GetListenersResponse;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static GetListenersResponse create() => GetListenersResponse._();
+  @$core.override
+  GetListenersResponse createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static GetListenersResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetListenersResponse>(create);
+  static GetListenersResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $pb.PbList<JoinedMember> get members => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.int get totalListeners => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set totalListeners($core.int value) => $_setSignedInt32(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasTotalListeners() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearTotalListeners() => $_clearField(2);
+}
+
+class JoinedMember extends $pb.GeneratedMessage {
+  factory JoinedMember({
+    $core.String? userId,
+    $core.String? username,
+    $core.String? displayName,
+    $core.String? avatarUrl,
+  }) {
+    final result = create();
+    if (userId != null) result.userId = userId;
+    if (username != null) result.username = username;
+    if (displayName != null) result.displayName = displayName;
+    if (avatarUrl != null) result.avatarUrl = avatarUrl;
+    return result;
+  }
+
+  JoinedMember._();
+
+  factory JoinedMember.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory JoinedMember.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'JoinedMember',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'userId')
+    ..aOS(2, _omitFieldNames ? '' : 'username')
+    ..aOS(3, _omitFieldNames ? '' : 'displayName')
+    ..aOS(4, _omitFieldNames ? '' : 'avatarUrl')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  JoinedMember clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  JoinedMember copyWith(void Function(JoinedMember) updates) =>
+      super.copyWith((message) => updates(message as JoinedMember))
+          as JoinedMember;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static JoinedMember create() => JoinedMember._();
+  @$core.override
+  JoinedMember createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static JoinedMember getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<JoinedMember>(create);
+  static JoinedMember? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get userId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set userId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasUserId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearUserId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get username => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set username($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasUsername() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearUsername() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get displayName => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set displayName($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasDisplayName() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearDisplayName() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get avatarUrl => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set avatarUrl($core.String value) => $_setString(3, value);
+  @$pb.TagNumber(4)
+  $core.bool hasAvatarUrl() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearAvatarUrl() => $_clearField(4);
+}
+
+class LeftMember extends $pb.GeneratedMessage {
+  factory LeftMember({
+    $core.String? userId,
+  }) {
+    final result = create();
+    if (userId != null) result.userId = userId;
+    return result;
+  }
+
+  LeftMember._();
+
+  factory LeftMember.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory LeftMember.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'LeftMember',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'userId')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  LeftMember clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  LeftMember copyWith(void Function(LeftMember) updates) =>
+      super.copyWith((message) => updates(message as LeftMember)) as LeftMember;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static LeftMember create() => LeftMember._();
+  @$core.override
+  LeftMember createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static LeftMember getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<LeftMember>(create);
+  static LeftMember? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get userId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set userId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasUserId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearUserId() => $_clearField(1);
+}
+
+class LiveChatMessage extends $pb.GeneratedMessage {
+  factory LiveChatMessage({
+    $core.String? userId,
+    $core.String? text,
+  }) {
+    final result = create();
+    if (userId != null) result.userId = userId;
+    if (text != null) result.text = text;
+    return result;
+  }
+
+  LiveChatMessage._();
+
+  factory LiveChatMessage.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory LiveChatMessage.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'LiveChatMessage',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'userId')
+    ..aOS(2, _omitFieldNames ? '' : 'text')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  LiveChatMessage clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  LiveChatMessage copyWith(void Function(LiveChatMessage) updates) =>
+      super.copyWith((message) => updates(message as LiveChatMessage))
+          as LiveChatMessage;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static LiveChatMessage create() => LiveChatMessage._();
+  @$core.override
+  LiveChatMessage createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static LiveChatMessage getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<LiveChatMessage>(create);
+  static LiveChatMessage? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get userId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set userId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasUserId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearUserId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get text => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set text($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasText() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearText() => $_clearField(2);
+}
+
 class RoomEvent extends $pb.GeneratedMessage {
   factory RoomEvent({
     RoomEventType? type,
     $core.String? roomId,
-    $core.int? listenerCount,
-    $core.String? targetUserId,
+    JoinedMember? joinedMember,
+    LeftMember? leftMember,
+    LiveChatMessage? liveChatMessage,
   }) {
     final result = create();
     if (type != null) result.type = type;
     if (roomId != null) result.roomId = roomId;
-    if (listenerCount != null) result.listenerCount = listenerCount;
-    if (targetUserId != null) result.targetUserId = targetUserId;
+    if (joinedMember != null) result.joinedMember = joinedMember;
+    if (leftMember != null) result.leftMember = leftMember;
+    if (liveChatMessage != null) result.liveChatMessage = liveChatMessage;
     return result;
   }
 
@@ -1199,8 +1525,12 @@ class RoomEvent extends $pb.GeneratedMessage {
     ..aE<RoomEventType>(1, _omitFieldNames ? '' : 'type',
         enumValues: RoomEventType.values)
     ..aOS(2, _omitFieldNames ? '' : 'roomId')
-    ..aI(3, _omitFieldNames ? '' : 'listenerCount')
-    ..aOS(4, _omitFieldNames ? '' : 'targetUserId')
+    ..aOM<JoinedMember>(3, _omitFieldNames ? '' : 'joinedMember',
+        subBuilder: JoinedMember.create)
+    ..aOM<LeftMember>(4, _omitFieldNames ? '' : 'leftMember',
+        subBuilder: LeftMember.create)
+    ..aOM<LiveChatMessage>(5, _omitFieldNames ? '' : 'liveChatMessage',
+        subBuilder: LiveChatMessage.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1240,22 +1570,117 @@ class RoomEvent extends $pb.GeneratedMessage {
   void clearRoomId() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get listenerCount => $_getIZ(2);
+  JoinedMember get joinedMember => $_getN(2);
   @$pb.TagNumber(3)
-  set listenerCount($core.int value) => $_setSignedInt32(2, value);
+  set joinedMember(JoinedMember value) => $_setField(3, value);
   @$pb.TagNumber(3)
-  $core.bool hasListenerCount() => $_has(2);
+  $core.bool hasJoinedMember() => $_has(2);
   @$pb.TagNumber(3)
-  void clearListenerCount() => $_clearField(3);
+  void clearJoinedMember() => $_clearField(3);
+  @$pb.TagNumber(3)
+  JoinedMember ensureJoinedMember() => $_ensure(2);
 
   @$pb.TagNumber(4)
-  $core.String get targetUserId => $_getSZ(3);
+  LeftMember get leftMember => $_getN(3);
   @$pb.TagNumber(4)
-  set targetUserId($core.String value) => $_setString(3, value);
+  set leftMember(LeftMember value) => $_setField(4, value);
   @$pb.TagNumber(4)
-  $core.bool hasTargetUserId() => $_has(3);
+  $core.bool hasLeftMember() => $_has(3);
   @$pb.TagNumber(4)
-  void clearTargetUserId() => $_clearField(4);
+  void clearLeftMember() => $_clearField(4);
+  @$pb.TagNumber(4)
+  LeftMember ensureLeftMember() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  LiveChatMessage get liveChatMessage => $_getN(4);
+  @$pb.TagNumber(5)
+  set liveChatMessage(LiveChatMessage value) => $_setField(5, value);
+  @$pb.TagNumber(5)
+  $core.bool hasLiveChatMessage() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearLiveChatMessage() => $_clearField(5);
+  @$pb.TagNumber(5)
+  LiveChatMessage ensureLiveChatMessage() => $_ensure(4);
+}
+
+class SendLiveChatMessageRequest extends $pb.GeneratedMessage {
+  factory SendLiveChatMessageRequest({
+    $core.String? roomId,
+    $core.String? userId,
+    $core.String? text,
+  }) {
+    final result = create();
+    if (roomId != null) result.roomId = roomId;
+    if (userId != null) result.userId = userId;
+    if (text != null) result.text = text;
+    return result;
+  }
+
+  SendLiveChatMessageRequest._();
+
+  factory SendLiveChatMessageRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SendLiveChatMessageRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SendLiveChatMessageRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'roomId')
+    ..aOS(2, _omitFieldNames ? '' : 'userId')
+    ..aOS(3, _omitFieldNames ? '' : 'text')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SendLiveChatMessageRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SendLiveChatMessageRequest copyWith(
+          void Function(SendLiveChatMessageRequest) updates) =>
+      super.copyWith(
+              (message) => updates(message as SendLiveChatMessageRequest))
+          as SendLiveChatMessageRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SendLiveChatMessageRequest create() => SendLiveChatMessageRequest._();
+  @$core.override
+  SendLiveChatMessageRequest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static SendLiveChatMessageRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SendLiveChatMessageRequest>(create);
+  static SendLiveChatMessageRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get roomId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set roomId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasRoomId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearRoomId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get userId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set userId($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasUserId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearUserId() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get text => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set text($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasText() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearText() => $_clearField(3);
 }
 
 const $core.bool _omitFieldNames =

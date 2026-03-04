@@ -68,6 +68,7 @@ const RoomEventType$json = {
     {'1': 'ROOM_EVENT_TYPE_USER_JOINED', '2': 1},
     {'1': 'ROOM_EVENT_TYPE_USER_LEFT', '2': 2},
     {'1': 'ROOM_EVENT_TYPE_ROOM_ENDED', '2': 3},
+    {'1': 'ROOM_EVENT_TYPE_LIVE_CHAT_MESSAGE', '2': 4},
   ],
 };
 
@@ -75,7 +76,8 @@ const RoomEventType$json = {
 final $typed_data.Uint8List roomEventTypeDescriptor = $convert.base64Decode(
     'Cg1Sb29tRXZlbnRUeXBlEh8KG1JPT01fRVZFTlRfVFlQRV9VTlNQRUNJRklFRBAAEh8KG1JPT0'
     '1fRVZFTlRfVFlQRV9VU0VSX0pPSU5FRBABEh0KGVJPT01fRVZFTlRfVFlQRV9VU0VSX0xFRlQQ'
-    'AhIeChpST09NX0VWRU5UX1RZUEVfUk9PTV9FTkRFRBAD');
+    'AhIeChpST09NX0VWRU5UX1RZUEVfUk9PTV9FTkRFRBADEiUKIVJPT01fRVZFTlRfVFlQRV9MSV'
+    'ZFX0NIQVRfTUVTU0FHRRAE');
 
 @$core.Deprecated('Use roomDescriptor instead')
 const Room$json = {
@@ -389,6 +391,83 @@ final $typed_data.Uint8List subscribeRequestDescriptor = $convert.base64Decode(
     'ChBTdWJzY3JpYmVSZXF1ZXN0EhcKB3Jvb21faWQYASABKAlSBnJvb21JZBIXCgd1c2VyX2lkGA'
     'IgASgJUgZ1c2VySWQ=');
 
+@$core.Deprecated('Use getListenersRequestDescriptor instead')
+const GetListenersRequest$json = {
+  '1': 'GetListenersRequest',
+  '2': [
+    {'1': 'room_id', '3': 1, '4': 1, '5': 9, '10': 'roomId'},
+  ],
+};
+
+/// Descriptor for `GetListenersRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getListenersRequestDescriptor =
+    $convert.base64Decode(
+        'ChNHZXRMaXN0ZW5lcnNSZXF1ZXN0EhcKB3Jvb21faWQYASABKAlSBnJvb21JZA==');
+
+@$core.Deprecated('Use getListenersResponseDescriptor instead')
+const GetListenersResponse$json = {
+  '1': 'GetListenersResponse',
+  '2': [
+    {
+      '1': 'members',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.room.JoinedMember',
+      '10': 'members'
+    },
+    {'1': 'total_listeners', '3': 2, '4': 1, '5': 5, '10': 'totalListeners'},
+  ],
+};
+
+/// Descriptor for `GetListenersResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getListenersResponseDescriptor = $convert.base64Decode(
+    'ChRHZXRMaXN0ZW5lcnNSZXNwb25zZRIsCgdtZW1iZXJzGAEgAygLMhIucm9vbS5Kb2luZWRNZW'
+    '1iZXJSB21lbWJlcnMSJwoPdG90YWxfbGlzdGVuZXJzGAIgASgFUg50b3RhbExpc3RlbmVycw==');
+
+@$core.Deprecated('Use joinedMemberDescriptor instead')
+const JoinedMember$json = {
+  '1': 'JoinedMember',
+  '2': [
+    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
+    {'1': 'username', '3': 2, '4': 1, '5': 9, '10': 'username'},
+    {'1': 'display_name', '3': 3, '4': 1, '5': 9, '10': 'displayName'},
+    {'1': 'avatar_url', '3': 4, '4': 1, '5': 9, '10': 'avatarUrl'},
+  ],
+};
+
+/// Descriptor for `JoinedMember`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List joinedMemberDescriptor = $convert.base64Decode(
+    'CgxKb2luZWRNZW1iZXISFwoHdXNlcl9pZBgBIAEoCVIGdXNlcklkEhoKCHVzZXJuYW1lGAIgAS'
+    'gJUgh1c2VybmFtZRIhCgxkaXNwbGF5X25hbWUYAyABKAlSC2Rpc3BsYXlOYW1lEh0KCmF2YXRh'
+    'cl91cmwYBCABKAlSCWF2YXRhclVybA==');
+
+@$core.Deprecated('Use leftMemberDescriptor instead')
+const LeftMember$json = {
+  '1': 'LeftMember',
+  '2': [
+    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
+  ],
+};
+
+/// Descriptor for `LeftMember`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List leftMemberDescriptor = $convert
+    .base64Decode('CgpMZWZ0TWVtYmVyEhcKB3VzZXJfaWQYASABKAlSBnVzZXJJZA==');
+
+@$core.Deprecated('Use liveChatMessageDescriptor instead')
+const LiveChatMessage$json = {
+  '1': 'LiveChatMessage',
+  '2': [
+    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
+    {'1': 'text', '3': 2, '4': 1, '5': 9, '10': 'text'},
+  ],
+};
+
+/// Descriptor for `LiveChatMessage`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List liveChatMessageDescriptor = $convert.base64Decode(
+    'Cg9MaXZlQ2hhdE1lc3NhZ2USFwoHdXNlcl9pZBgBIAEoCVIGdXNlcklkEhIKBHRleHQYAiABKA'
+    'lSBHRleHQ=');
+
 @$core.Deprecated('Use roomEventDescriptor instead')
 const RoomEvent$json = {
   '1': 'RoomEvent',
@@ -402,13 +481,53 @@ const RoomEvent$json = {
       '10': 'type'
     },
     {'1': 'room_id', '3': 2, '4': 1, '5': 9, '10': 'roomId'},
-    {'1': 'listener_count', '3': 3, '4': 1, '5': 5, '10': 'listenerCount'},
-    {'1': 'target_user_id', '3': 4, '4': 1, '5': 9, '10': 'targetUserId'},
+    {
+      '1': 'joined_member',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.room.JoinedMember',
+      '10': 'joinedMember'
+    },
+    {
+      '1': 'left_member',
+      '3': 4,
+      '4': 1,
+      '5': 11,
+      '6': '.room.LeftMember',
+      '10': 'leftMember'
+    },
+    {
+      '1': 'live_chat_message',
+      '3': 5,
+      '4': 1,
+      '5': 11,
+      '6': '.room.LiveChatMessage',
+      '10': 'liveChatMessage'
+    },
   ],
 };
 
 /// Descriptor for `RoomEvent`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List roomEventDescriptor = $convert.base64Decode(
     'CglSb29tRXZlbnQSJwoEdHlwZRgBIAEoDjITLnJvb20uUm9vbUV2ZW50VHlwZVIEdHlwZRIXCg'
-    'dyb29tX2lkGAIgASgJUgZyb29tSWQSJQoObGlzdGVuZXJfY291bnQYAyABKAVSDWxpc3RlbmVy'
-    'Q291bnQSJAoOdGFyZ2V0X3VzZXJfaWQYBCABKAlSDHRhcmdldFVzZXJJZA==');
+    'dyb29tX2lkGAIgASgJUgZyb29tSWQSNwoNam9pbmVkX21lbWJlchgDIAEoCzISLnJvb20uSm9p'
+    'bmVkTWVtYmVyUgxqb2luZWRNZW1iZXISMQoLbGVmdF9tZW1iZXIYBCABKAsyEC5yb29tLkxlZn'
+    'RNZW1iZXJSCmxlZnRNZW1iZXISQQoRbGl2ZV9jaGF0X21lc3NhZ2UYBSABKAsyFS5yb29tLkxp'
+    'dmVDaGF0TWVzc2FnZVIPbGl2ZUNoYXRNZXNzYWdl');
+
+@$core.Deprecated('Use sendLiveChatMessageRequestDescriptor instead')
+const SendLiveChatMessageRequest$json = {
+  '1': 'SendLiveChatMessageRequest',
+  '2': [
+    {'1': 'room_id', '3': 1, '4': 1, '5': 9, '10': 'roomId'},
+    {'1': 'user_id', '3': 2, '4': 1, '5': 9, '10': 'userId'},
+    {'1': 'text', '3': 3, '4': 1, '5': 9, '10': 'text'},
+  ],
+};
+
+/// Descriptor for `SendLiveChatMessageRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List sendLiveChatMessageRequestDescriptor =
+    $convert.base64Decode(
+        'ChpTZW5kTGl2ZUNoYXRNZXNzYWdlUmVxdWVzdBIXCgdyb29tX2lkGAEgASgJUgZyb29tSWQSFw'
+        'oHdXNlcl9pZBgCIAEoCVIGdXNlcklkEhIKBHRleHQYAyABKAlSBHRleHQ=');

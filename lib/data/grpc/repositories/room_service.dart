@@ -68,4 +68,17 @@ class RoomServiceRepository implements RoomRepository {
     final request = proto.SubscribeRequest(roomId: roomId, userId: userId);
     return _client.subscribeToRoomEvents(request).map(RoomEventModel.fromProto);
   }
+
+  @override
+  Future<void> sendLiveChatMessage(String roomId, String userId, String message) async {
+    final request = proto.SendLiveChatMessageRequest(roomId: roomId, userId: userId, text: message);
+    await _client.sendLiveChatMessage(request);
+  }
+
+  @override
+  Future<List<JoinedMemberModel>> getRoomMembers(String roomId) async {
+    final request = proto.GetListenersRequest(roomId: roomId);
+    final response = await _client.getListeners(request);
+    return response.members.map((p) => JoinedMemberModel.fromProto(p)).toList();
+  }
 }

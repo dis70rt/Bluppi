@@ -6,8 +6,9 @@ import 'package:bluppi/application/providers/party/sync_provider.dart';
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
 import 'package:bluppi/application/providers/room/room_listeners_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
+import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/chats/chat_room_panel.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/listeners.dart';
-import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/live_chat_feed.dart';
+import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/chats/live_chat_feed.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/room_header.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/track_session.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class RoomScreen extends ConsumerWidget {
                 ref.invalidate(clockDisciplineProvider);
                 ref.invalidate(clockHistoryProvider);
                 ref.invalidate(playbackStreamProvider(currentRoom.id));
-                ref.invalidate(roomListenersProvider(currentRoom.id));
+                ref.invalidate(roomEventsProvider(currentRoom.id));
                 if(isHost) {
                   ref.read(currentRoomProvider.notifier).leaveRoom();
                 } else {
@@ -90,7 +91,7 @@ class RoomScreen extends ConsumerWidget {
               ),
               CurrentRoomTrack(isHost: isHost, roomId: currentRoom.id),
               RoomListeners(roomId: currentRoom.id),
-              LiveChatFeed(),
+              Expanded(child: RoomChatPanel(roomId: currentRoom.id,)),
             ],
           ),
         ),

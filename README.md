@@ -14,3 +14,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+```bash
+adb devices | awk 'NR>1 && $2=="device" {print $1}' | xargs -I {} sh -c 'adb -s {} reverse tcp:50051 tcp:50051 && adb -s {} reverse tcp:8001 tcp:8001'
+```

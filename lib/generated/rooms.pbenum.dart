@@ -89,16 +89,20 @@ class RoomEventType extends $pb.ProtobufEnum {
       RoomEventType._(2, _omitEnumNames ? '' : 'ROOM_EVENT_TYPE_USER_LEFT');
   static const RoomEventType ROOM_EVENT_TYPE_ROOM_ENDED =
       RoomEventType._(3, _omitEnumNames ? '' : 'ROOM_EVENT_TYPE_ROOM_ENDED');
+  static const RoomEventType ROOM_EVENT_TYPE_LIVE_CHAT_MESSAGE =
+      RoomEventType._(
+          4, _omitEnumNames ? '' : 'ROOM_EVENT_TYPE_LIVE_CHAT_MESSAGE');
 
   static const $core.List<RoomEventType> values = <RoomEventType>[
     ROOM_EVENT_TYPE_UNSPECIFIED,
     ROOM_EVENT_TYPE_USER_JOINED,
     ROOM_EVENT_TYPE_USER_LEFT,
     ROOM_EVENT_TYPE_ROOM_ENDED,
+    ROOM_EVENT_TYPE_LIVE_CHAT_MESSAGE,
   ];
 
   static final $core.List<RoomEventType?> _byValue =
-      $pb.ProtobufEnum.$_initByValueList(values, 3);
+      $pb.ProtobufEnum.$_initByValueList(values, 4);
   static RoomEventType? valueOf($core.int value) =>
       value < 0 || value >= _byValue.length ? null : _byValue[value];
 

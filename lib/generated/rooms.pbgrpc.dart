@@ -77,6 +77,20 @@ class RoomServiceClient extends $grpc.Client {
         options: options);
   }
 
+  $grpc.ResponseFuture<$0.GetListenersResponse> getListeners(
+    $0.GetListenersRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$getListeners, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$1.Empty> sendLiveChatMessage(
+    $0.SendLiveChatMessageRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$sendLiveChatMessage, request, options: options);
+  }
+
   // method descriptors
 
   static final _$createRoom = $grpc.ClientMethod<$0.CreateRoomRequest, $0.Room>(
@@ -105,6 +119,16 @@ class RoomServiceClient extends $grpc.Client {
           '/room.RoomService/SubscribeToRoomEvents',
           ($0.SubscribeRequest value) => value.writeToBuffer(),
           $0.RoomEvent.fromBuffer);
+  static final _$getListeners =
+      $grpc.ClientMethod<$0.GetListenersRequest, $0.GetListenersResponse>(
+          '/room.RoomService/GetListeners',
+          ($0.GetListenersRequest value) => value.writeToBuffer(),
+          $0.GetListenersResponse.fromBuffer);
+  static final _$sendLiveChatMessage =
+      $grpc.ClientMethod<$0.SendLiveChatMessageRequest, $1.Empty>(
+          '/room.RoomService/SendLiveChatMessage',
+          ($0.SendLiveChatMessageRequest value) => value.writeToBuffer(),
+          $1.Empty.fromBuffer);
 }
 
 @$pb.GrpcServiceName('room.RoomService')
@@ -154,6 +178,23 @@ abstract class RoomServiceBase extends $grpc.Service {
         true,
         ($core.List<$core.int> value) => $0.SubscribeRequest.fromBuffer(value),
         ($0.RoomEvent value) => value.writeToBuffer()));
+    $addMethod(
+        $grpc.ServiceMethod<$0.GetListenersRequest, $0.GetListenersResponse>(
+            'GetListeners',
+            getListeners_Pre,
+            false,
+            false,
+            ($core.List<$core.int> value) =>
+                $0.GetListenersRequest.fromBuffer(value),
+            ($0.GetListenersResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.SendLiveChatMessageRequest, $1.Empty>(
+        'SendLiveChatMessage',
+        sendLiveChatMessage_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.SendLiveChatMessageRequest.fromBuffer(value),
+        ($1.Empty value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.Room> createRoom_Pre($grpc.ServiceCall $call,
@@ -203,4 +244,21 @@ abstract class RoomServiceBase extends $grpc.Service {
 
   $async.Stream<$0.RoomEvent> subscribeToRoomEvents(
       $grpc.ServiceCall call, $0.SubscribeRequest request);
+
+  $async.Future<$0.GetListenersResponse> getListeners_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$0.GetListenersRequest> $request) async {
+    return getListeners($call, await $request);
+  }
+
+  $async.Future<$0.GetListenersResponse> getListeners(
+      $grpc.ServiceCall call, $0.GetListenersRequest request);
+
+  $async.Future<$1.Empty> sendLiveChatMessage_Pre($grpc.ServiceCall $call,
+      $async.Future<$0.SendLiveChatMessageRequest> $request) async {
+    return sendLiveChatMessage($call, await $request);
+  }
+
+  $async.Future<$1.Empty> sendLiveChatMessage(
+      $grpc.ServiceCall call, $0.SendLiveChatMessageRequest request);
 }
