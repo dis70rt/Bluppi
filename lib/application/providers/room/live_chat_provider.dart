@@ -6,7 +6,7 @@ import 'package:bluppi/domain/models/room_events_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final liveChatProvider =
-    NotifierProvider.family<LiveChatNotifier, List<LiveChatBubble>, String>(
+    NotifierProvider.family.autoDispose<LiveChatNotifier, List<LiveChatBubble>, String>(
   (arg) => LiveChatNotifier(arg),
 );
 

@@ -3,7 +3,7 @@ import 'package:bluppi/data/grpc/repositories/room_service.dart';
 import 'package:bluppi/domain/models/room_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final currentRoomProvider = NotifierProvider<CurrentRoomNotifier, RoomModel?>(
+final currentRoomProvider = NotifierProvider.autoDispose<CurrentRoomNotifier, RoomModel?>(
   CurrentRoomNotifier.new,
 );
 

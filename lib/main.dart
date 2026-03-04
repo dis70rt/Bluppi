@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:bluppi/app.dart';
 import 'package:bluppi/audio/player_handler.dart';
+import 'package:bluppi/core/utils/leak_observer.dart';
 import 'package:bluppi/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +21,7 @@ void main() async {
     ),
   );
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(observers: [LeakObserver()], child: MyApp()));
 }
