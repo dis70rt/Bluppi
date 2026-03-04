@@ -72,18 +72,18 @@ class RoomEventsNotifier extends Notifier<RoomEventState> {
   void _listenToEvents(String roomId) {
     final repo = ref.read(roomServiceProvider);
     final currentUserId = ref.read(userProvider).value?.id ?? '';
+    final liveChatNotifier = ref.read(liveChatProvider(roomId).notifier);
 
     _eventSub = repo.subscribeToRoomEvents(roomId, currentUserId).listen(
       (event) {
         switch (event.type) {
           case RoomEventType.userJoined:
-          log('User Joined: ${event.joinedMember?.username}', name: 'RoomListenersNotifier');
-          log('User ID: ${event.joinedMember?.userId}', name: 'RoomListenersNotifier');
-          log('User Profile Pic: ${event.joinedMember?.avatarUrl}', name: 'RoomListenersNotifier');
-          log('User Display Name: ${event.joinedMember?.displayName}', name: 'RoomListenersNotifier');
             addListener(event.joinedMember!);
+            liveChatNotifier.addSystemMessage('${event.joinedMember!.displayName} joined the room');
             break;
           case RoomEventType.userLeft:
+            final leftMember = state.members[event.leftMember!.userId]?.displayName ?? 'A user';
+            liveChatNotifier.addSystemMessage('$leftMember left the room');
             removeListener(event.leftMember!.userId);
             break;
           case RoomEventType.roomEnded:
@@ -92,10 +92,7 @@ class RoomEventsNotifier extends Notifier<RoomEventState> {
             break;
           case RoomEventType.liveChatMessage:
             final profile = state.members[event.liveChatMessage!.userId];
-            ref.read(liveChatProvider(roomId).notifier).addUserMessage(
-              msg: event.liveChatMessage!,
-              profile: profile!,
-            );
+            liveChatNotifier.addUserMessage(msg: event.liveChatMessage!, profile: profile!);
              break;
           case RoomEventType.unknown:
             break;

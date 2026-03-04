@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:bluppi/application/providers/party/playback_stream_provider.dart';
 import 'package:bluppi/application/providers/party/sync_history_provider.dart';
@@ -8,7 +7,6 @@ import 'package:bluppi/application/providers/room/room_listeners_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/chats/chat_room_panel.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/listeners.dart';
-import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/chats/live_chat_feed.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/room_header.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/track_session.dart';
 import 'package:flutter/material.dart';
