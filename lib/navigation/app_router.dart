@@ -4,8 +4,6 @@ import 'package:bluppi/ui/screens/HomeScreen/home_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/NetworkDiagnostics/network_diagnostics_screen.dart';
-import 'package:bluppi/ui/screens/RoomScreen/Room/create_room_sheet.dart';
-import 'package:bluppi/ui/screens/RoomScreen/Room/room_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/rooms_screen.dart';
 import 'package:bluppi/ui/screens/SearchScreen/search_screen.dart';
 import 'package:bluppi/ui/screens/auth_screen.dart';

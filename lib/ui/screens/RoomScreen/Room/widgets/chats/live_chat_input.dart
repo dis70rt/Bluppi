@@ -13,7 +13,6 @@ class LiveChatInput extends ConsumerStatefulWidget {
 
 class _LiveChatInputState extends ConsumerState<LiveChatInput> {
   final TextEditingController _controller = TextEditingController();
-  bool _isSending = false;
 
   @override
   void dispose() {
@@ -25,27 +24,27 @@ class _LiveChatInputState extends ConsumerState<LiveChatInput> {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    setState(() => _isSending = true);
+    _controller.clear();
 
     try {
       await ref
           .read(liveChatProvider(widget.roomId).notifier)
           .sendMessage(text);
-      _controller.clear();
     } catch (e) {
       if (!mounted) return;
+
+      _controller.text = text;
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to send: $e')));
-    } finally {
-      if (mounted) setState(() => _isSending = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 0, ),
+      padding: const EdgeInsets.symmetric(horizontal: 0),
       child: Row(
         children: [
           Expanded(
@@ -67,19 +66,11 @@ class _LiveChatInputState extends ConsumerState<LiveChatInput> {
             ),
           ),
           const SizedBox(width: 8),
-          _isSending
-              ? const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.send, color: BluppiColors.accent), iconSize: 24,
-                  onPressed: _handleSend,
-                ),
+          IconButton(
+            icon: const Icon(Icons.send, color: BluppiColors.accent),
+            iconSize: 24,
+            onPressed: _handleSend,
+          ),
         ],
       ),
     );
