@@ -1,3 +1,4 @@
+import 'package:bluppi/data/auth/auth_interceptor.dart';
 import 'package:bluppi/data/grpc/channels/grpc_channel.dart';
 import 'package:bluppi/domain/models/sync_model.dart';
 import 'package:bluppi/domain/repositories/sync_repository.dart';
@@ -7,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final syncServiceProvider = Provider<SyncServiceRepository>((ref) {
   final channel = ref.watch(grpcChannelProvider);
-  final client = proto.SyncServiceClient(channel);
+  final client = proto.SyncServiceClient(channel, interceptors: [AuthInterceptor()]);
   return SyncServiceRepository(client);
 });
 
@@ -17,8 +18,8 @@ class SyncServiceRepository implements SyncRepository {
   SyncServiceRepository(this._client);
 
   @override
-  Future<ServerResponse> sync(int clientSendNs, String roomId, String userId) async {
-    final request = proto.SyncRequest(clientSendUs: Int64(clientSendNs), roomId: roomId, userId: userId);
+  Future<ServerResponse> sync(int clientSendNs, String roomId) async {
+    final request = proto.SyncRequest(clientSendUs: Int64(clientSendNs), roomId: roomId);
     final response = await _client.clockSync(request);
     return ServerResponse.fromProto(response);
   }

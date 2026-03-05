@@ -195,29 +195,26 @@ final $typed_data.Uint8List getTracksResponseDescriptor = $convert.base64Decode(
 const LikeTrackRequest$json = {
   '1': 'LikeTrackRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'track_id', '3': 2, '4': 1, '5': 9, '10': 'trackId'},
   ],
 };
 
 /// Descriptor for `LikeTrackRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List likeTrackRequestDescriptor = $convert.base64Decode(
-    'ChBMaWtlVHJhY2tSZXF1ZXN0EhcKB3VzZXJfaWQYASABKAlSBnVzZXJJZBIZCgh0cmFja19pZB'
-    'gCIAEoCVIHdHJhY2tJZA==');
+    'ChBMaWtlVHJhY2tSZXF1ZXN0EhkKCHRyYWNrX2lkGAIgASgJUgd0cmFja0lk');
 
 @$core.Deprecated('Use unlikeTrackRequestDescriptor instead')
 const UnlikeTrackRequest$json = {
   '1': 'UnlikeTrackRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'track_id', '3': 2, '4': 1, '5': 9, '10': 'trackId'},
   ],
 };
 
 /// Descriptor for `UnlikeTrackRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List unlikeTrackRequestDescriptor = $convert.base64Decode(
-    'ChJVbmxpa2VUcmFja1JlcXVlc3QSFwoHdXNlcl9pZBgBIAEoCVIGdXNlcklkEhkKCHRyYWNrX2'
-    'lkGAIgASgJUgd0cmFja0lk');
+final $typed_data.Uint8List unlikeTrackRequestDescriptor =
+    $convert.base64Decode(
+        'ChJVbmxpa2VUcmFja1JlcXVlc3QSGQoIdHJhY2tfaWQYAiABKAlSB3RyYWNrSWQ=');
 
 @$core.Deprecated('Use statusResponseDescriptor instead')
 const StatusResponse$json = {
@@ -237,7 +234,6 @@ final $typed_data.Uint8List statusResponseDescriptor = $convert.base64Decode(
 const GetLikedTracksRequest$json = {
   '1': 'GetLikedTracksRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
     {'1': 'offset', '3': 3, '4': 1, '5': 5, '10': 'offset'},
   ],
@@ -245,8 +241,8 @@ const GetLikedTracksRequest$json = {
 
 /// Descriptor for `GetLikedTracksRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getLikedTracksRequestDescriptor = $convert.base64Decode(
-    'ChVHZXRMaWtlZFRyYWNrc1JlcXVlc3QSFwoHdXNlcl9pZBgBIAEoCVIGdXNlcklkEhQKBWxpbW'
-    'l0GAIgASgFUgVsaW1pdBIWCgZvZmZzZXQYAyABKAVSBm9mZnNldA==');
+    'ChVHZXRMaWtlZFRyYWNrc1JlcXVlc3QSFAoFbGltaXQYAiABKAVSBWxpbWl0EhYKBm9mZnNldB'
+    'gDIAEoBVIGb2Zmc2V0');
 
 @$core.Deprecated('Use likedTrackEntryDescriptor instead')
 const LikedTrackEntry$json = {
@@ -300,15 +296,14 @@ final $typed_data.Uint8List getLikedTracksResponseDescriptor =
 const IsTrackLikedRequest$json = {
   '1': 'IsTrackLikedRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'track_id', '3': 2, '4': 1, '5': 9, '10': 'trackId'},
   ],
 };
 
 /// Descriptor for `IsTrackLikedRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List isTrackLikedRequestDescriptor = $convert.base64Decode(
-    'ChNJc1RyYWNrTGlrZWRSZXF1ZXN0EhcKB3VzZXJfaWQYASABKAlSBnVzZXJJZBIZCgh0cmFja1'
-    '9pZBgCIAEoCVIHdHJhY2tJZA==');
+final $typed_data.Uint8List isTrackLikedRequestDescriptor =
+    $convert.base64Decode(
+        'ChNJc1RyYWNrTGlrZWRSZXF1ZXN0EhkKCHRyYWNrX2lkGAIgASgJUgd0cmFja0lk');
 
 @$core.Deprecated('Use isTrackLikedResponseDescriptor instead')
 const IsTrackLikedResponse$json = {
@@ -327,7 +322,6 @@ final $typed_data.Uint8List isTrackLikedResponseDescriptor =
 const AddTrackToHistoryRequest$json = {
   '1': 'AddTrackToHistoryRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'track_id', '3': 2, '4': 1, '5': 9, '10': 'trackId'},
   ],
 };
@@ -335,14 +329,12 @@ const AddTrackToHistoryRequest$json = {
 /// Descriptor for `AddTrackToHistoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List addTrackToHistoryRequestDescriptor =
     $convert.base64Decode(
-        'ChhBZGRUcmFja1RvSGlzdG9yeVJlcXVlc3QSFwoHdXNlcl9pZBgBIAEoCVIGdXNlcklkEhkKCH'
-        'RyYWNrX2lkGAIgASgJUgd0cmFja0lk');
+        'ChhBZGRUcmFja1RvSGlzdG9yeVJlcXVlc3QSGQoIdHJhY2tfaWQYAiABKAlSB3RyYWNrSWQ=');
 
 @$core.Deprecated('Use getTrackHistoryRequestDescriptor instead')
 const GetTrackHistoryRequest$json = {
   '1': 'GetTrackHistoryRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
     {'1': 'offset', '3': 3, '4': 1, '5': 5, '10': 'offset'},
   ],
@@ -351,8 +343,8 @@ const GetTrackHistoryRequest$json = {
 /// Descriptor for `GetTrackHistoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getTrackHistoryRequestDescriptor =
     $convert.base64Decode(
-        'ChZHZXRUcmFja0hpc3RvcnlSZXF1ZXN0EhcKB3VzZXJfaWQYASABKAlSBnVzZXJJZBIUCgVsaW'
-        '1pdBgCIAEoBVIFbGltaXQSFgoGb2Zmc2V0GAMgASgFUgZvZmZzZXQ=');
+        'ChZHZXRUcmFja0hpc3RvcnlSZXF1ZXN0EhQKBWxpbWl0GAIgASgFUgVsaW1pdBIWCgZvZmZzZX'
+        'QYAyABKAVSBm9mZnNldA==');
 
 @$core.Deprecated('Use historyTrackEntryDescriptor instead')
 const HistoryTrackEntry$json = {
@@ -406,15 +398,11 @@ final $typed_data.Uint8List getTrackHistoryResponseDescriptor =
 @$core.Deprecated('Use clearTrackHistoryRequestDescriptor instead')
 const ClearTrackHistoryRequest$json = {
   '1': 'ClearTrackHistoryRequest',
-  '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
-  ],
 };
 
 /// Descriptor for `ClearTrackHistoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List clearTrackHistoryRequestDescriptor =
-    $convert.base64Decode(
-        'ChhDbGVhclRyYWNrSGlzdG9yeVJlcXVlc3QSFwoHdXNlcl9pZBgBIAEoCVIGdXNlcklk');
+    $convert.base64Decode('ChhDbGVhclRyYWNrSGlzdG9yeVJlcXVlc3Q=');
 
 @$core.Deprecated('Use getRecommendationsRequestDescriptor instead')
 const GetRecommendationsRequest$json = {

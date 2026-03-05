@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bluppi/domain/models/history_track_model.dart';
 import 'package:bluppi/data/grpc/repositories/track_service_client.dart';
 
@@ -49,8 +48,7 @@ class HistoryNotifier extends AsyncNotifier<List<HistoryTrackModel>> {
 
     try {
       final repo = ref.read(trackServiceProvider);
-      final userId = await _getUserId();
-      final remote = await repo.getHistoryTracks(userId);
+      final remote = await repo.getHistoryTracks();
       await _saveToPrefs(remote);
       return remote;
     } catch (_) {
@@ -84,22 +82,14 @@ class HistoryNotifier extends AsyncNotifier<List<HistoryTrackModel>> {
   Future<void> _syncToApi(HistoryTrackModel entry) async {
     try {
       final repo = ref.read(trackServiceProvider);
-      final userId = await _getUserId();
-      await repo.addTrackToHistory(userId, entry.trackId);
+      await repo.addTrackToHistory(entry.trackId);
     } catch (_) {}
   }
 
   Future<void> _clearRemote() async {
     try {
       final repo = ref.read(trackServiceProvider);
-      final userId = await _getUserId();
-      await repo.clearHistory(userId);
+      await repo.clearHistory();
     } catch (_) {}
-  }
-
-  Future<String> _getUserId() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw Exception('User not authenticated');
-    return user.uid;
   }
 }

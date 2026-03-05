@@ -20,7 +20,6 @@ const ClientCommand$json = {
   '1': 'ClientCommand',
   '2': [
     {'1': 'room_id', '3': 1, '4': 1, '5': 9, '10': 'roomId'},
-    {'1': 'user_id', '3': 2, '4': 1, '5': 9, '10': 'userId'},
     {
       '1': 'play',
       '3': 3,
@@ -65,12 +64,11 @@ const ClientCommand$json = {
 
 /// Descriptor for `ClientCommand`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List clientCommandDescriptor = $convert.base64Decode(
-    'Cg1DbGllbnRDb21tYW5kEhcKB3Jvb21faWQYASABKAlSBnJvb21JZBIXCgd1c2VyX2lkGAIgAS'
-    'gJUgZ1c2VySWQSKwoEcGxheRgDIAEoCzIVLnBsYXliYWNrLlBsYXlDb21tYW5kSABSBHBsYXkS'
-    'LgoFcGF1c2UYBCABKAsyFi5wbGF5YmFjay5QYXVzZUNvbW1hbmRIAFIFcGF1c2USQQoMdHJhY2'
-    'tfY2hhbmdlGAUgASgLMhwucGxheWJhY2suVHJhY2tDaGFuZ2VDb21tYW5kSABSC3RyYWNrQ2hh'
-    'bmdlEjoKDGJ1ZmZlcl9yZWFkeRgGIAEoCzIVLnBsYXliYWNrLkJ1ZmZlclJlYWR5SABSC2J1Zm'
-    'ZlclJlYWR5QgkKB3BheWxvYWQ=');
+    'Cg1DbGllbnRDb21tYW5kEhcKB3Jvb21faWQYASABKAlSBnJvb21JZBIrCgRwbGF5GAMgASgLMh'
+    'UucGxheWJhY2suUGxheUNvbW1hbmRIAFIEcGxheRIuCgVwYXVzZRgEIAEoCzIWLnBsYXliYWNr'
+    'LlBhdXNlQ29tbWFuZEgAUgVwYXVzZRJBCgx0cmFja19jaGFuZ2UYBSABKAsyHC5wbGF5YmFjay'
+    '5UcmFja0NoYW5nZUNvbW1hbmRIAFILdHJhY2tDaGFuZ2USOgoMYnVmZmVyX3JlYWR5GAYgASgL'
+    'MhUucGxheWJhY2suQnVmZmVyUmVhZHlIAFILYnVmZmVyUmVhZHlCCQoHcGF5bG9hZA==');
 
 @$core.Deprecated('Use playCommandDescriptor instead')
 const PlayCommand$json = {

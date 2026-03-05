@@ -1,3 +1,4 @@
+import 'package:bluppi/data/auth/auth_interceptor.dart';
 import 'package:bluppi/domain/models/create_user_model.dart';
 import 'package:bluppi/domain/repositories/user_repository.dart';
 import 'package:bluppi/generated/users.pbgrpc.dart' as proto;
@@ -8,7 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userServiceClientRepositoryProvider = Provider<UserServiceClientRepository>((ref) {
   final channel = ref.watch(grpcChannelProvider);
-  final client = proto.UserServiceClient(channel);
+  final client = proto.UserServiceClient(
+    channel,
+    interceptors: [AuthInterceptor()],
+    );
   return UserServiceClientRepository(client);
 });
 
@@ -59,22 +63,19 @@ class UserServiceClientRepository implements UserRepository {
 
   @override
   Future<void> followUser(String userId) async {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    final request = proto.FollowUserRequest(followerId: userId, followeeId: currentUserId);
+    final request = proto.FollowUserRequest(followeeId: userId);
     await _client.followUser(request);
   }
 
   @override
   Future<void> unfollowUser(String userId) async {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    final request = proto.UnfollowUserRequest(followerId: userId, followeeId: currentUserId);
+    final request = proto.UnfollowUserRequest(followeeId: userId);
     await _client.unfollowUser(request);
   }
 
   @override
   Future<bool> isFollowing(String followeeId) async {
-    final currentUserId = FirebaseAuth.instance.currentUser!.uid;
-    final request = proto.IsFollowingRequest(followerId: currentUserId, followeeId: followeeId);
+    final request = proto.IsFollowingRequest(followeeId: followeeId);
     final response = await _client.isFollowing(request);
     return response.isFollowing;
   }

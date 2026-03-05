@@ -5,7 +5,7 @@ import 'package:bluppi/domain/models/track_model.dart';
 abstract class TrackRepository {
   Future<TrackModel> getTrack(String id);
   Future<SearchTrackResponse> searchTrack(String query, {int limit = 10, String cursor = ""});
-  Future<void> addTrackToHistory(String userId, String trackId);
-  Future<List<HistoryTrackModel>> getHistoryTracks(String userId, {int limit = 10, int offset = 0});
-  Future<void> clearHistory(String userId);
+  Future<void> addTrackToHistory(String trackId);
+  Future<List<HistoryTrackModel>> getHistoryTracks({int limit = 10, int offset = 0});
+  Future<void> clearHistory();
 }

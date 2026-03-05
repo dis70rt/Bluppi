@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bluppi/application/providers/room/live_chat_provider.dart';
-import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/data/grpc/repositories/room_service.dart';
 import 'package:bluppi/domain/models/room_events_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,10 +70,9 @@ class RoomEventsNotifier extends Notifier<RoomEventState> {
 
   void _listenToEvents(String roomId) {
     final repo = ref.read(roomServiceProvider);
-    final currentUserId = ref.read(userProvider).value?.id ?? '';
     final liveChatNotifier = ref.read(liveChatProvider(roomId).notifier);
 
-    _eventSub = repo.subscribeToRoomEvents(roomId, currentUserId).listen(
+    _eventSub = repo.subscribeToRoomEvents(roomId).listen(
       (event) {
         switch (event.type) {
           case RoomEventType.userJoined:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bluppi/data/auth/auth_interceptor.dart';
 import 'package:bluppi/data/grpc/channels/grpc_channel.dart';
 import 'package:bluppi/domain/models/playback_stream_model.dart';
 import 'package:bluppi/domain/repositories/playback_stream_repository.dart';
@@ -11,7 +12,7 @@ final playbackStreamServiceProvider = Provider<PlaybackStreamServiceRepository>(
   (ref) {
     final channel = ref.watch(grpcChannelProvider);
     return PlaybackStreamServiceRepository(
-      proto.PlaybackServiceClient(channel),
+      proto.PlaybackServiceClient(channel, interceptors: [AuthInterceptor()]),
     );
   },
 );
@@ -20,7 +21,6 @@ class PlaybackStreamServiceRepository implements PlaybackStreamRepository {
   final proto.PlaybackServiceClient _client;
   StreamController<proto.ClientCommand>? _commandStream;
   String? _roomId;
-  String? _userId;
 
   PlaybackStreamServiceRepository(this._client);
 
@@ -32,7 +32,6 @@ class PlaybackStreamServiceRepository implements PlaybackStreamRepository {
   }) {
     return proto.ClientCommand(
       roomId: _roomId ?? '',
-      userId: _userId ?? '',
       play: play,
       pause: pause,
       trackChange: trackChange,
@@ -45,9 +44,8 @@ class PlaybackStreamServiceRepository implements PlaybackStreamRepository {
     _commandStream?.close();
     _commandStream = StreamController<proto.ClientCommand>();
     _roomId = roomId;
-    _userId = userId;
 
-    _commandStream!.add(proto.ClientCommand(roomId: roomId, userId: userId));
+    _commandStream!.add(proto.ClientCommand(roomId: roomId));
 
     final responseStream = _client.streamSession(_commandStream!.stream);
     return responseStream
@@ -60,7 +58,6 @@ class PlaybackStreamServiceRepository implements PlaybackStreamRepository {
     _commandStream?.close();
     _commandStream = null;
     _roomId = null;
-    _userId = null;
   }
 
   @override

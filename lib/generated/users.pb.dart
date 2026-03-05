@@ -567,7 +567,6 @@ class GetUserByUsernameRequest extends $pb.GeneratedMessage {
 
 class UpdateUserRequest extends $pb.GeneratedMessage {
   factory UpdateUserRequest({
-    $core.String? userId,
     $core.String? email,
     $core.String? name,
     $core.String? bio,
@@ -579,7 +578,6 @@ class UpdateUserRequest extends $pb.GeneratedMessage {
     $core.String? gender,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (email != null) result.email = email;
     if (name != null) result.name = name;
     if (bio != null) result.bio = bio;
@@ -605,7 +603,6 @@ class UpdateUserRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'UpdateUserRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aOS(2, _omitFieldNames ? '' : 'email')
     ..aOS(3, _omitFieldNames ? '' : 'name')
     ..aOS(4, _omitFieldNames ? '' : 'bio')
@@ -637,102 +634,88 @@ class UpdateUserRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<UpdateUserRequest>(create);
   static UpdateUserRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   /// mimicking PATCH behavior
   @$pb.TagNumber(2)
-  $core.String get email => $_getSZ(1);
+  $core.String get email => $_getSZ(0);
   @$pb.TagNumber(2)
-  set email($core.String value) => $_setString(1, value);
+  set email($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasEmail() => $_has(1);
+  $core.bool hasEmail() => $_has(0);
   @$pb.TagNumber(2)
   void clearEmail() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.String get name => $_getSZ(2);
+  $core.String get name => $_getSZ(1);
   @$pb.TagNumber(3)
-  set name($core.String value) => $_setString(2, value);
+  set name($core.String value) => $_setString(1, value);
   @$pb.TagNumber(3)
-  $core.bool hasName() => $_has(2);
+  $core.bool hasName() => $_has(1);
   @$pb.TagNumber(3)
   void clearName() => $_clearField(3);
 
   @$pb.TagNumber(4)
-  $core.String get bio => $_getSZ(3);
+  $core.String get bio => $_getSZ(2);
   @$pb.TagNumber(4)
-  set bio($core.String value) => $_setString(3, value);
+  set bio($core.String value) => $_setString(2, value);
   @$pb.TagNumber(4)
-  $core.bool hasBio() => $_has(3);
+  $core.bool hasBio() => $_has(2);
   @$pb.TagNumber(4)
   void clearBio() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $core.String get country => $_getSZ(4);
+  $core.String get country => $_getSZ(3);
   @$pb.TagNumber(5)
-  set country($core.String value) => $_setString(4, value);
+  set country($core.String value) => $_setString(3, value);
   @$pb.TagNumber(5)
-  $core.bool hasCountry() => $_has(4);
+  $core.bool hasCountry() => $_has(3);
   @$pb.TagNumber(5)
   void clearCountry() => $_clearField(5);
 
   @$pb.TagNumber(6)
-  $core.String get phone => $_getSZ(5);
+  $core.String get phone => $_getSZ(4);
   @$pb.TagNumber(6)
-  set phone($core.String value) => $_setString(5, value);
+  set phone($core.String value) => $_setString(4, value);
   @$pb.TagNumber(6)
-  $core.bool hasPhone() => $_has(5);
+  $core.bool hasPhone() => $_has(4);
   @$pb.TagNumber(6)
   void clearPhone() => $_clearField(6);
 
   @$pb.TagNumber(7)
-  $core.String get profilePic => $_getSZ(6);
+  $core.String get profilePic => $_getSZ(5);
   @$pb.TagNumber(7)
-  set profilePic($core.String value) => $_setString(6, value);
+  set profilePic($core.String value) => $_setString(5, value);
   @$pb.TagNumber(7)
-  $core.bool hasProfilePic() => $_has(6);
+  $core.bool hasProfilePic() => $_has(5);
   @$pb.TagNumber(7)
   void clearProfilePic() => $_clearField(7);
 
   @$pb.TagNumber(8)
-  $pb.PbList<$core.String> get favoriteGenres => $_getList(7);
+  $pb.PbList<$core.String> get favoriteGenres => $_getList(6);
 
   @$pb.TagNumber(9)
-  $1.Timestamp get dateOfBirth => $_getN(8);
+  $1.Timestamp get dateOfBirth => $_getN(7);
   @$pb.TagNumber(9)
   set dateOfBirth($1.Timestamp value) => $_setField(9, value);
   @$pb.TagNumber(9)
-  $core.bool hasDateOfBirth() => $_has(8);
+  $core.bool hasDateOfBirth() => $_has(7);
   @$pb.TagNumber(9)
   void clearDateOfBirth() => $_clearField(9);
   @$pb.TagNumber(9)
-  $1.Timestamp ensureDateOfBirth() => $_ensure(8);
+  $1.Timestamp ensureDateOfBirth() => $_ensure(7);
 
   @$pb.TagNumber(10)
-  $core.String get gender => $_getSZ(9);
+  $core.String get gender => $_getSZ(8);
   @$pb.TagNumber(10)
-  set gender($core.String value) => $_setString(9, value);
+  set gender($core.String value) => $_setString(8, value);
   @$pb.TagNumber(10)
-  $core.bool hasGender() => $_has(9);
+  $core.bool hasGender() => $_has(8);
   @$pb.TagNumber(10)
   void clearGender() => $_clearField(10);
 }
 
 class DeleteUserRequest extends $pb.GeneratedMessage {
-  factory DeleteUserRequest({
-    $core.String? userId,
-  }) {
-    final result = create();
-    if (userId != null) result.userId = userId;
-    return result;
-  }
+  factory DeleteUserRequest() => create();
 
   DeleteUserRequest._();
 
@@ -747,7 +730,6 @@ class DeleteUserRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'DeleteUserRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -768,15 +750,6 @@ class DeleteUserRequest extends $pb.GeneratedMessage {
   static DeleteUserRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<DeleteUserRequest>(create);
   static DeleteUserRequest? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
 }
 
 class DeleteUserResponse extends $pb.GeneratedMessage {
@@ -1443,11 +1416,9 @@ class AddRecentSearchRequest extends $pb.GeneratedMessage {
 
 class GetRecentSearchesRequest extends $pb.GeneratedMessage {
   factory GetRecentSearchesRequest({
-    $core.String? userId,
     $core.int? limit,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (limit != null) result.limit = limit;
     return result;
   }
@@ -1465,7 +1436,6 @@ class GetRecentSearchesRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'GetRecentSearchesRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aI(2, _omitFieldNames ? '' : 'limit')
     ..hasRequiredFields = false;
 
@@ -1489,21 +1459,13 @@ class GetRecentSearchesRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<GetRecentSearchesRequest>(create);
   static GetRecentSearchesRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   @$pb.TagNumber(2)
-  $core.int get limit => $_getIZ(1);
+  $core.int get limit => $_getIZ(0);
   @$pb.TagNumber(2)
-  set limit($core.int value) => $_setSignedInt32(1, value);
+  set limit($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasLimit() => $_has(1);
+  $core.bool hasLimit() => $_has(0);
   @$pb.TagNumber(2)
   void clearLimit() => $_clearField(2);
 }
@@ -1629,11 +1591,9 @@ class RecentSearchesResponse extends $pb.GeneratedMessage {
 
 class FollowUserRequest extends $pb.GeneratedMessage {
   factory FollowUserRequest({
-    $core.String? followerId,
     $core.String? followeeId,
   }) {
     final result = create();
-    if (followerId != null) result.followerId = followerId;
     if (followeeId != null) result.followeeId = followeeId;
     return result;
   }
@@ -1651,7 +1611,6 @@ class FollowUserRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'FollowUserRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'followerId')
     ..aOS(2, _omitFieldNames ? '' : 'followeeId')
     ..hasRequiredFields = false;
 
@@ -1674,32 +1633,22 @@ class FollowUserRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<FollowUserRequest>(create);
   static FollowUserRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get followerId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set followerId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasFollowerId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearFollowerId() => $_clearField(1);
-
+  /// string follower_id = 1;
   @$pb.TagNumber(2)
-  $core.String get followeeId => $_getSZ(1);
+  $core.String get followeeId => $_getSZ(0);
   @$pb.TagNumber(2)
-  set followeeId($core.String value) => $_setString(1, value);
+  set followeeId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasFolloweeId() => $_has(1);
+  $core.bool hasFolloweeId() => $_has(0);
   @$pb.TagNumber(2)
   void clearFolloweeId() => $_clearField(2);
 }
 
 class UnfollowUserRequest extends $pb.GeneratedMessage {
   factory UnfollowUserRequest({
-    $core.String? followerId,
     $core.String? followeeId,
   }) {
     final result = create();
-    if (followerId != null) result.followerId = followerId;
     if (followeeId != null) result.followeeId = followeeId;
     return result;
   }
@@ -1717,7 +1666,6 @@ class UnfollowUserRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'UnfollowUserRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'followerId')
     ..aOS(2, _omitFieldNames ? '' : 'followeeId')
     ..hasRequiredFields = false;
 
@@ -1740,32 +1688,22 @@ class UnfollowUserRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<UnfollowUserRequest>(create);
   static UnfollowUserRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get followerId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set followerId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasFollowerId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearFollowerId() => $_clearField(1);
-
+  /// string follower_id = 1;
   @$pb.TagNumber(2)
-  $core.String get followeeId => $_getSZ(1);
+  $core.String get followeeId => $_getSZ(0);
   @$pb.TagNumber(2)
-  set followeeId($core.String value) => $_setString(1, value);
+  set followeeId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasFolloweeId() => $_has(1);
+  $core.bool hasFolloweeId() => $_has(0);
   @$pb.TagNumber(2)
   void clearFolloweeId() => $_clearField(2);
 }
 
 class IsFollowingRequest extends $pb.GeneratedMessage {
   factory IsFollowingRequest({
-    $core.String? followerId,
     $core.String? followeeId,
   }) {
     final result = create();
-    if (followerId != null) result.followerId = followerId;
     if (followeeId != null) result.followeeId = followeeId;
     return result;
   }
@@ -1783,7 +1721,6 @@ class IsFollowingRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'IsFollowingRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'followerId')
     ..aOS(2, _omitFieldNames ? '' : 'followeeId')
     ..hasRequiredFields = false;
 
@@ -1806,21 +1743,13 @@ class IsFollowingRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<IsFollowingRequest>(create);
   static IsFollowingRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get followerId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set followerId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasFollowerId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearFollowerId() => $_clearField(1);
-
+  /// string follower_id = 1;
   @$pb.TagNumber(2)
-  $core.String get followeeId => $_getSZ(1);
+  $core.String get followeeId => $_getSZ(0);
   @$pb.TagNumber(2)
-  set followeeId($core.String value) => $_setString(1, value);
+  set followeeId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasFolloweeId() => $_has(1);
+  $core.bool hasFolloweeId() => $_has(0);
   @$pb.TagNumber(2)
   void clearFolloweeId() => $_clearField(2);
 }

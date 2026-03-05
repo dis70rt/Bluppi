@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
-import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/data/grpc/repositories/room_service.dart';
 import 'package:riverpod/riverpod.dart';
 
@@ -85,9 +84,8 @@ class CreateRoomController extends Notifier<CreateRoomState> {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final hostUserId = ref.read(userProvider).value?.id;
       final repo = ref.read(roomServiceProvider);
-      final room = await repo.createRoom(state.name, state.isPublic, state.inviteOnly, hostUserId!);
+      final room = await repo.createRoom(state.name, state.isPublic, state.inviteOnly);
       ref.read(currentRoomProvider.notifier).setCreatedRoom(room);
 
       state = state.copyWith(isLoading: false);

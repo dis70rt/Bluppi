@@ -607,13 +607,11 @@ class CreateRoomRequest extends $pb.GeneratedMessage {
     $core.String? name,
     RoomVisibility? visibility,
     $core.bool? inviteOnly,
-    $core.String? hostUserId,
   }) {
     final result = create();
     if (name != null) result.name = name;
     if (visibility != null) result.visibility = visibility;
     if (inviteOnly != null) result.inviteOnly = inviteOnly;
-    if (hostUserId != null) result.hostUserId = hostUserId;
     return result;
   }
 
@@ -634,7 +632,6 @@ class CreateRoomRequest extends $pb.GeneratedMessage {
     ..aE<RoomVisibility>(2, _omitFieldNames ? '' : 'visibility',
         enumValues: RoomVisibility.values)
     ..aOB(3, _omitFieldNames ? '' : 'inviteOnly')
-    ..aOS(4, _omitFieldNames ? '' : 'hostUserId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -682,15 +679,6 @@ class CreateRoomRequest extends $pb.GeneratedMessage {
   $core.bool hasInviteOnly() => $_has(2);
   @$pb.TagNumber(3)
   void clearInviteOnly() => $_clearField(3);
-
-  @$pb.TagNumber(4)
-  $core.String get hostUserId => $_getSZ(3);
-  @$pb.TagNumber(4)
-  set hostUserId($core.String value) => $_setString(3, value);
-  @$pb.TagNumber(4)
-  $core.bool hasHostUserId() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearHostUserId() => $_clearField(4);
 }
 
 class GetRoomRequest extends $pb.GeneratedMessage {
@@ -807,12 +795,10 @@ class JoinRoomRequest extends $pb.GeneratedMessage {
   factory JoinRoomRequest({
     $core.String? roomId,
     $core.String? roomCode,
-    $core.String? userId,
   }) {
     final result = create();
     if (roomId != null) result.roomId = roomId;
     if (roomCode != null) result.roomCode = roomCode;
-    if (userId != null) result.userId = userId;
     return result;
   }
 
@@ -838,7 +824,6 @@ class JoinRoomRequest extends $pb.GeneratedMessage {
     ..oo(0, [1, 2])
     ..aOS(1, _omitFieldNames ? '' : 'roomId')
     ..aOS(2, _omitFieldNames ? '' : 'roomCode')
-    ..aOS(3, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -885,25 +870,14 @@ class JoinRoomRequest extends $pb.GeneratedMessage {
   $core.bool hasRoomCode() => $_has(1);
   @$pb.TagNumber(2)
   void clearRoomCode() => $_clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.String get userId => $_getSZ(2);
-  @$pb.TagNumber(3)
-  set userId($core.String value) => $_setString(2, value);
-  @$pb.TagNumber(3)
-  $core.bool hasUserId() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearUserId() => $_clearField(3);
 }
 
 class LeaveRoomRequest extends $pb.GeneratedMessage {
   factory LeaveRoomRequest({
     $core.String? roomId,
-    $core.String? userId,
   }) {
     final result = create();
     if (roomId != null) result.roomId = roomId;
-    if (userId != null) result.userId = userId;
     return result;
   }
 
@@ -921,7 +895,6 @@ class LeaveRoomRequest extends $pb.GeneratedMessage {
       package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'roomId')
-    ..aOS(2, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -951,15 +924,6 @@ class LeaveRoomRequest extends $pb.GeneratedMessage {
   $core.bool hasRoomId() => $_has(0);
   @$pb.TagNumber(1)
   void clearRoomId() => $_clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get userId => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set userId($core.String value) => $_setString(1, value);
-  @$pb.TagNumber(2)
-  $core.bool hasUserId() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearUserId() => $_clearField(2);
 }
 
 class ListRoomsRequest extends $pb.GeneratedMessage {
@@ -1105,11 +1069,9 @@ class ListRoomsResponse extends $pb.GeneratedMessage {
 class SubscribeRequest extends $pb.GeneratedMessage {
   factory SubscribeRequest({
     $core.String? roomId,
-    $core.String? userId,
   }) {
     final result = create();
     if (roomId != null) result.roomId = roomId;
-    if (userId != null) result.userId = userId;
     return result;
   }
 
@@ -1127,7 +1089,6 @@ class SubscribeRequest extends $pb.GeneratedMessage {
       package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'roomId')
-    ..aOS(2, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1157,15 +1118,6 @@ class SubscribeRequest extends $pb.GeneratedMessage {
   $core.bool hasRoomId() => $_has(0);
   @$pb.TagNumber(1)
   void clearRoomId() => $_clearField(1);
-
-  @$pb.TagNumber(2)
-  $core.String get userId => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set userId($core.String value) => $_setString(1, value);
-  @$pb.TagNumber(2)
-  $core.bool hasUserId() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearUserId() => $_clearField(2);
 }
 
 class GetListenersRequest extends $pb.GeneratedMessage {
@@ -1606,12 +1558,10 @@ class RoomEvent extends $pb.GeneratedMessage {
 class SendLiveChatMessageRequest extends $pb.GeneratedMessage {
   factory SendLiveChatMessageRequest({
     $core.String? roomId,
-    $core.String? userId,
     $core.String? text,
   }) {
     final result = create();
     if (roomId != null) result.roomId = roomId;
-    if (userId != null) result.userId = userId;
     if (text != null) result.text = text;
     return result;
   }
@@ -1630,7 +1580,6 @@ class SendLiveChatMessageRequest extends $pb.GeneratedMessage {
       package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'roomId')
-    ..aOS(2, _omitFieldNames ? '' : 'userId')
     ..aOS(3, _omitFieldNames ? '' : 'text')
     ..hasRequiredFields = false;
 
@@ -1664,21 +1613,13 @@ class SendLiveChatMessageRequest extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearRoomId() => $_clearField(1);
 
-  @$pb.TagNumber(2)
-  $core.String get userId => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set userId($core.String value) => $_setString(1, value);
-  @$pb.TagNumber(2)
-  $core.bool hasUserId() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearUserId() => $_clearField(2);
-
+  /// string user_id = 2;
   @$pb.TagNumber(3)
-  $core.String get text => $_getSZ(2);
+  $core.String get text => $_getSZ(1);
   @$pb.TagNumber(3)
-  set text($core.String value) => $_setString(2, value);
+  set text($core.String value) => $_setString(1, value);
   @$pb.TagNumber(3)
-  $core.bool hasText() => $_has(2);
+  $core.bool hasText() => $_has(1);
   @$pb.TagNumber(3)
   void clearText() => $_clearField(3);
 }

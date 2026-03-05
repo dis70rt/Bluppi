@@ -1,3 +1,4 @@
+import 'package:bluppi/data/auth/auth_interceptor.dart';
 import 'package:bluppi/data/grpc/channels/grpc_channel.dart';
 import 'package:bluppi/domain/models/history_track_model.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final trackServiceProvider = Provider<TrackServiceRepository>((ref) {
   final channel = ref.watch(grpcChannelProvider);
-  final client = proto.TrackServiceClient(channel);
+  final client = proto.TrackServiceClient(channel, interceptors: [AuthInterceptor()]);
   return TrackServiceRepository(client);
 });
 
@@ -39,14 +40,14 @@ class TrackServiceRepository implements TrackRepository {
   }
 
   @override
-  Future<void> addTrackToHistory(String userId, String trackId) async {
-    final request = proto.AddTrackToHistoryRequest(userId: userId, trackId: trackId);
+  Future<void> addTrackToHistory(String trackId) async {
+    final request = proto.AddTrackToHistoryRequest(trackId: trackId);
     await _client.addTrackToHistory(request);
   }
 
   @override
-  Future<List<HistoryTrackModel>> getHistoryTracks(String userId, {int limit = 10, int offset = 0}) async {
-    final request = proto.GetTrackHistoryRequest(userId: userId, limit: limit, offset: offset);
+  Future<List<HistoryTrackModel>> getHistoryTracks({int limit = 10, int offset = 0}) async {
+    final request = proto.GetTrackHistoryRequest(limit: limit, offset: offset);
     final response = await _client.getTrackHistory(request);
 
     return response.history
@@ -55,8 +56,8 @@ class TrackServiceRepository implements TrackRepository {
   }
 
   @override
-  Future<void> clearHistory(String userId) async {
-    final request = proto.ClearTrackHistoryRequest(userId: userId);
+  Future<void> clearHistory() async {
+    final request = proto.ClearTrackHistoryRequest();
     await _client.clearTrackHistory(request);
   }
 }

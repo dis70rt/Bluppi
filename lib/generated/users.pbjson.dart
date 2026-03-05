@@ -138,7 +138,6 @@ final $typed_data.Uint8List getUserByUsernameRequestDescriptor =
 const UpdateUserRequest$json = {
   '1': 'UpdateUserRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'email', '3': 2, '4': 1, '5': 9, '9': 0, '10': 'email', '17': true},
     {'1': 'name', '3': 3, '4': 1, '5': 9, '9': 1, '10': 'name', '17': true},
     {'1': 'bio', '3': 4, '4': 1, '5': 9, '9': 2, '10': 'bio', '17': true},
@@ -196,27 +195,23 @@ const UpdateUserRequest$json = {
 
 /// Descriptor for `UpdateUserRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List updateUserRequestDescriptor = $convert.base64Decode(
-    'ChFVcGRhdGVVc2VyUmVxdWVzdBIXCgd1c2VyX2lkGAEgASgJUgZ1c2VySWQSGQoFZW1haWwYAi'
-    'ABKAlIAFIFZW1haWyIAQESFwoEbmFtZRgDIAEoCUgBUgRuYW1liAEBEhUKA2JpbxgEIAEoCUgC'
-    'UgNiaW+IAQESHQoHY291bnRyeRgFIAEoCUgDUgdjb3VudHJ5iAEBEhkKBXBob25lGAYgASgJSA'
-    'RSBXBob25liAEBEiQKC3Byb2ZpbGVfcGljGAcgASgJSAVSCnByb2ZpbGVQaWOIAQESJwoPZmF2'
-    'b3JpdGVfZ2VucmVzGAggAygJUg5mYXZvcml0ZUdlbnJlcxJDCg1kYXRlX29mX2JpcnRoGAkgAS'
-    'gLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgGUgtkYXRlT2ZCaXJ0aIgBARIbCgZnZW5k'
-    'ZXIYCiABKAlIB1IGZ2VuZGVyiAEBQggKBl9lbWFpbEIHCgVfbmFtZUIGCgRfYmlvQgoKCF9jb3'
-    'VudHJ5QggKBl9waG9uZUIOCgxfcHJvZmlsZV9waWNCEAoOX2RhdGVfb2ZfYmlydGhCCQoHX2dl'
-    'bmRlcg==');
+    'ChFVcGRhdGVVc2VyUmVxdWVzdBIZCgVlbWFpbBgCIAEoCUgAUgVlbWFpbIgBARIXCgRuYW1lGA'
+    'MgASgJSAFSBG5hbWWIAQESFQoDYmlvGAQgASgJSAJSA2Jpb4gBARIdCgdjb3VudHJ5GAUgASgJ'
+    'SANSB2NvdW50cnmIAQESGQoFcGhvbmUYBiABKAlIBFIFcGhvbmWIAQESJAoLcHJvZmlsZV9waW'
+    'MYByABKAlIBVIKcHJvZmlsZVBpY4gBARInCg9mYXZvcml0ZV9nZW5yZXMYCCADKAlSDmZhdm9y'
+    'aXRlR2VucmVzEkMKDWRhdGVfb2ZfYmlydGgYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZX'
+    'N0YW1wSAZSC2RhdGVPZkJpcnRoiAEBEhsKBmdlbmRlchgKIAEoCUgHUgZnZW5kZXKIAQFCCAoG'
+    'X2VtYWlsQgcKBV9uYW1lQgYKBF9iaW9CCgoIX2NvdW50cnlCCAoGX3Bob25lQg4KDF9wcm9maW'
+    'xlX3BpY0IQCg5fZGF0ZV9vZl9iaXJ0aEIJCgdfZ2VuZGVy');
 
 @$core.Deprecated('Use deleteUserRequestDescriptor instead')
 const DeleteUserRequest$json = {
   '1': 'DeleteUserRequest',
-  '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
-  ],
 };
 
 /// Descriptor for `DeleteUserRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List deleteUserRequestDescriptor = $convert.base64Decode(
-    'ChFEZWxldGVVc2VyUmVxdWVzdBIXCgd1c2VyX2lkGAEgASgJUgZ1c2VySWQ=');
+final $typed_data.Uint8List deleteUserRequestDescriptor =
+    $convert.base64Decode('ChFEZWxldGVVc2VyUmVxdWVzdA==');
 
 @$core.Deprecated('Use deleteUserResponseDescriptor instead')
 const DeleteUserResponse$json = {
@@ -370,7 +365,6 @@ final $typed_data.Uint8List addRecentSearchRequestDescriptor =
 const GetRecentSearchesRequest$json = {
   '1': 'GetRecentSearchesRequest',
   '2': [
-    {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
   ],
 };
@@ -378,8 +372,7 @@ const GetRecentSearchesRequest$json = {
 /// Descriptor for `GetRecentSearchesRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getRecentSearchesRequestDescriptor =
     $convert.base64Decode(
-        'ChhHZXRSZWNlbnRTZWFyY2hlc1JlcXVlc3QSFwoHdXNlcl9pZBgBIAEoCVIGdXNlcklkEhQKBW'
-        'xpbWl0GAIgASgFUgVsaW1pdA==');
+        'ChhHZXRSZWNlbnRTZWFyY2hlc1JlcXVlc3QSFAoFbGltaXQYAiABKAVSBWxpbWl0');
 
 @$core.Deprecated('Use recentSearchEntryDescriptor instead')
 const RecentSearchEntry$json = {
@@ -427,43 +420,37 @@ final $typed_data.Uint8List recentSearchesResponseDescriptor =
 const FollowUserRequest$json = {
   '1': 'FollowUserRequest',
   '2': [
-    {'1': 'follower_id', '3': 1, '4': 1, '5': 9, '10': 'followerId'},
     {'1': 'followee_id', '3': 2, '4': 1, '5': 9, '10': 'followeeId'},
   ],
 };
 
 /// Descriptor for `FollowUserRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List followUserRequestDescriptor = $convert.base64Decode(
-    'ChFGb2xsb3dVc2VyUmVxdWVzdBIfCgtmb2xsb3dlcl9pZBgBIAEoCVIKZm9sbG93ZXJJZBIfCg'
-    'tmb2xsb3dlZV9pZBgCIAEoCVIKZm9sbG93ZWVJZA==');
+    'ChFGb2xsb3dVc2VyUmVxdWVzdBIfCgtmb2xsb3dlZV9pZBgCIAEoCVIKZm9sbG93ZWVJZA==');
 
 @$core.Deprecated('Use unfollowUserRequestDescriptor instead')
 const UnfollowUserRequest$json = {
   '1': 'UnfollowUserRequest',
   '2': [
-    {'1': 'follower_id', '3': 1, '4': 1, '5': 9, '10': 'followerId'},
     {'1': 'followee_id', '3': 2, '4': 1, '5': 9, '10': 'followeeId'},
   ],
 };
 
 /// Descriptor for `UnfollowUserRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List unfollowUserRequestDescriptor = $convert.base64Decode(
-    'ChNVbmZvbGxvd1VzZXJSZXF1ZXN0Eh8KC2ZvbGxvd2VyX2lkGAEgASgJUgpmb2xsb3dlcklkEh'
-    '8KC2ZvbGxvd2VlX2lkGAIgASgJUgpmb2xsb3dlZUlk');
+    'ChNVbmZvbGxvd1VzZXJSZXF1ZXN0Eh8KC2ZvbGxvd2VlX2lkGAIgASgJUgpmb2xsb3dlZUlk');
 
 @$core.Deprecated('Use isFollowingRequestDescriptor instead')
 const IsFollowingRequest$json = {
   '1': 'IsFollowingRequest',
   '2': [
-    {'1': 'follower_id', '3': 1, '4': 1, '5': 9, '10': 'followerId'},
     {'1': 'followee_id', '3': 2, '4': 1, '5': 9, '10': 'followeeId'},
   ],
 };
 
 /// Descriptor for `IsFollowingRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List isFollowingRequestDescriptor = $convert.base64Decode(
-    'ChJJc0ZvbGxvd2luZ1JlcXVlc3QSHwoLZm9sbG93ZXJfaWQYASABKAlSCmZvbGxvd2VySWQSHw'
-    'oLZm9sbG93ZWVfaWQYAiABKAlSCmZvbGxvd2VlSWQ=');
+    'ChJJc0ZvbGxvd2luZ1JlcXVlc3QSHwoLZm9sbG93ZWVfaWQYAiABKAlSCmZvbGxvd2VlSWQ=');
 
 @$core.Deprecated('Use isFollowingResponseDescriptor instead')
 const IsFollowingResponse$json = {

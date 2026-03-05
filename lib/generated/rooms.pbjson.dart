@@ -266,7 +266,6 @@ const CreateRoomRequest$json = {
       '10': 'visibility'
     },
     {'1': 'invite_only', '3': 3, '4': 1, '5': 8, '10': 'inviteOnly'},
-    {'1': 'host_user_id', '3': 4, '4': 1, '5': 9, '10': 'hostUserId'},
   ],
 };
 
@@ -274,7 +273,7 @@ const CreateRoomRequest$json = {
 final $typed_data.Uint8List createRoomRequestDescriptor = $convert.base64Decode(
     'ChFDcmVhdGVSb29tUmVxdWVzdBISCgRuYW1lGAEgASgJUgRuYW1lEjQKCnZpc2liaWxpdHkYAi'
     'ABKA4yFC5yb29tLlJvb21WaXNpYmlsaXR5Ugp2aXNpYmlsaXR5Eh8KC2ludml0ZV9vbmx5GAMg'
-    'ASgIUgppbnZpdGVPbmx5EiAKDGhvc3RfdXNlcl9pZBgEIAEoCVIKaG9zdFVzZXJJZA==');
+    'ASgIUgppbnZpdGVPbmx5');
 
 @$core.Deprecated('Use getRoomRequestDescriptor instead')
 const GetRoomRequest$json = {
@@ -306,7 +305,6 @@ const JoinRoomRequest$json = {
   '2': [
     {'1': 'room_id', '3': 1, '4': 1, '5': 9, '9': 0, '10': 'roomId'},
     {'1': 'room_code', '3': 2, '4': 1, '5': 9, '9': 0, '10': 'roomCode'},
-    {'1': 'user_id', '3': 3, '4': 1, '5': 9, '10': 'userId'},
   ],
   '8': [
     {'1': 'identifier'},
@@ -316,22 +314,19 @@ const JoinRoomRequest$json = {
 /// Descriptor for `JoinRoomRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List joinRoomRequestDescriptor = $convert.base64Decode(
     'Cg9Kb2luUm9vbVJlcXVlc3QSGQoHcm9vbV9pZBgBIAEoCUgAUgZyb29tSWQSHQoJcm9vbV9jb2'
-    'RlGAIgASgJSABSCHJvb21Db2RlEhcKB3VzZXJfaWQYAyABKAlSBnVzZXJJZEIMCgppZGVudGlm'
-    'aWVy');
+    'RlGAIgASgJSABSCHJvb21Db2RlQgwKCmlkZW50aWZpZXI=');
 
 @$core.Deprecated('Use leaveRoomRequestDescriptor instead')
 const LeaveRoomRequest$json = {
   '1': 'LeaveRoomRequest',
   '2': [
     {'1': 'room_id', '3': 1, '4': 1, '5': 9, '10': 'roomId'},
-    {'1': 'user_id', '3': 2, '4': 1, '5': 9, '10': 'userId'},
   ],
 };
 
 /// Descriptor for `LeaveRoomRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List leaveRoomRequestDescriptor = $convert.base64Decode(
-    'ChBMZWF2ZVJvb21SZXF1ZXN0EhcKB3Jvb21faWQYASABKAlSBnJvb21JZBIXCgd1c2VyX2lkGA'
-    'IgASgJUgZ1c2VySWQ=');
+    'ChBMZWF2ZVJvb21SZXF1ZXN0EhcKB3Jvb21faWQYASABKAlSBnJvb21JZA==');
 
 @$core.Deprecated('Use listRoomsRequestDescriptor instead')
 const ListRoomsRequest$json = {
@@ -382,14 +377,12 @@ const SubscribeRequest$json = {
   '1': 'SubscribeRequest',
   '2': [
     {'1': 'room_id', '3': 1, '4': 1, '5': 9, '10': 'roomId'},
-    {'1': 'user_id', '3': 2, '4': 1, '5': 9, '10': 'userId'},
   ],
 };
 
 /// Descriptor for `SubscribeRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List subscribeRequestDescriptor = $convert.base64Decode(
-    'ChBTdWJzY3JpYmVSZXF1ZXN0EhcKB3Jvb21faWQYASABKAlSBnJvb21JZBIXCgd1c2VyX2lkGA'
-    'IgASgJUgZ1c2VySWQ=');
+    'ChBTdWJzY3JpYmVSZXF1ZXN0EhcKB3Jvb21faWQYASABKAlSBnJvb21JZA==');
 
 @$core.Deprecated('Use getListenersRequestDescriptor instead')
 const GetListenersRequest$json = {
@@ -521,7 +514,6 @@ const SendLiveChatMessageRequest$json = {
   '1': 'SendLiveChatMessageRequest',
   '2': [
     {'1': 'room_id', '3': 1, '4': 1, '5': 9, '10': 'roomId'},
-    {'1': 'user_id', '3': 2, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'text', '3': 3, '4': 1, '5': 9, '10': 'text'},
   ],
 };
@@ -529,5 +521,5 @@ const SendLiveChatMessageRequest$json = {
 /// Descriptor for `SendLiveChatMessageRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List sendLiveChatMessageRequestDescriptor =
     $convert.base64Decode(
-        'ChpTZW5kTGl2ZUNoYXRNZXNzYWdlUmVxdWVzdBIXCgdyb29tX2lkGAEgASgJUgZyb29tSWQSFw'
-        'oHdXNlcl9pZBgCIAEoCVIGdXNlcklkEhIKBHRleHQYAyABKAlSBHRleHQ=');
+        'ChpTZW5kTGl2ZUNoYXRNZXNzYWdlUmVxdWVzdBIXCgdyb29tX2lkGAEgASgJUgZyb29tSWQSEg'
+        'oEdGV4dBgDIAEoCVIEdGV4dA==');

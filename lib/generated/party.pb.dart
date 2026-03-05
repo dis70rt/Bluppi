@@ -21,12 +21,10 @@ class SyncRequest extends $pb.GeneratedMessage {
   factory SyncRequest({
     $fixnum.Int64? clientSendUs,
     $core.String? roomId,
-    $core.String? userId,
   }) {
     final result = create();
     if (clientSendUs != null) result.clientSendUs = clientSendUs;
     if (roomId != null) result.roomId = roomId;
-    if (userId != null) result.userId = userId;
     return result;
   }
 
@@ -45,7 +43,6 @@ class SyncRequest extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..aInt64(1, _omitFieldNames ? '' : 'clientSendUs')
     ..aOS(2, _omitFieldNames ? '' : 'roomId')
-    ..aOS(3, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -84,15 +81,6 @@ class SyncRequest extends $pb.GeneratedMessage {
   $core.bool hasRoomId() => $_has(1);
   @$pb.TagNumber(2)
   void clearRoomId() => $_clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.String get userId => $_getSZ(2);
-  @$pb.TagNumber(3)
-  set userId($core.String value) => $_setString(2, value);
-  @$pb.TagNumber(3)
-  $core.bool hasUserId() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearUserId() => $_clearField(3);
 }
 
 class SyncResponse extends $pb.GeneratedMessage {

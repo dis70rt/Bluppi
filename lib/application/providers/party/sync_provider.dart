@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:bluppi/application/providers/party/sync_history_provider.dart';
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
-import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/data/grpc/repositories/sync_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,7 +40,6 @@ class ClockDisciplineNotifier extends Notifier<ClockState> {
   Future<SyncSample?> _probe() async {
     final repo = ref.read(syncServiceProvider);
     final currentRoom = ref.read(currentRoomProvider);
-    final currentUser = ref.read(userProvider).value;
 
     final t1 = DateTime.now().microsecondsSinceEpoch;
 
@@ -49,7 +47,6 @@ class ClockDisciplineNotifier extends Notifier<ClockState> {
       final res = await repo.sync(
         t1,
         currentRoom?.id ?? '',
-        currentUser?.id ?? '',
       );
 
       final t4 = DateTime.now().microsecondsSinceEpoch;

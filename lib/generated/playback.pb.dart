@@ -22,7 +22,6 @@ enum ClientCommand_Payload { play, pause, trackChange, bufferReady, notSet }
 class ClientCommand extends $pb.GeneratedMessage {
   factory ClientCommand({
     $core.String? roomId,
-    $core.String? userId,
     PlayCommand? play,
     PauseCommand? pause,
     TrackChangeCommand? trackChange,
@@ -30,7 +29,6 @@ class ClientCommand extends $pb.GeneratedMessage {
   }) {
     final result = create();
     if (roomId != null) result.roomId = roomId;
-    if (userId != null) result.userId = userId;
     if (play != null) result.play = play;
     if (pause != null) result.pause = pause;
     if (trackChange != null) result.trackChange = trackChange;
@@ -61,7 +59,6 @@ class ClientCommand extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..oo(0, [3, 4, 5, 6])
     ..aOS(1, _omitFieldNames ? '' : 'roomId')
-    ..aOS(2, _omitFieldNames ? '' : 'userId')
     ..aOM<PlayCommand>(3, _omitFieldNames ? '' : 'play',
         subBuilder: PlayCommand.create)
     ..aOM<PauseCommand>(4, _omitFieldNames ? '' : 'pause',
@@ -112,58 +109,49 @@ class ClientCommand extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearRoomId() => $_clearField(1);
 
-  @$pb.TagNumber(2)
-  $core.String get userId => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set userId($core.String value) => $_setString(1, value);
-  @$pb.TagNumber(2)
-  $core.bool hasUserId() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearUserId() => $_clearField(2);
-
   @$pb.TagNumber(3)
-  PlayCommand get play => $_getN(2);
+  PlayCommand get play => $_getN(1);
   @$pb.TagNumber(3)
   set play(PlayCommand value) => $_setField(3, value);
   @$pb.TagNumber(3)
-  $core.bool hasPlay() => $_has(2);
+  $core.bool hasPlay() => $_has(1);
   @$pb.TagNumber(3)
   void clearPlay() => $_clearField(3);
   @$pb.TagNumber(3)
-  PlayCommand ensurePlay() => $_ensure(2);
+  PlayCommand ensurePlay() => $_ensure(1);
 
   @$pb.TagNumber(4)
-  PauseCommand get pause => $_getN(3);
+  PauseCommand get pause => $_getN(2);
   @$pb.TagNumber(4)
   set pause(PauseCommand value) => $_setField(4, value);
   @$pb.TagNumber(4)
-  $core.bool hasPause() => $_has(3);
+  $core.bool hasPause() => $_has(2);
   @$pb.TagNumber(4)
   void clearPause() => $_clearField(4);
   @$pb.TagNumber(4)
-  PauseCommand ensurePause() => $_ensure(3);
+  PauseCommand ensurePause() => $_ensure(2);
 
   @$pb.TagNumber(5)
-  TrackChangeCommand get trackChange => $_getN(4);
+  TrackChangeCommand get trackChange => $_getN(3);
   @$pb.TagNumber(5)
   set trackChange(TrackChangeCommand value) => $_setField(5, value);
   @$pb.TagNumber(5)
-  $core.bool hasTrackChange() => $_has(4);
+  $core.bool hasTrackChange() => $_has(3);
   @$pb.TagNumber(5)
   void clearTrackChange() => $_clearField(5);
   @$pb.TagNumber(5)
-  TrackChangeCommand ensureTrackChange() => $_ensure(4);
+  TrackChangeCommand ensureTrackChange() => $_ensure(3);
 
   @$pb.TagNumber(6)
-  BufferReady get bufferReady => $_getN(5);
+  BufferReady get bufferReady => $_getN(4);
   @$pb.TagNumber(6)
   set bufferReady(BufferReady value) => $_setField(6, value);
   @$pb.TagNumber(6)
-  $core.bool hasBufferReady() => $_has(5);
+  $core.bool hasBufferReady() => $_has(4);
   @$pb.TagNumber(6)
   void clearBufferReady() => $_clearField(6);
   @$pb.TagNumber(6)
-  BufferReady ensureBufferReady() => $_ensure(5);
+  BufferReady ensureBufferReady() => $_ensure(4);
 }
 
 class PlayCommand extends $pb.GeneratedMessage {

@@ -68,7 +68,7 @@ class LiveChatNotifier extends Notifier<List<LiveChatBubble>> {
       throw Exception('User is not logged in. Cannot send message.');
     }
     final repo = ref.read(roomServiceProvider);
-    await repo.sendLiveChatMessage(roomId, userId, message);
+    await repo.sendLiveChatMessage(roomId, message);
   }
 
   void clear() {

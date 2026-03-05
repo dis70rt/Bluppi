@@ -1,3 +1,4 @@
+import 'package:bluppi/data/auth/auth_interceptor.dart';
 import 'package:bluppi/data/grpc/channels/grpc_channel.dart';
 import 'package:bluppi/domain/models/room_events_model.dart';
 import 'package:bluppi/domain/models/room_model.dart';
@@ -8,7 +9,7 @@ import 'package:bluppi/generated/rooms.pbgrpc.dart' as proto;
 
 final roomServiceProvider = Provider<RoomServiceRepository>((ref) {
   final channel = ref.watch(grpcChannelProvider);
-  final client = proto.RoomServiceClient(channel);
+  final client = proto.RoomServiceClient(channel, interceptors: [AuthInterceptor()]);
   return RoomServiceRepository(client);
 });
 
@@ -18,30 +19,30 @@ class RoomServiceRepository implements RoomRepository {
   RoomServiceRepository(this._client);
 
   @override
-  Future<RoomModel> createRoom(String name, bool isPublic, bool inviteOnly, String hostUserId) async {
+  Future<RoomModel> createRoom(String name, bool isPublic, bool inviteOnly) async {
     final protoVisibility = isPublic
         ? proto.RoomVisibility.ROOM_VISIBILITY_PUBLIC
         : proto.RoomVisibility.ROOM_VISIBILITY_PRIVATE;
     
-    final request = proto.CreateRoomRequest(name: name, visibility: protoVisibility, inviteOnly: inviteOnly, hostUserId: hostUserId);
+    final request = proto.CreateRoomRequest(name: name, visibility: protoVisibility, inviteOnly: inviteOnly);
     final response = await _client.createRoom(request);
     return RoomModel.fromProto(response);
   }
 
   @override
-  Future<void> leaveRoom(String roomId, String userId) async {
-    final request = proto.LeaveRoomRequest(roomId: roomId, userId: userId);
+  Future<void> leaveRoom(String roomId) async {
+    final request = proto.LeaveRoomRequest(roomId: roomId);
     await _client.leaveRoom(request);
   }
 
   @override
-  Future<void> joinRoomByID(String roomId, String userId) async {
-    final request = proto.JoinRoomRequest(roomId: roomId, userId: userId);
+  Future<void> joinRoomByID(String roomId) async {
+    final request = proto.JoinRoomRequest(roomId: roomId);
     await _client.joinRoom(request);
   }
 
   @override
-  Future<void> joinRoomByCode(String roomCode, String userId) async {}
+  Future<void> joinRoomByCode(String roomCode) async {}
 
   @override
   Future<(List<RoomSummaryModel>, String)> listRooms(bool visibility, int pageSize, String pageToken) async {
@@ -64,14 +65,14 @@ class RoomServiceRepository implements RoomRepository {
   }
 
   @override
-  Stream<RoomEventModel> subscribeToRoomEvents(String roomId, String userId) {
-    final request = proto.SubscribeRequest(roomId: roomId, userId: userId);
+  Stream<RoomEventModel> subscribeToRoomEvents(String roomId) {
+    final request = proto.SubscribeRequest(roomId: roomId);
     return _client.subscribeToRoomEvents(request).map(RoomEventModel.fromProto);
   }
 
   @override
-  Future<void> sendLiveChatMessage(String roomId, String userId, String message) async {
-    final request = proto.SendLiveChatMessageRequest(roomId: roomId, userId: userId, text: message);
+  Future<void> sendLiveChatMessage(String roomId, String message) async {
+    final request = proto.SendLiveChatMessageRequest(roomId: roomId, text: message);
     await _client.sendLiveChatMessage(request);
   }
 

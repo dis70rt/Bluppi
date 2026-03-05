@@ -784,11 +784,9 @@ class GetTracksResponse extends $pb.GeneratedMessage {
 
 class LikeTrackRequest extends $pb.GeneratedMessage {
   factory LikeTrackRequest({
-    $core.String? userId,
     $core.String? trackId,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (trackId != null) result.trackId = trackId;
     return result;
   }
@@ -806,7 +804,6 @@ class LikeTrackRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'LikeTrackRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aOS(2, _omitFieldNames ? '' : 'trackId')
     ..hasRequiredFields = false;
 
@@ -829,32 +826,22 @@ class LikeTrackRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<LikeTrackRequest>(create);
   static LikeTrackRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   @$pb.TagNumber(2)
-  $core.String get trackId => $_getSZ(1);
+  $core.String get trackId => $_getSZ(0);
   @$pb.TagNumber(2)
-  set trackId($core.String value) => $_setString(1, value);
+  set trackId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasTrackId() => $_has(1);
+  $core.bool hasTrackId() => $_has(0);
   @$pb.TagNumber(2)
   void clearTrackId() => $_clearField(2);
 }
 
 class UnlikeTrackRequest extends $pb.GeneratedMessage {
   factory UnlikeTrackRequest({
-    $core.String? userId,
     $core.String? trackId,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (trackId != null) result.trackId = trackId;
     return result;
   }
@@ -872,7 +859,6 @@ class UnlikeTrackRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'UnlikeTrackRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aOS(2, _omitFieldNames ? '' : 'trackId')
     ..hasRequiredFields = false;
 
@@ -895,21 +881,13 @@ class UnlikeTrackRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<UnlikeTrackRequest>(create);
   static UnlikeTrackRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   @$pb.TagNumber(2)
-  $core.String get trackId => $_getSZ(1);
+  $core.String get trackId => $_getSZ(0);
   @$pb.TagNumber(2)
-  set trackId($core.String value) => $_setString(1, value);
+  set trackId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasTrackId() => $_has(1);
+  $core.bool hasTrackId() => $_has(0);
   @$pb.TagNumber(2)
   void clearTrackId() => $_clearField(2);
 }
@@ -982,12 +960,10 @@ class StatusResponse extends $pb.GeneratedMessage {
 
 class GetLikedTracksRequest extends $pb.GeneratedMessage {
   factory GetLikedTracksRequest({
-    $core.String? userId,
     $core.int? limit,
     $core.int? offset,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (limit != null) result.limit = limit;
     if (offset != null) result.offset = offset;
     return result;
@@ -1006,7 +982,6 @@ class GetLikedTracksRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'GetLikedTracksRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aI(2, _omitFieldNames ? '' : 'limit')
     ..aI(3, _omitFieldNames ? '' : 'offset')
     ..hasRequiredFields = false;
@@ -1031,30 +1006,22 @@ class GetLikedTracksRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<GetLikedTracksRequest>(create);
   static GetLikedTracksRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   @$pb.TagNumber(2)
-  $core.int get limit => $_getIZ(1);
+  $core.int get limit => $_getIZ(0);
   @$pb.TagNumber(2)
-  set limit($core.int value) => $_setSignedInt32(1, value);
+  set limit($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasLimit() => $_has(1);
+  $core.bool hasLimit() => $_has(0);
   @$pb.TagNumber(2)
   void clearLimit() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get offset => $_getIZ(2);
+  $core.int get offset => $_getIZ(1);
   @$pb.TagNumber(3)
-  set offset($core.int value) => $_setSignedInt32(2, value);
+  set offset($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(3)
-  $core.bool hasOffset() => $_has(2);
+  $core.bool hasOffset() => $_has(1);
   @$pb.TagNumber(3)
   void clearOffset() => $_clearField(3);
 }
@@ -1228,11 +1195,9 @@ class GetLikedTracksResponse extends $pb.GeneratedMessage {
 
 class IsTrackLikedRequest extends $pb.GeneratedMessage {
   factory IsTrackLikedRequest({
-    $core.String? userId,
     $core.String? trackId,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (trackId != null) result.trackId = trackId;
     return result;
   }
@@ -1250,7 +1215,6 @@ class IsTrackLikedRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'IsTrackLikedRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aOS(2, _omitFieldNames ? '' : 'trackId')
     ..hasRequiredFields = false;
 
@@ -1273,21 +1237,13 @@ class IsTrackLikedRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<IsTrackLikedRequest>(create);
   static IsTrackLikedRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   @$pb.TagNumber(2)
-  $core.String get trackId => $_getSZ(1);
+  $core.String get trackId => $_getSZ(0);
   @$pb.TagNumber(2)
-  set trackId($core.String value) => $_setString(1, value);
+  set trackId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasTrackId() => $_has(1);
+  $core.bool hasTrackId() => $_has(0);
   @$pb.TagNumber(2)
   void clearTrackId() => $_clearField(2);
 }
@@ -1348,11 +1304,9 @@ class IsTrackLikedResponse extends $pb.GeneratedMessage {
 
 class AddTrackToHistoryRequest extends $pb.GeneratedMessage {
   factory AddTrackToHistoryRequest({
-    $core.String? userId,
     $core.String? trackId,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (trackId != null) result.trackId = trackId;
     return result;
   }
@@ -1370,7 +1324,6 @@ class AddTrackToHistoryRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'AddTrackToHistoryRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aOS(2, _omitFieldNames ? '' : 'trackId')
     ..hasRequiredFields = false;
 
@@ -1394,33 +1347,23 @@ class AddTrackToHistoryRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<AddTrackToHistoryRequest>(create);
   static AddTrackToHistoryRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   @$pb.TagNumber(2)
-  $core.String get trackId => $_getSZ(1);
+  $core.String get trackId => $_getSZ(0);
   @$pb.TagNumber(2)
-  set trackId($core.String value) => $_setString(1, value);
+  set trackId($core.String value) => $_setString(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasTrackId() => $_has(1);
+  $core.bool hasTrackId() => $_has(0);
   @$pb.TagNumber(2)
   void clearTrackId() => $_clearField(2);
 }
 
 class GetTrackHistoryRequest extends $pb.GeneratedMessage {
   factory GetTrackHistoryRequest({
-    $core.String? userId,
     $core.int? limit,
     $core.int? offset,
   }) {
     final result = create();
-    if (userId != null) result.userId = userId;
     if (limit != null) result.limit = limit;
     if (offset != null) result.offset = offset;
     return result;
@@ -1439,7 +1382,6 @@ class GetTrackHistoryRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'GetTrackHistoryRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aI(2, _omitFieldNames ? '' : 'limit')
     ..aI(3, _omitFieldNames ? '' : 'offset')
     ..hasRequiredFields = false;
@@ -1464,30 +1406,22 @@ class GetTrackHistoryRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<GetTrackHistoryRequest>(create);
   static GetTrackHistoryRequest? _defaultInstance;
 
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
-
+  /// string user_id = 1;
   @$pb.TagNumber(2)
-  $core.int get limit => $_getIZ(1);
+  $core.int get limit => $_getIZ(0);
   @$pb.TagNumber(2)
-  set limit($core.int value) => $_setSignedInt32(1, value);
+  set limit($core.int value) => $_setSignedInt32(0, value);
   @$pb.TagNumber(2)
-  $core.bool hasLimit() => $_has(1);
+  $core.bool hasLimit() => $_has(0);
   @$pb.TagNumber(2)
   void clearLimit() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get offset => $_getIZ(2);
+  $core.int get offset => $_getIZ(1);
   @$pb.TagNumber(3)
-  set offset($core.int value) => $_setSignedInt32(2, value);
+  set offset($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(3)
-  $core.bool hasOffset() => $_has(2);
+  $core.bool hasOffset() => $_has(1);
   @$pb.TagNumber(3)
   void clearOffset() => $_clearField(3);
 }
@@ -1672,13 +1606,7 @@ class GetTrackHistoryResponse extends $pb.GeneratedMessage {
 }
 
 class ClearTrackHistoryRequest extends $pb.GeneratedMessage {
-  factory ClearTrackHistoryRequest({
-    $core.String? userId,
-  }) {
-    final result = create();
-    if (userId != null) result.userId = userId;
-    return result;
-  }
+  factory ClearTrackHistoryRequest() => create();
 
   ClearTrackHistoryRequest._();
 
@@ -1693,7 +1621,6 @@ class ClearTrackHistoryRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'ClearTrackHistoryRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
-    ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1715,15 +1642,6 @@ class ClearTrackHistoryRequest extends $pb.GeneratedMessage {
   static ClearTrackHistoryRequest getDefault() => _defaultInstance ??=
       $pb.GeneratedMessage.$_defaultFor<ClearTrackHistoryRequest>(create);
   static ClearTrackHistoryRequest? _defaultInstance;
-
-  @$pb.TagNumber(1)
-  $core.String get userId => $_getSZ(0);
-  @$pb.TagNumber(1)
-  set userId($core.String value) => $_setString(0, value);
-  @$pb.TagNumber(1)
-  $core.bool hasUserId() => $_has(0);
-  @$pb.TagNumber(1)
-  void clearUserId() => $_clearField(1);
 }
 
 class GetRecommendationsRequest extends $pb.GeneratedMessage {

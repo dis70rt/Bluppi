@@ -24,7 +24,7 @@ class CurrentRoomNotifier extends Notifier<RoomModel?> {
     }
 
     final repo = ref.read(roomServiceProvider);
-    await repo.joinRoomByID(roomId, currentUser.id);
+    await repo.joinRoomByID(roomId);
 
     final fullRoom = await repo.getRoom(roomId);
     state = fullRoom;
@@ -42,7 +42,7 @@ class CurrentRoomNotifier extends Notifier<RoomModel?> {
     try {
       await ref
           .read(roomServiceProvider)
-          .leaveRoom(currentRoom.id, currentUser.id);
+          .leaveRoom(currentRoom.id);
     } catch (_) {}
     state = null;
   }

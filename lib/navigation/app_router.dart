@@ -34,6 +34,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'auth',
         builder: (context, state) => const AuthScreen(),
       ),
+      GoRoute(
+        path: '/create-profile',
+        name: 'create_profile',
+        builder: (context, state) => const CreateProfileScreen(),
+      ),
 
       ShellRoute(
         builder: (context, state, child) => MainScreen(child: child),
@@ -42,11 +47,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: '/',
             name: 'home',
             builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: '/create-profile',
-            name: 'create_profile',
-            builder: (context, state) => const CreateProfileScreen(),
           ),
           GoRoute(
             path: '/profile',
