@@ -523,3 +523,17 @@ final $typed_data.Uint8List sendLiveChatMessageRequestDescriptor =
     $convert.base64Decode(
         'ChpTZW5kTGl2ZUNoYXRNZXNzYWdlUmVxdWVzdBIXCgdyb29tX2lkGAEgASgJUgZyb29tSWQSEg'
         'oEdGV4dBgDIAEoCVIEdGV4dA==');
+
+@$core.Deprecated('Use inviteUserRequestDescriptor instead')
+const InviteUserRequest$json = {
+  '1': 'InviteUserRequest',
+  '2': [
+    {'1': 'room_id', '3': 1, '4': 1, '5': 9, '10': 'roomId'},
+    {'1': 'target_user_id', '3': 2, '4': 1, '5': 9, '10': 'targetUserId'},
+  ],
+};
+
+/// Descriptor for `InviteUserRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List inviteUserRequestDescriptor = $convert.base64Decode(
+    'ChFJbnZpdGVVc2VyUmVxdWVzdBIXCgdyb29tX2lkGAEgASgJUgZyb29tSWQSJAoOdGFyZ2V0X3'
+    'VzZXJfaWQYAiABKAlSDHRhcmdldFVzZXJJZA==');

@@ -1,4 +1,5 @@
 import 'package:bluppi/application/providers/auth/auth_provider.dart';
+import 'package:bluppi/application/providers/notification/fcm_provider.dart';
 import 'package:bluppi/application/providers/user/create_profile_provider.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/domain/repositories/auth_repository.dart';
@@ -8,6 +9,10 @@ final authLifecycleListenerProvider = Provider<void>((ref) {
   ref.listen(authStateProvider, (prev, next) {
     final prevStatus = prev?.value;
     final nextStatus = next.value;
+
+    if (nextStatus == AuthStatus.authenticated && prevStatus != AuthStatus.authenticated) {
+      ref.read(fcmNotifierProvider.notifier).requestAndSyncToken();
+    }
 
     if (prevStatus == null || prevStatus == AuthStatus.unknown) {
       return;

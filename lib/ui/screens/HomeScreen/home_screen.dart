@@ -1,4 +1,5 @@
 import 'package:bluppi/application/providers/auth/auth_provider.dart';
+import 'package:bluppi/application/providers/notification/fcm_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
@@ -48,6 +49,7 @@ class HomeScreen extends ConsumerWidget {
   }
 
   void _signOut(WidgetRef ref) async {
+    await ref.read(fcmNotifierProvider.notifier).unregisterAndDeleteToken();
     await ref.read(authRepositoryProvider).logOut();
 
     ref.invalidate(userProvider);

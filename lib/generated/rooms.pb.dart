@@ -1624,6 +1624,72 @@ class SendLiveChatMessageRequest extends $pb.GeneratedMessage {
   void clearText() => $_clearField(3);
 }
 
+class InviteUserRequest extends $pb.GeneratedMessage {
+  factory InviteUserRequest({
+    $core.String? roomId,
+    $core.String? targetUserId,
+  }) {
+    final result = create();
+    if (roomId != null) result.roomId = roomId;
+    if (targetUserId != null) result.targetUserId = targetUserId;
+    return result;
+  }
+
+  InviteUserRequest._();
+
+  factory InviteUserRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory InviteUserRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'InviteUserRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'room'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'roomId')
+    ..aOS(2, _omitFieldNames ? '' : 'targetUserId')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  InviteUserRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  InviteUserRequest copyWith(void Function(InviteUserRequest) updates) =>
+      super.copyWith((message) => updates(message as InviteUserRequest))
+          as InviteUserRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static InviteUserRequest create() => InviteUserRequest._();
+  @$core.override
+  InviteUserRequest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static InviteUserRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<InviteUserRequest>(create);
+  static InviteUserRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get roomId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set roomId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasRoomId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearRoomId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get targetUserId => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set targetUserId($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasTargetUserId() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearTargetUserId() => $_clearField(2);
+}
+
 const $core.bool _omitFieldNames =
     $core.bool.fromEnvironment('protobuf.omit_field_names');
 const $core.bool _omitMessageNames =

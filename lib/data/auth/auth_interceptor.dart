@@ -7,6 +7,7 @@ class AuthInterceptor implements ClientInterceptor {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final token = await user.getIdToken();
+      // log('JWT token retrieved for gRPC call to $uri: $token');
       if (token != null) {
         metadata['authorization'] = 'Bearer $token';
       }

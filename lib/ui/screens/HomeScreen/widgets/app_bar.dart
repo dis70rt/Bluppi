@@ -62,7 +62,11 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
       actions: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: _iconButton(onPressed: () => {}, icon: Icons.search),
+          child: _iconButton(onPressed: () => {}, icon: FontAwesomeIcons.bell),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: _iconButton(onPressed: () => {}, icon: FontAwesomeIcons.users),
         ),
       ],
     );
@@ -72,7 +76,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
     required void Function() onPressed,
     required IconData icon,
     double size = 40.0,
-    double iconSize = 20.0,
+    double iconSize = 14.0,
   }) {
     return SizedBox(
       height: size,

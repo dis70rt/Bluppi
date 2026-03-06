@@ -23,5 +23,9 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(ProviderScope(observers: [LeakObserver()], child: MyApp()));
+  runApp(ProviderScope(
+    // observers: [LeakObserver()],
+    child: MyApp()
+    )
+  );
 }

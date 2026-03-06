@@ -91,6 +91,13 @@ class RoomServiceClient extends $grpc.Client {
     return $createUnaryCall(_$sendLiveChatMessage, request, options: options);
   }
 
+  $grpc.ResponseFuture<$1.Empty> inviteUserToRoom(
+    $0.InviteUserRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$inviteUserToRoom, request, options: options);
+  }
+
   // method descriptors
 
   static final _$createRoom = $grpc.ClientMethod<$0.CreateRoomRequest, $0.Room>(
@@ -128,6 +135,11 @@ class RoomServiceClient extends $grpc.Client {
       $grpc.ClientMethod<$0.SendLiveChatMessageRequest, $1.Empty>(
           '/room.RoomService/SendLiveChatMessage',
           ($0.SendLiveChatMessageRequest value) => value.writeToBuffer(),
+          $1.Empty.fromBuffer);
+  static final _$inviteUserToRoom =
+      $grpc.ClientMethod<$0.InviteUserRequest, $1.Empty>(
+          '/room.RoomService/InviteUserToRoom',
+          ($0.InviteUserRequest value) => value.writeToBuffer(),
           $1.Empty.fromBuffer);
 }
 
@@ -195,6 +207,13 @@ abstract class RoomServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.SendLiveChatMessageRequest.fromBuffer(value),
         ($1.Empty value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.InviteUserRequest, $1.Empty>(
+        'InviteUserToRoom',
+        inviteUserToRoom_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $0.InviteUserRequest.fromBuffer(value),
+        ($1.Empty value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.Room> createRoom_Pre($grpc.ServiceCall $call,
@@ -261,4 +280,12 @@ abstract class RoomServiceBase extends $grpc.Service {
 
   $async.Future<$1.Empty> sendLiveChatMessage(
       $grpc.ServiceCall call, $0.SendLiveChatMessageRequest request);
+
+  $async.Future<$1.Empty> inviteUserToRoom_Pre($grpc.ServiceCall $call,
+      $async.Future<$0.InviteUserRequest> $request) async {
+    return inviteUserToRoom($call, await $request);
+  }
+
+  $async.Future<$1.Empty> inviteUserToRoom(
+      $grpc.ServiceCall call, $0.InviteUserRequest request);
 }
