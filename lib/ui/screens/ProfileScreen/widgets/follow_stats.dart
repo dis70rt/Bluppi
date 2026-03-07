@@ -1,53 +1,36 @@
-import 'package:bluppi/application/providers/user/follow_provider.dart';
+// following_stats_widget.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FollowingStatsWidget extends ConsumerWidget {
-  final String userId;
+class FollowingStatsWidget extends StatelessWidget {
   final int followers;
   final int following;
 
   const FollowingStatsWidget({
     super.key,
-    required this.userId,
     required this.followers,
     required this.following,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final stats = ref.watch(
-      followStatsProvider(
-        FollowStats(userId: userId, followers: followers, following: following),
-      ),
-    );
-
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 10, left: 10),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _statColumn("Followers", stats.followers, context, ref),
-              SizedBox(width: 20),
-              _statColumn("Following", stats.following, context, ref),
-              SizedBox(width: 20),
-            ],
-          ),
+          _statColumn("Followers", followers),
+          const SizedBox(width: 20),
+          _statColumn("Following", following),
         ],
       ),
     );
   }
 
-  Widget _statColumn(
-    String title,
-    int count,
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget _statColumn(String title, int count) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        // TODO: Navigate to followers/following list
+      },
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,

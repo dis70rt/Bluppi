@@ -1,24 +1,23 @@
+// follow_button.dart
 import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FollowButton extends ConsumerWidget {
-  final FollowStatsNotifier followNotifier;
+class FollowButton extends StatelessWidget {
+  final FollowStats followState; // Listen to the state, not the Notifier!
   final bool isOwnProfile;
-  final VoidCallback? onFollowTap;
+  final VoidCallback onFollowTap;
 
   const FollowButton({
     super.key,
-    required this.followNotifier,
+    required this.followState,
     required this.isOwnProfile,
-    this.onFollowTap,
+    required this.onFollowTap,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final glassColor = Colors.white.withAlpha(20);
     final activeColor = const Color(0xFF2D3BFF);
-    //TODO: Later Implement the backend logic onTap of the buttons
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -26,94 +25,61 @@ class FollowButton extends ConsumerWidget {
         if (isOwnProfile) ...[
           Expanded(
             child: _buildActionButton(
-              context,
               label: "Edit Profile",
               backgroundColor: glassColor,
               textColor: Colors.white,
-              onTap: () {
-                //TODO: Navigate to Edit Profile
-              },
+              onTap: () {}, // TODO: Navigate to Edit Profile
             ),
           ),
           const SizedBox(width: 8),
           _buildCircularIconButton(
             icon: Icons.settings_outlined,
             backgroundColor: glassColor,
-            onTap: () {
-              // Open Settings
-            },
+            onTap: () {}, // Open Settings
           ),
         ] else ...[
-          FutureBuilder(
-            future: followNotifier.isFollowing(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                  height: 44,
-                  child: Center(
-                    child: SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              if (snapshot.hasError) {
-                return const SizedBox(
-                  height: 44,
-                  child: Center(
-                    child: Icon(Icons.error_outline, color: Colors.redAccent),
-                  ),
-                );
-              }
-
-              if (!snapshot.hasData) {
-                return const SizedBox(
-                  height: 44,
-                  child: Center(
-                    child: Icon(Icons.error_outline, color: Colors.redAccent),
-                  ),
-                );
-              }
-
-              final isFollowing = snapshot.data!;
-
-              return Expanded(
-                child: _buildActionButton(
-                  context,
-                  label: isFollowing ? "Following" : "Follow",
-                  backgroundColor: isFollowing ? glassColor : activeColor,
-                  textColor: Colors.white,
-                  fontWeight: isFollowing ? FontWeight.w600 : FontWeight.bold,
-                  onTap: onFollowTap ?? () {},
+          
+          // 1. Loading State (Background fetch is happening)
+          if (followState.isFollowing == null)
+            const SizedBox(
+              height: 44,
+              child: Center(
+                child: SizedBox(
+                  width: 16, height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                 ),
-              );
-            },
-          ),
+              ),
+            )
+            
+          // 2. Data State (We know if they are following or not)
+          else 
+            Expanded(
+              child: _buildActionButton(
+                label: followState.isFollowing! ? "Following" : "Follow",
+                backgroundColor: followState.isFollowing! ? glassColor : activeColor,
+                textColor: Colors.white,
+                fontWeight: followState.isFollowing! ? FontWeight.w600 : FontWeight.bold,
+                // Disable button to prevent spam while a network request is loading
+                onTap: followState.isLoading ? null : onFollowTap,
+              ),
+            ),
+            
           const SizedBox(width: 8),
           _buildCircularIconButton(
             icon: Icons.mail_outline_rounded,
             backgroundColor: glassColor,
-            onTap: () {
-              //TODO: Open Chat
-            },
+            onTap: () {}, // TODO: Open Chat
           ),
         ],
       ],
     );
   }
 
-  Widget _buildActionButton(
-    BuildContext context, {
+  Widget _buildActionButton({
     required String label,
     required Color backgroundColor,
     required Color textColor,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
     FontWeight fontWeight = FontWeight.w600,
   }) {
     return SizedBox(
@@ -123,11 +89,11 @@ class FollowButton extends ConsumerWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: textColor,
+          disabledBackgroundColor: backgroundColor.withOpacity(0.5),
+          disabledForegroundColor: textColor.withOpacity(0.5),
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Text(
           label,
@@ -145,20 +111,14 @@ class FollowButton extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
+      width: 44, height: 44,
+      decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(12)),
       child: IconButton(
         onPressed: onTap,
         icon: Icon(icon, color: Colors.white, size: 22),
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),
-        style: IconButton.styleFrom(
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
+        style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       ),
     );
   }

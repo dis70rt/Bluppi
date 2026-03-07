@@ -36,7 +36,7 @@ class NotificationServiceRepository implements NotificationRepository {
     }
     final request = proto.RegisterDeviceRequest(fcmToken: fcmToken, deviceType: protoDeviceType);
     await _client.registerDevice(request);
-    log('FCM token registered with backend: $fcmToken');
+    // log('FCM token registered with backend: $fcmToken');
   }
 
   @override

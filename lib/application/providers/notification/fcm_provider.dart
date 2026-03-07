@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:bluppi/navigation/app_router.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/data/grpc/repositories/notification_service.dart';
@@ -26,7 +27,25 @@ class FCMNotifier extends AsyncNotifier<FCMState> {
   @override
   Future<FCMState> build() async {
     final subscription = _messaging.onTokenRefresh.listen(_handleTokenRefresh);
-    ref.onDispose(() => subscription.cancel());
+    
+    // Listen to foreground messages
+    final fgSub = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      log('Foreground message received: ${message.notification?.title}');
+      // TODO: Handle showing an in-app banner or updating unread count
+    });
+
+    // Listen to notification taps when app is backgrounded
+    final openSub = FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      log('Notification tapped: ${message.data}');
+      final router = ref.read(goRouterProvider);
+      router.go('/u/${message.data['follower_name']}');
+    });
+    
+    ref.onDispose(() {
+      subscription.cancel();
+      fgSub.cancel();
+      openSub.cancel();
+    });
 
     final token = await _messaging.getToken();
     return FCMState(token: token);

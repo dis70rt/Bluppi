@@ -36,6 +36,10 @@ class HomeScreen extends ConsumerWidget {
                 onPressed: () => _signOut(ref),
                 child: const Text("Sign Out"),
               ),
+              MaterialButton(
+                onPressed: () => context.go('/u/saikat'),
+                child: const Text("Check Profile"),
+              ),
             ],
           ),
         );

@@ -15,15 +15,15 @@ class ProfileContent extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = profile.user!;
     final isOwnProfile = profile.isOwnProfile;
-    final followNotifier = ref.watch(
-      followStatsProvider(
-        FollowStats(
-          userId: user.id,
-          followers: user.followerCount,
-          following: user.followingCount,
-        ),
-      ).notifier,
+
+    final initialFollowStats = FollowStats(
+      userId: user.id,
+      followers: user.followerCount,
+      following: user.followingCount,
     );
+
+    final followState = ref.watch(followStatsProvider(initialFollowStats));
+    final followNotifier = ref.read(followStatsProvider(initialFollowStats).notifier);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -41,15 +41,16 @@ class ProfileContent extends ConsumerWidget {
             children: [
               ProfileHeader(profile: profile),
               FollowingStatsWidget(
-                userId: user.id,
-                followers: user.followerCount,
-                following: user.followingCount,
+                followers: followState.followers,
+                following: followState.following,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               FollowButton(
-                followNotifier: followNotifier,
+                followState: followState,
                 isOwnProfile: isOwnProfile,
+                onFollowTap: () => followNotifier.toggleFollow(),
               ),
+              
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(color: Colors.white10),
@@ -59,38 +60,5 @@ class ProfileContent extends ConsumerWidget {
         ),
       ),
     );
-  }
-}
-
-class EditRow extends StatelessWidget {
-  const EditRow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.edit),
-      onPressed: () {
-        // Edit profile logic
-      },
-    );
-  }
-}
-
-class LastPlayedWidget extends StatelessWidget {
-  final String userId;
-  const LastPlayedWidget({super.key, required this.userId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class TabBarContents extends StatelessWidget {
-  const TabBarContents({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
