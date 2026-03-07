@@ -3,10 +3,12 @@ import 'package:bluppi/application/providers/party/playback_stream_provider.dart
 import 'package:bluppi/application/providers/party/sync_history_provider.dart';
 import 'package:bluppi/application/providers/party/sync_provider.dart';
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
+import 'package:bluppi/application/providers/room/live_chat_provider.dart';
 import 'package:bluppi/application/providers/room/room_listeners_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/chats/chat_room_panel.dart';
-import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/listeners.dart';
+import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/inviteFriends/invite_friends.dart';
+import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/listeners/listeners.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/room_header.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/widgets/track_session.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +55,8 @@ class RoomScreen extends ConsumerWidget {
                 ref.invalidate(clockHistoryProvider);
                 ref.invalidate(playbackStreamProvider(currentRoom.id));
                 ref.invalidate(roomEventsProvider(currentRoom.id));
+                ref.invalidate(currentRoomProvider);
+                ref.invalidate(liveChatProvider(currentRoom.id));
                 if(isHost) {
                   ref.read(currentRoomProvider.notifier).leaveRoom();
                 } else {
@@ -88,7 +92,13 @@ class RoomScreen extends ConsumerWidget {
                 hostUserId: currentRoom.hostUserId,
               ),
               CurrentRoomTrack(isHost: isHost, roomId: currentRoom.id),
-              RoomListeners(roomId: currentRoom.id),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  RoomListeners(roomId: currentRoom.id),
+                  InviteFriends(roomId: currentRoom.id),
+                ],
+              ),
               Expanded(child: RoomChatPanel(roomId: currentRoom.id,)),
             ],
           ),

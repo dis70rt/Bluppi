@@ -12,4 +12,5 @@ abstract class RoomRepository {
   Stream<RoomEventModel> subscribeToRoomEvents(String roomId);
   Future<void> sendLiveChatMessage(String roomId, String message);
   Future<List<JoinedMemberModel>> getRoomMembers(String roomId);
+  Future<void> inviteUser(String roomId, String userId);
 }

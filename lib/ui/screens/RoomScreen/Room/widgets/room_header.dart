@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:bluppi/application/providers/user/user_service_provider.dart';
 
@@ -25,9 +26,7 @@ class RoomHeader extends ConsumerWidget {
         children: [
           asyncHost.when(
             data: (host) => GestureDetector(
-              onTap: () {
-                // Optional: Navigate to user profile when tapped
-              },
+              onTap: () => context.push('/u/${host.username}'),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

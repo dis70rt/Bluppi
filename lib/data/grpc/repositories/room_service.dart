@@ -82,4 +82,10 @@ class RoomServiceRepository implements RoomRepository {
     final response = await _client.getListeners(request);
     return response.members.map((p) => JoinedMemberModel.fromProto(p)).toList();
   }
+
+  @override
+  Future<void> inviteUser(String roomId, String userId) async {
+    final request = proto.InviteUserRequest(roomId: roomId, targetUserId: userId);
+    await _client.inviteUserToRoom(request);
+  }
 }
