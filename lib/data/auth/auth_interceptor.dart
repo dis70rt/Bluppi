@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grpc/grpc.dart';
 
@@ -9,6 +11,7 @@ class AuthInterceptor implements ClientInterceptor {
       final token = await user.getIdToken();
       // log('JWT token retrieved for gRPC call to $uri: $token');
       if (token != null) {
+        log("Testing Tokken: $token");
         metadata['authorization'] = 'Bearer $token';
       }
     }

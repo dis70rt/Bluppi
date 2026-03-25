@@ -218,4 +218,3 @@ message GetFollowingResponse {
   repeated FollowUserEntry following = 1;
   int64 total = 2;
 }
-

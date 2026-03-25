@@ -74,7 +74,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   Widget _iconButton({
     required void Function() onPressed,
-    required IconData icon,
+    required FaIconData icon,
     double size = 40.0,
     double iconSize = 14.0,
   }) {

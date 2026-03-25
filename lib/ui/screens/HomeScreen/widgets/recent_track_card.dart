@@ -1,3 +1,4 @@
+import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/domain/models/history_track_model.dart';
 import 'package:bluppi/core/utils/time_ago.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -25,6 +26,10 @@ class RecentTrackCard extends ConsumerWidget {
                 child: CachedNetworkImage(
                   imageUrl: historyTrack.imageLarge,
                   fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Container(
+                    color: BluppiColors.surfaceRaised,
+                    child: const Icon(Icons.music_note, size: 40, color: BluppiColors.accent),
+                  ),
                 ),
               ),
               Positioned(

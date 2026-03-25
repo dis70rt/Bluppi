@@ -1,5 +1,4 @@
 
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bluppi/data/auth/auth_interceptor.dart';

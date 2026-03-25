@@ -7,25 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:493403177434:android:9e2996df0ff7b52675c0e3",
+        "mobilesdk_app_id": "1:493403177434:android:77d072696738505775c0e3",
         "android_client_info": {
-          "package_name": "in.ethernode.bluppi"
+          "package_name": "in.saikat.bluppi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "493403177434-7je0clfnerstm6rcpmnvusr9a8470bqa.apps.googleusercontent.com",
+          "client_id": "493403177434-7plsj3j87pucr9ftrla3v59nvk0hq8dm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "in.ethernode.bluppi",
-            "certificate_hash": "db8178146f130f26ed6fca1d4ce2e906df622520"
-          }
-        },
-        {
-          "client_id": "493403177434-9dct9j0crlmhou4atfkd4v312h5i6ib9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "in.ethernode.bluppi",
+            "package_name": "in.saikat.bluppi",
             "certificate_hash": "e3e5645ed87155076a2d4a9e4c001a62944ad71a"
           }
         },
@@ -43,36 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "493403177434-jip8bk0u0ah6i6n2jta2hm00cpur7iic.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:493403177434:android:77d072696738505775c0e3",
-        "android_client_info": {
-          "package_name": "in.saikat.bluppi"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "493403177434-jip8bk0u0ah6i6n2jta2hm00cpur7iic.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCBa-97umH8lgOkop9zCZySfl7P1yn_cMo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "493403177434-jip8bk0u0ah6i6n2jta2hm00cpur7iic.apps.googleusercontent.com",
+              "client_id": "493403177434-11jtgittrs1d860l14h9l7dm4d72nhng.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
