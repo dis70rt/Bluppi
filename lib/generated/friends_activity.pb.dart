@@ -13,6 +13,8 @@
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
+import 'package:protobuf/well_known_types/google/protobuf/timestamp.pb.dart'
+    as $1;
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
@@ -26,6 +28,8 @@ class FriendActivity extends $pb.GeneratedMessage {
     $core.String? trackTitle,
     $core.String? trackArtist,
     $core.String? trackCoverUrl,
+    $core.String? trackPreviewUrl,
+    $1.Timestamp? lastSeen,
   }) {
     final result = create();
     if (friendId != null) result.friendId = friendId;
@@ -36,6 +40,8 @@ class FriendActivity extends $pb.GeneratedMessage {
     if (trackTitle != null) result.trackTitle = trackTitle;
     if (trackArtist != null) result.trackArtist = trackArtist;
     if (trackCoverUrl != null) result.trackCoverUrl = trackCoverUrl;
+    if (trackPreviewUrl != null) result.trackPreviewUrl = trackPreviewUrl;
+    if (lastSeen != null) result.lastSeen = lastSeen;
     return result;
   }
 
@@ -61,6 +67,9 @@ class FriendActivity extends $pb.GeneratedMessage {
     ..aOS(6, _omitFieldNames ? '' : 'trackTitle')
     ..aOS(7, _omitFieldNames ? '' : 'trackArtist')
     ..aOS(8, _omitFieldNames ? '' : 'trackCoverUrl')
+    ..aOS(9, _omitFieldNames ? '' : 'trackPreviewUrl')
+    ..aOM<$1.Timestamp>(10, _omitFieldNames ? '' : 'lastSeen',
+        subBuilder: $1.Timestamp.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -154,6 +163,26 @@ class FriendActivity extends $pb.GeneratedMessage {
   $core.bool hasTrackCoverUrl() => $_has(7);
   @$pb.TagNumber(8)
   void clearTrackCoverUrl() => $_clearField(8);
+
+  @$pb.TagNumber(9)
+  $core.String get trackPreviewUrl => $_getSZ(8);
+  @$pb.TagNumber(9)
+  set trackPreviewUrl($core.String value) => $_setString(8, value);
+  @$pb.TagNumber(9)
+  $core.bool hasTrackPreviewUrl() => $_has(8);
+  @$pb.TagNumber(9)
+  void clearTrackPreviewUrl() => $_clearField(9);
+
+  @$pb.TagNumber(10)
+  $1.Timestamp get lastSeen => $_getN(9);
+  @$pb.TagNumber(10)
+  set lastSeen($1.Timestamp value) => $_setField(10, value);
+  @$pb.TagNumber(10)
+  $core.bool hasLastSeen() => $_has(9);
+  @$pb.TagNumber(10)
+  void clearLastSeen() => $_clearField(10);
+  @$pb.TagNumber(10)
+  $1.Timestamp ensureLastSeen() => $_ensure(9);
 }
 
 class GetFriendsFeedRequest extends $pb.GeneratedMessage {

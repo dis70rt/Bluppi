@@ -3,6 +3,7 @@ import 'package:bluppi/application/providers/notification/fcm_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
+import 'package:bluppi/ui/screens/HomeScreen/Activity/activity_list_widget.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/app_bar.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/loading_home.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/recently_played_widget.dart';
@@ -29,6 +30,7 @@ class HomeScreen extends ConsumerWidget {
           body: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              ActivityListWidget(),
               RecentlyPlayedWidget(),
               Text('Welcome, ${user.name}'),
               const SizedBox(height: 20),
@@ -37,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
                 child: const Text("Sign Out"),
               ),
               MaterialButton(
-                onPressed: () => context.go('/u/saikat'),
+                onPressed: () => context.go('/u/sai'),
                 child: const Text("Check Profile"),
               ),
             ],

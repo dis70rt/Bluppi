@@ -15,3 +15,17 @@ final grpcChannelProvider = Provider<ClientChannel>((ref) {
 
   return channel;
 });
+
+final gatewayGrpcChannelProvider = Provider<ClientChannel>((ref) {
+  final channel = ClientChannel(
+    AppConfig.grpcServerAddress,
+    port: 50050,
+    options: const ChannelOptions(
+      credentials: ChannelCredentials.insecure(),
+    ),
+  );
+
+  ref.onDispose(() => channel.shutdown());
+
+  return channel;
+});

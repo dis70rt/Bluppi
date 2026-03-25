@@ -59,12 +59,30 @@ const FriendActivity$json = {
       '10': 'trackCoverUrl',
       '17': true
     },
+    {
+      '1': 'track_preview_url',
+      '3': 9,
+      '4': 1,
+      '5': 9,
+      '9': 4,
+      '10': 'trackPreviewUrl',
+      '17': true
+    },
+    {
+      '1': 'last_seen',
+      '3': 10,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'lastSeen'
+    },
   ],
   '8': [
     {'1': '_track_id'},
     {'1': '_track_title'},
     {'1': '_track_artist'},
     {'1': '_track_cover_url'},
+    {'1': '_track_preview_url'},
   ],
 };
 
@@ -75,8 +93,10 @@ final $typed_data.Uint8List friendActivityDescriptor = $convert.base64Decode(
     'bmRBdmF0YXJVcmwSFgoGc3RhdHVzGAQgASgJUgZzdGF0dXMSHgoIdHJhY2tfaWQYBSABKAlIAF'
     'IHdHJhY2tJZIgBARIkCgt0cmFja190aXRsZRgGIAEoCUgBUgp0cmFja1RpdGxliAEBEiYKDHRy'
     'YWNrX2FydGlzdBgHIAEoCUgCUgt0cmFja0FydGlzdIgBARIrCg90cmFja19jb3Zlcl91cmwYCC'
-    'ABKAlIA1INdHJhY2tDb3ZlclVybIgBAUILCglfdHJhY2tfaWRCDgoMX3RyYWNrX3RpdGxlQg8K'
-    'DV90cmFja19hcnRpc3RCEgoQX3RyYWNrX2NvdmVyX3VybA==');
+    'ABKAlIA1INdHJhY2tDb3ZlclVybIgBARIvChF0cmFja19wcmV2aWV3X3VybBgJIAEoCUgEUg90'
+    'cmFja1ByZXZpZXdVcmyIAQESNwoJbGFzdF9zZWVuGAogASgLMhouZ29vZ2xlLnByb3RvYnVmLl'
+    'RpbWVzdGFtcFIIbGFzdFNlZW5CCwoJX3RyYWNrX2lkQg4KDF90cmFja190aXRsZUIPCg1fdHJh'
+    'Y2tfYXJ0aXN0QhIKEF90cmFja19jb3Zlcl91cmxCFAoSX3RyYWNrX3ByZXZpZXdfdXJs');
 
 @$core.Deprecated('Use getFriendsFeedRequestDescriptor instead')
 const GetFriendsFeedRequest$json = {

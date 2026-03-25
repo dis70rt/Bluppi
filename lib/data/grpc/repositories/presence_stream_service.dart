@@ -10,7 +10,7 @@ import 'package:bluppi/generated/presences.pbgrpc.dart' as proto;
 
 final onlinePresenceServiceProvider = Provider<OnlinePresenceServiceRepository>(
   (ref) {
-    final channel = ref.watch(grpcChannelProvider);
+    final channel = ref.watch(gatewayGrpcChannelProvider);
     return OnlinePresenceServiceRepository(
       proto.PresenceGatewayClient(channel, interceptors: [AuthInterceptor()])
     );
