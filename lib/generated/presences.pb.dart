@@ -12,8 +12,9 @@
 
 import 'dart:core' as $core;
 
-import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
+import 'package:protobuf/well_known_types/google/protobuf/timestamp.pb.dart'
+    as $2;
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
@@ -69,7 +70,7 @@ class PresenceUpdate extends $pb.GeneratedMessage {
   factory PresenceUpdate({
     $core.String? userId,
     $core.String? status,
-    $fixnum.Int64? lastSeen,
+    $2.Timestamp? lastSeen,
   }) {
     final result = create();
     if (userId != null) result.userId = userId;
@@ -93,7 +94,8 @@ class PresenceUpdate extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aOS(2, _omitFieldNames ? '' : 'status')
-    ..aInt64(3, _omitFieldNames ? '' : 'lastSeen')
+    ..aOM<$2.Timestamp>(3, _omitFieldNames ? '' : 'lastSeen',
+        subBuilder: $2.Timestamp.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -134,13 +136,15 @@ class PresenceUpdate extends $pb.GeneratedMessage {
   void clearStatus() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $fixnum.Int64 get lastSeen => $_getI64(2);
+  $2.Timestamp get lastSeen => $_getN(2);
   @$pb.TagNumber(3)
-  set lastSeen($fixnum.Int64 value) => $_setInt64(2, value);
+  set lastSeen($2.Timestamp value) => $_setField(3, value);
   @$pb.TagNumber(3)
   $core.bool hasLastSeen() => $_has(2);
   @$pb.TagNumber(3)
   void clearLastSeen() => $_clearField(3);
+  @$pb.TagNumber(3)
+  $2.Timestamp ensureLastSeen() => $_ensure(2);
 }
 
 class HeartBeatRequest extends $pb.GeneratedMessage {

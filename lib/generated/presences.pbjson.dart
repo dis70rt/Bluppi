@@ -34,14 +34,22 @@ const PresenceUpdate$json = {
   '2': [
     {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'status', '3': 2, '4': 1, '5': 9, '10': 'status'},
-    {'1': 'last_seen', '3': 3, '4': 1, '5': 3, '10': 'lastSeen'},
+    {
+      '1': 'last_seen',
+      '3': 3,
+      '4': 1,
+      '5': 11,
+      '6': '.google.protobuf.Timestamp',
+      '10': 'lastSeen'
+    },
   ],
 };
 
 /// Descriptor for `PresenceUpdate`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List presenceUpdateDescriptor = $convert.base64Decode(
     'Cg5QcmVzZW5jZVVwZGF0ZRIXCgd1c2VyX2lkGAEgASgJUgZ1c2VySWQSFgoGc3RhdHVzGAIgAS'
-    'gJUgZzdGF0dXMSGwoJbGFzdF9zZWVuGAMgASgDUghsYXN0U2Vlbg==');
+    'gJUgZzdGF0dXMSNwoJbGFzdF9zZWVuGAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFt'
+    'cFIIbGFzdFNlZW4=');
 
 @$core.Deprecated('Use heartBeatRequestDescriptor instead')
 const HeartBeatRequest$json = {

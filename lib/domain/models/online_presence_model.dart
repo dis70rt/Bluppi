@@ -15,8 +15,7 @@ class PresenceEvent {
     return PresenceEvent(
       userId: protoUpdate.userId,
       status: protoUpdate.status,
-      // TODO: Later change this to timestamp
-      lastSeen: DateTime.fromMillisecondsSinceEpoch(protoUpdate.lastSeen.toInt()),
+      lastSeen: protoUpdate.lastSeen.toDateTime(),
     );
   }
 }
