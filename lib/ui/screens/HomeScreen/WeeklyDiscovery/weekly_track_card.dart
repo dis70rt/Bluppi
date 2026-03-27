@@ -1,55 +1,33 @@
-import 'package:bluppi/application/providers/music/playback_provider.dart';
-import 'package:bluppi/application/providers/music/queue_provider.dart';
-import 'package:bluppi/application/providers/music/track_provider.dart';
-import 'package:bluppi/application/providers/room/current_room_provider.dart';
-import 'package:bluppi/application/providers/user/user_provider.dart';
-import 'package:bluppi/domain/models/track_model.dart';
+import 'package:bluppi/application/controllers/playback_controller.dart';
+  import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
+import 'package:bluppi/domain/models/track_summary_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class WeeklyTrackCard extends ConsumerWidget {
-  final dynamic track;
+  final TrackSummaryModel track;
 
   const WeeklyTrackCard({super.key, required this.track});
 
-  Future<void> _onTap(WidgetRef ref, PlayerState player, bool isCurrentTrack) async {
-    final currentRoom = ref.read(currentRoomProvider);
-    final currentUser = ref.read(userProvider).value;
-
-    if (currentRoom != null && currentRoom.hostUserId != currentUser?.id) {
-      ScaffoldMessenger.of(ref.context).showSnackBar(
-        const SnackBar(content: Text("Only the host can change tracks.")),
-      );
-      return;
-    }
-
-    final playback = ref.read(playerProvider.notifier);
-    final queue = ref.read(queueProvider.notifier);
-
-    if (!isCurrentTrack) {
-      final TrackModel fullTrack = await ref.read(trackProvider(track.id).future);
-      queue.setQueue([fullTrack], QueueSource.user);
-      return;
-    }
-
-    if (player.status == PlaybackStatus.playing) {
-      playback.pause();
-    } else {
-      playback.play();
-    }
-  }
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final player = ref.watch(playerProvider);
-    
+  Widget build(BuildContext context, WidgetRef ref) {    
     final currentQueueItem = ref.watch(queueProvider).currentItem;
     final isCurrentTrack = currentQueueItem?.track.id == track.id;
 
     return GestureDetector(
-      onTap: () => _onTap(ref, player, isCurrentTrack),
+      onTap: () {
+        ref.read(trackActionControllerProvider.notifier).playOrToggleTrack(
+            trackId: track.id,
+            isCurrentTrack: isCurrentTrack,
+            onError: (errorMessage) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(errorMessage)),
+              );
+            },
+          );
+      },
       child: Container(
         width: MediaQuery.of(context).size.width - 32,
         height: 100,

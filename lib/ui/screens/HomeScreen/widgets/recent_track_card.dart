@@ -1,3 +1,5 @@
+import 'package:bluppi/application/controllers/playback_controller.dart';
+import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/domain/models/history_track_model.dart';
 import 'package:bluppi/core/utils/time_ago.dart';
@@ -11,11 +13,25 @@ class RecentTrackCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final currentQueueItem = ref.watch(queueProvider).currentItem;
+    final isCurrentTrack = currentQueueItem?.track.id == historyTrack.trackId;
+    
     return SizedBox(
       width: 200,
       height: 100,
       child: InkWell(
-        onTap: () {},
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          ref.read(trackActionControllerProvider.notifier).playOrToggleTrack(
+            trackId: historyTrack.trackId,
+            isCurrentTrack: isCurrentTrack,
+            onError: (errorMessage) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(errorMessage)),
+              );
+            },
+          );
+        },
         child: Card(
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

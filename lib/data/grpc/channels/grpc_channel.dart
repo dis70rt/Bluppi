@@ -7,7 +7,7 @@ final grpcChannelProvider = Provider<ClientChannel>((ref) {
     AppConfig.grpcServerAddress,
     port: AppConfig.grpcServerPort,
     options: const ChannelOptions(
-      credentials: ChannelCredentials.insecure(),
+      credentials: ChannelCredentials.secure(),
     ),
   );
 
@@ -18,10 +18,10 @@ final grpcChannelProvider = Provider<ClientChannel>((ref) {
 
 final gatewayGrpcChannelProvider = Provider<ClientChannel>((ref) {
   final channel = ClientChannel(
-    AppConfig.grpcServerAddress,
-    port: 50050,
+    AppConfig.gatewayServerAddress,
+    port: AppConfig.gatewayServerPort,
     options: const ChannelOptions(
-      credentials: ChannelCredentials.insecure(),
+      credentials: ChannelCredentials.secure(),
     ),
   );
 

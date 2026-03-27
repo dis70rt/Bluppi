@@ -16,11 +16,7 @@ class WeeklyDiscovery extends ConsumerWidget {
       children: [
         Text(
           'Weekly Discovery',
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-            fontSize: 20,
-            letterSpacing: -0.5,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         asyncTracks.when(
           data: (tracks) {

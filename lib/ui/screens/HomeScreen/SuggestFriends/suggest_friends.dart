@@ -49,12 +49,7 @@ class SuggestFriends extends StatelessWidget {
       children: [
         Text(
           'Suggest Friends',
-          style: TextStyle(
-            color: BluppiColors.textPrimary,
-            fontWeight: FontWeight.w800,
-            fontSize: 20,
-            letterSpacing: -0.5,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         const SizedBox(height: 12),
         SizedBox(

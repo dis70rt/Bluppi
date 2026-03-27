@@ -1,3 +1,4 @@
+import 'package:bluppi/config.dart';
 import 'package:dio/dio.dart';
 import 'package:bluppi/domain/repositories/stream_repository.dart';
 
@@ -5,7 +6,7 @@ class StreamServiceRepository implements StreamRepository {
 
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl:  "http://localhost:8001", // "https://bluppi.saikat.in/api/v2",
+      baseUrl:  AppConfig.audioServerUrl,
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
     ),
