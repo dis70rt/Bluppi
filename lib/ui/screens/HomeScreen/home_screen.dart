@@ -1,8 +1,5 @@
-import 'package:bluppi/application/providers/auth/auth_provider.dart';
-import 'package:bluppi/application/providers/notification/fcm_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
-import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/activity_list_widget.dart';
 import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/suggest_friends.dart';
 import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/weekly_discovery.dart';
@@ -43,14 +40,6 @@ class HomeScreen extends ConsumerWidget {
                     RecentlyPlayedWidget(),
                     SuggestFriends(),
                     const SizedBox(height:80),
-                    // MaterialButton(
-                    //   onPressed: () => _signOut(ref),
-                    //   child: const Text("Sign Out"),
-                    // ),
-                    // MaterialButton(
-                    //   onPressed: () => context.go('/u/sai'),
-                    //   child: const Text("Check Profile"),
-                    // ),
                   ],
                 ),
               ),
@@ -66,12 +55,12 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  void _signOut(WidgetRef ref) async {
-    await ref.read(fcmNotifierProvider.notifier).unregisterAndDeleteToken();
-    await ref.read(authRepositoryProvider).logOut();
+  // void _signOut(WidgetRef ref) async {
+  //   await ref.read(fcmNotifierProvider.notifier).unregisterAndDeleteToken();
+  //   await ref.read(authRepositoryProvider).logOut();
 
-    ref.invalidate(userProvider);
-    ref.invalidate(userExistsProvider);
-    ref.invalidate(authStateProvider);
-  }
+  //   ref.invalidate(userProvider);
+  //   ref.invalidate(userExistsProvider);
+  //   ref.invalidate(authStateProvider);
+  // }
 }
