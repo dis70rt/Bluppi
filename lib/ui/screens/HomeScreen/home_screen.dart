@@ -27,28 +27,33 @@ class HomeScreen extends ConsumerWidget {
           return const SizedBox.shrink();
         }
 
-        return Scaffold(
-          appBar: HomeAppBar(user: user),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 16,
-              children: [
-                ActivityListWidget(),
-                WeeklyDiscovery(),
-                RecentlyPlayedWidget(),
-                SuggestFriends()
-                // MaterialButton(
-                //   onPressed: () => _signOut(ref),
-                //   child: const Text("Sign Out"),
-                // ),
-                // MaterialButton(
-                //   onPressed: () => context.go('/u/sai'),
-                //   child: const Text("Check Profile"),
-                // ),
-              ],
+        return SafeArea(
+          child: Scaffold(
+            appBar: HomeAppBar(user: user),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 16,
+                  children: [
+                    ActivityListWidget(),
+                    WeeklyDiscovery(),
+                    RecentlyPlayedWidget(),
+                    SuggestFriends(),
+                    const SizedBox(height:80),
+                    // MaterialButton(
+                    //   onPressed: () => _signOut(ref),
+                    //   child: const Text("Sign Out"),
+                    // ),
+                    // MaterialButton(
+                    //   onPressed: () => context.go('/u/sai'),
+                    //   child: const Text("Check Profile"),
+                    // ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
