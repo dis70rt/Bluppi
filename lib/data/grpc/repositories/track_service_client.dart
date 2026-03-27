@@ -4,6 +4,7 @@ import 'package:bluppi/domain/models/history_track_model.dart';
 import 'package:bluppi/domain/models/search_track_model.dart';
 import 'package:bluppi/domain/models/search_track_response_model.dart';
 import 'package:bluppi/domain/models/track_model.dart';
+import 'package:bluppi/domain/models/track_summary_model.dart';
 import 'package:bluppi/domain/repositories/track_repository.dart';
 import 'package:bluppi/generated/tracks.pbgrpc.dart' as proto;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,5 +60,12 @@ class TrackServiceRepository implements TrackRepository {
   Future<void> clearHistory() async {
     final request = proto.ClearTrackHistoryRequest();
     await _client.clearTrackHistory(request);
+  }
+
+  @override
+  Future<List<TrackSummaryModel>> weeklyDiscoverTracks(String nextCursor, {int limit = 10}) async {
+    final request = proto.DiscoverTracksRequest(limit: limit, nextCursor: nextCursor);
+    final response = await _client.weeklyDiscoverTracks(request);
+    return response.tracks.map((proto.TrackSummary t) => TrackSummaryModel.fromProto(t)).toList();
   }
 }

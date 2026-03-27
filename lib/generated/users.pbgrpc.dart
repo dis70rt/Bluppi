@@ -155,6 +155,13 @@ class UserServiceClient extends $grpc.Client {
     return $createUnaryCall(_$isFollowing, request, options: options);
   }
 
+  $grpc.ResponseFuture<$0.SuggestFriendsResponse> getSuggestedFriends(
+    $0.SuggestFriendsRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$getSuggestedFriends, request, options: options);
+  }
+
   // method descriptors
 
   static final _$createUser =
@@ -242,6 +249,11 @@ class UserServiceClient extends $grpc.Client {
           '/users.UserService/IsFollowing',
           ($0.IsFollowingRequest value) => value.writeToBuffer(),
           $0.IsFollowingResponse.fromBuffer);
+  static final _$getSuggestedFriends =
+      $grpc.ClientMethod<$0.SuggestFriendsRequest, $0.SuggestFriendsResponse>(
+          '/users.UserService/GetSuggestedFriends',
+          ($0.SuggestFriendsRequest value) => value.writeToBuffer(),
+          $0.SuggestFriendsResponse.fromBuffer);
 }
 
 @$pb.GrpcServiceName('users.UserService')
@@ -392,6 +404,15 @@ abstract class UserServiceBase extends $grpc.Service {
             ($core.List<$core.int> value) =>
                 $0.IsFollowingRequest.fromBuffer(value),
             ($0.IsFollowingResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.SuggestFriendsRequest,
+            $0.SuggestFriendsResponse>(
+        'GetSuggestedFriends',
+        getSuggestedFriends_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.SuggestFriendsRequest.fromBuffer(value),
+        ($0.SuggestFriendsResponse value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.UserResponse> createUser_Pre($grpc.ServiceCall $call,
@@ -535,4 +556,13 @@ abstract class UserServiceBase extends $grpc.Service {
 
   $async.Future<$0.IsFollowingResponse> isFollowing(
       $grpc.ServiceCall call, $0.IsFollowingRequest request);
+
+  $async.Future<$0.SuggestFriendsResponse> getSuggestedFriends_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$0.SuggestFriendsRequest> $request) async {
+    return getSuggestedFriends($call, await $request);
+  }
+
+  $async.Future<$0.SuggestFriendsResponse> getSuggestedFriends(
+      $grpc.ServiceCall call, $0.SuggestFriendsRequest request);
 }

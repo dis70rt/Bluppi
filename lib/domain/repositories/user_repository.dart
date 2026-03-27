@@ -1,5 +1,6 @@
 import 'package:bluppi/domain/models/create_user_model.dart';
 import 'package:bluppi/domain/models/user_model.dart';
+import 'package:bluppi/domain/models/user_summary_model.dart';
 
 abstract class UserRepository {
   Future<UserModel> createUser(CreateUserModel user);
@@ -10,4 +11,5 @@ abstract class UserRepository {
   Future<void> followUser(String userId);
   Future<void> unfollowUser(String userId);
   Future<bool> isFollowing(String followeeId);
+  Future<List<UserSummaryModel>> getSuggestedFriends(String nextCursor, {int limit = 10});
 }

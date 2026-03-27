@@ -439,3 +439,82 @@ final $typed_data.Uint8List getRecommendationsResponseDescriptor =
     $convert.base64Decode(
         'ChpHZXRSZWNvbW1lbmRhdGlvbnNSZXNwb25zZRIlCgZ0cmFja3MYASADKAsyDS50cmFja3MuVH'
         'JhY2tSBnRyYWNrcw==');
+
+@$core.Deprecated('Use trackSummaryDescriptor instead')
+const TrackSummary$json = {
+  '1': 'TrackSummary',
+  '2': [
+    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'title', '3': 2, '4': 1, '5': 9, '10': 'title'},
+    {'1': 'artist', '3': 3, '4': 1, '5': 9, '10': 'artist'},
+    {'1': 'image_url', '3': 4, '4': 1, '5': 9, '10': 'imageUrl'},
+    {'1': 'preview_url', '3': 5, '4': 1, '5': 9, '10': 'previewUrl'},
+    {
+      '1': 'social_count',
+      '3': 6,
+      '4': 1,
+      '5': 5,
+      '9': 0,
+      '10': 'socialCount',
+      '17': true
+    },
+    {
+      '1': 'social_context',
+      '3': 7,
+      '4': 1,
+      '5': 9,
+      '9': 1,
+      '10': 'socialContext',
+      '17': true
+    },
+  ],
+  '8': [
+    {'1': '_social_count'},
+    {'1': '_social_context'},
+  ],
+};
+
+/// Descriptor for `TrackSummary`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List trackSummaryDescriptor = $convert.base64Decode(
+    'CgxUcmFja1N1bW1hcnkSDgoCaWQYASABKAlSAmlkEhQKBXRpdGxlGAIgASgJUgV0aXRsZRIWCg'
+    'ZhcnRpc3QYAyABKAlSBmFydGlzdBIbCglpbWFnZV91cmwYBCABKAlSCGltYWdlVXJsEh8KC3By'
+    'ZXZpZXdfdXJsGAUgASgJUgpwcmV2aWV3VXJsEiYKDHNvY2lhbF9jb3VudBgGIAEoBUgAUgtzb2'
+    'NpYWxDb3VudIgBARIqCg5zb2NpYWxfY29udGV4dBgHIAEoCUgBUg1zb2NpYWxDb250ZXh0iAEB'
+    'Qg8KDV9zb2NpYWxfY291bnRCEQoPX3NvY2lhbF9jb250ZXh0');
+
+@$core.Deprecated('Use discoverTracksRequestDescriptor instead')
+const DiscoverTracksRequest$json = {
+  '1': 'DiscoverTracksRequest',
+  '2': [
+    {'1': 'limit', '3': 1, '4': 1, '5': 5, '10': 'limit'},
+    {'1': 'next_cursor', '3': 2, '4': 1, '5': 9, '10': 'nextCursor'},
+  ],
+};
+
+/// Descriptor for `DiscoverTracksRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List discoverTracksRequestDescriptor = $convert.base64Decode(
+    'ChVEaXNjb3ZlclRyYWNrc1JlcXVlc3QSFAoFbGltaXQYASABKAVSBWxpbWl0Eh8KC25leHRfY3'
+    'Vyc29yGAIgASgJUgpuZXh0Q3Vyc29y');
+
+@$core.Deprecated('Use discoverTracksResponseDescriptor instead')
+const DiscoverTracksResponse$json = {
+  '1': 'DiscoverTracksResponse',
+  '2': [
+    {
+      '1': 'tracks',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.tracks.TrackSummary',
+      '10': 'tracks'
+    },
+    {'1': 'next_cursor', '3': 2, '4': 1, '5': 9, '10': 'nextCursor'},
+    {'1': 'has_more', '3': 3, '4': 1, '5': 8, '10': 'hasMore'},
+  ],
+};
+
+/// Descriptor for `DiscoverTracksResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List discoverTracksResponseDescriptor = $convert.base64Decode(
+    'ChZEaXNjb3ZlclRyYWNrc1Jlc3BvbnNlEiwKBnRyYWNrcxgBIAMoCzIULnRyYWNrcy5UcmFja1'
+    'N1bW1hcnlSBnRyYWNrcxIfCgtuZXh0X2N1cnNvchgCIAEoCVIKbmV4dEN1cnNvchIZCghoYXNf'
+    'bW9yZRgDIAEoCFIHaGFzTW9yZQ==');

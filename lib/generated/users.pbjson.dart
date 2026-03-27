@@ -562,3 +562,70 @@ const GetFollowingResponse$json = {
 final $typed_data.Uint8List getFollowingResponseDescriptor = $convert.base64Decode(
     'ChRHZXRGb2xsb3dpbmdSZXNwb25zZRI0Cglmb2xsb3dpbmcYASADKAsyFi51c2Vycy5Gb2xsb3'
     'dVc2VyRW50cnlSCWZvbGxvd2luZxIUCgV0b3RhbBgCIAEoA1IFdG90YWw=');
+
+@$core.Deprecated('Use userSummaryDescriptor instead')
+const UserSummary$json = {
+  '1': 'UserSummary',
+  '2': [
+    {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
+    {'1': 'username', '3': 2, '4': 1, '5': 9, '10': 'username'},
+    {'1': 'name', '3': 3, '4': 1, '5': 9, '10': 'name'},
+    {'1': 'profile_pic', '3': 4, '4': 1, '5': 9, '10': 'profilePic'},
+    {
+      '1': 'suggestion_reason',
+      '3': 5,
+      '4': 1,
+      '5': 9,
+      '9': 0,
+      '10': 'suggestionReason',
+      '17': true
+    },
+  ],
+  '8': [
+    {'1': '_suggestion_reason'},
+  ],
+};
+
+/// Descriptor for `UserSummary`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List userSummaryDescriptor = $convert.base64Decode(
+    'CgtVc2VyU3VtbWFyeRIOCgJpZBgBIAEoCVICaWQSGgoIdXNlcm5hbWUYAiABKAlSCHVzZXJuYW'
+    '1lEhIKBG5hbWUYAyABKAlSBG5hbWUSHwoLcHJvZmlsZV9waWMYBCABKAlSCnByb2ZpbGVQaWMS'
+    'MAoRc3VnZ2VzdGlvbl9yZWFzb24YBSABKAlIAFIQc3VnZ2VzdGlvblJlYXNvbogBAUIUChJfc3'
+    'VnZ2VzdGlvbl9yZWFzb24=');
+
+@$core.Deprecated('Use suggestFriendsRequestDescriptor instead')
+const SuggestFriendsRequest$json = {
+  '1': 'SuggestFriendsRequest',
+  '2': [
+    {'1': 'limit', '3': 1, '4': 1, '5': 5, '10': 'limit'},
+    {'1': 'next_cursor', '3': 2, '4': 1, '5': 9, '10': 'nextCursor'},
+  ],
+};
+
+/// Descriptor for `SuggestFriendsRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List suggestFriendsRequestDescriptor = $convert.base64Decode(
+    'ChVTdWdnZXN0RnJpZW5kc1JlcXVlc3QSFAoFbGltaXQYASABKAVSBWxpbWl0Eh8KC25leHRfY3'
+    'Vyc29yGAIgASgJUgpuZXh0Q3Vyc29y');
+
+@$core.Deprecated('Use suggestFriendsResponseDescriptor instead')
+const SuggestFriendsResponse$json = {
+  '1': 'SuggestFriendsResponse',
+  '2': [
+    {
+      '1': 'users',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.users.UserSummary',
+      '10': 'users'
+    },
+    {'1': 'next_cursor', '3': 2, '4': 1, '5': 9, '10': 'nextCursor'},
+    {'1': 'has_more', '3': 3, '4': 1, '5': 8, '10': 'hasMore'},
+  ],
+};
+
+/// Descriptor for `SuggestFriendsResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List suggestFriendsResponseDescriptor = $convert.base64Decode(
+    'ChZTdWdnZXN0RnJpZW5kc1Jlc3BvbnNlEigKBXVzZXJzGAEgAygLMhIudXNlcnMuVXNlclN1bW'
+    '1hcnlSBXVzZXJzEh8KC25leHRfY3Vyc29yGAIgASgJUgpuZXh0Q3Vyc29yEhkKCGhhc19tb3Jl'
+    'GAMgASgIUgdoYXNNb3Jl');

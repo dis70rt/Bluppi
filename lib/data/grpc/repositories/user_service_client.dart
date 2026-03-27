@@ -1,5 +1,6 @@
 import 'package:bluppi/data/auth/auth_interceptor.dart';
 import 'package:bluppi/domain/models/create_user_model.dart';
+import 'package:bluppi/domain/models/user_summary_model.dart';
 import 'package:bluppi/domain/repositories/user_repository.dart';
 import 'package:bluppi/generated/users.pbgrpc.dart' as proto;
 import 'package:bluppi/domain/models/user_model.dart';
@@ -78,5 +79,12 @@ class UserServiceClientRepository implements UserRepository {
     final request = proto.IsFollowingRequest(followeeId: followeeId);
     final response = await _client.isFollowing(request);
     return response.isFollowing;
+  }
+
+  @override
+  Future<List<UserSummaryModel>> getSuggestedFriends(String nextCursor, {int limit = 10}) async {
+    final request = proto.SuggestFriendsRequest(limit: limit, nextCursor: nextCursor);
+    final response = await _client.getSuggestedFriends(request);
+    return response.users.map((proto.UserSummary p) => UserSummaryModel.fromProto(p)).toList();
   }
 }

@@ -4,6 +4,8 @@ import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
 import 'package:bluppi/data/grpc/repositories/user_service_client.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/activity_list_widget.dart';
+import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/suggest_friends.dart';
+import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/weekly_discovery.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/app_bar.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/loading_home.dart';
 import 'package:bluppi/ui/screens/HomeScreen/widgets/recently_played_widget.dart';
@@ -27,22 +29,27 @@ class HomeScreen extends ConsumerWidget {
 
         return Scaffold(
           appBar: HomeAppBar(user: user),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              ActivityListWidget(),
-              RecentlyPlayedWidget(),
-              Text('Welcome, ${user.name}'),
-              const SizedBox(height: 20),
-              MaterialButton(
-                onPressed: () => _signOut(ref),
-                child: const Text("Sign Out"),
-              ),
-              MaterialButton(
-                onPressed: () => context.go('/u/sai'),
-                child: const Text("Check Profile"),
-              ),
-            ],
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16,
+              children: [
+                ActivityListWidget(),
+                WeeklyDiscovery(),
+                RecentlyPlayedWidget(),
+                SuggestFriends()
+                // MaterialButton(
+                //   onPressed: () => _signOut(ref),
+                //   child: const Text("Sign Out"),
+                // ),
+                // MaterialButton(
+                //   onPressed: () => context.go('/u/sai'),
+                //   child: const Text("Check Profile"),
+                // ),
+              ],
+            ),
           ),
         );
       },

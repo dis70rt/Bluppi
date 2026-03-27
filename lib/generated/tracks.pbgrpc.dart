@@ -121,6 +121,13 @@ class TrackServiceClient extends $grpc.Client {
     return $createUnaryCall(_$getRecommendations, request, options: options);
   }
 
+  $grpc.ResponseFuture<$0.DiscoverTracksResponse> weeklyDiscoverTracks(
+    $0.DiscoverTracksRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$weeklyDiscoverTracks, request, options: options);
+  }
+
   // method descriptors
 
   static final _$getTrack =
@@ -183,6 +190,11 @@ class TrackServiceClient extends $grpc.Client {
       '/tracks.TrackService/GetRecommendations',
       ($0.GetRecommendationsRequest value) => value.writeToBuffer(),
       $0.GetRecommendationsResponse.fromBuffer);
+  static final _$weeklyDiscoverTracks =
+      $grpc.ClientMethod<$0.DiscoverTracksRequest, $0.DiscoverTracksResponse>(
+          '/tracks.TrackService/WeeklyDiscoverTracks',
+          ($0.DiscoverTracksRequest value) => value.writeToBuffer(),
+          $0.DiscoverTracksResponse.fromBuffer);
 }
 
 @$pb.GrpcServiceName('tracks.TrackService')
@@ -293,6 +305,15 @@ abstract class TrackServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.GetRecommendationsRequest.fromBuffer(value),
         ($0.GetRecommendationsResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.DiscoverTracksRequest,
+            $0.DiscoverTracksResponse>(
+        'WeeklyDiscoverTracks',
+        weeklyDiscoverTracks_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.DiscoverTracksRequest.fromBuffer(value),
+        ($0.DiscoverTracksResponse value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.TrackResponse> getTrack_Pre($grpc.ServiceCall $call,
@@ -399,4 +420,13 @@ abstract class TrackServiceBase extends $grpc.Service {
 
   $async.Future<$0.GetRecommendationsResponse> getRecommendations(
       $grpc.ServiceCall call, $0.GetRecommendationsRequest request);
+
+  $async.Future<$0.DiscoverTracksResponse> weeklyDiscoverTracks_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$0.DiscoverTracksRequest> $request) async {
+    return weeklyDiscoverTracks($call, await $request);
+  }
+
+  $async.Future<$0.DiscoverTracksResponse> weeklyDiscoverTracks(
+      $grpc.ServiceCall call, $0.DiscoverTracksRequest request);
 }

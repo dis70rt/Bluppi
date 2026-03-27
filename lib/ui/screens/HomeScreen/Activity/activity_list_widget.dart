@@ -15,7 +15,7 @@ class ActivityListWidget extends ConsumerWidget {
     final asyncActivities = ref.watch(activityProvider);
 
     return SizedBox(
-      height: 150,
+      height: 130,
       child: asyncActivities.when(
         data: (activitiesList) {
           if (activitiesList.isEmpty) {
@@ -59,7 +59,7 @@ class ActivityListWidget extends ConsumerWidget {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: items.length,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      // padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemBuilder: (context, index) {
         return ActivityItemWidget(activity: items[index]);
       },

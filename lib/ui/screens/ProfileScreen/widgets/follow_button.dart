@@ -3,7 +3,7 @@ import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:flutter/material.dart';
 
 class FollowButton extends StatelessWidget {
-  final FollowStats followState; // Listen to the state, not the Notifier!
+  final FollowStats followState;
   final bool isOwnProfile;
   final VoidCallback onFollowTap;
 
@@ -89,8 +89,8 @@ class FollowButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: textColor,
-          disabledBackgroundColor: backgroundColor.withOpacity(0.5),
-          disabledForegroundColor: textColor.withOpacity(0.5),
+          disabledBackgroundColor: backgroundColor.withAlpha(128),
+          disabledForegroundColor: textColor.withAlpha(128),
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

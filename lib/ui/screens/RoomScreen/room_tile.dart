@@ -31,7 +31,7 @@ class RoomTile extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withAlpha(77),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -102,7 +102,7 @@ class RoomTile extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: theme.primaryColor.withOpacity(0.9),
+                                  color: theme.primaryColor.withAlpha(230),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -159,7 +159,7 @@ class RoomTile extends StatelessWidget {
         color: Colors.grey.shade800,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(52),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -203,7 +203,7 @@ class RoomTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.redAccent.withOpacity(0.2),
+        color: Colors.redAccent.withAlpha(128),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.redAccent, width: 1),
       ),

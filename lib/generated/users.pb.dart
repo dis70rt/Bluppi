@@ -2191,6 +2191,249 @@ class GetFollowingResponse extends $pb.GeneratedMessage {
   void clearTotal() => $_clearField(2);
 }
 
+class UserSummary extends $pb.GeneratedMessage {
+  factory UserSummary({
+    $core.String? id,
+    $core.String? username,
+    $core.String? name,
+    $core.String? profilePic,
+    $core.String? suggestionReason,
+  }) {
+    final result = create();
+    if (id != null) result.id = id;
+    if (username != null) result.username = username;
+    if (name != null) result.name = name;
+    if (profilePic != null) result.profilePic = profilePic;
+    if (suggestionReason != null) result.suggestionReason = suggestionReason;
+    return result;
+  }
+
+  UserSummary._();
+
+  factory UserSummary.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory UserSummary.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'UserSummary',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'id')
+    ..aOS(2, _omitFieldNames ? '' : 'username')
+    ..aOS(3, _omitFieldNames ? '' : 'name')
+    ..aOS(4, _omitFieldNames ? '' : 'profilePic')
+    ..aOS(5, _omitFieldNames ? '' : 'suggestionReason')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  UserSummary clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  UserSummary copyWith(void Function(UserSummary) updates) =>
+      super.copyWith((message) => updates(message as UserSummary))
+          as UserSummary;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static UserSummary create() => UserSummary._();
+  @$core.override
+  UserSummary createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static UserSummary getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<UserSummary>(create);
+  static UserSummary? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get id => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set id($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get username => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set username($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasUsername() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearUsername() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get name => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set name($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasName() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearName() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get profilePic => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set profilePic($core.String value) => $_setString(3, value);
+  @$pb.TagNumber(4)
+  $core.bool hasProfilePic() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearProfilePic() => $_clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.String get suggestionReason => $_getSZ(4);
+  @$pb.TagNumber(5)
+  set suggestionReason($core.String value) => $_setString(4, value);
+  @$pb.TagNumber(5)
+  $core.bool hasSuggestionReason() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearSuggestionReason() => $_clearField(5);
+}
+
+class SuggestFriendsRequest extends $pb.GeneratedMessage {
+  factory SuggestFriendsRequest({
+    $core.int? limit,
+    $core.String? nextCursor,
+  }) {
+    final result = create();
+    if (limit != null) result.limit = limit;
+    if (nextCursor != null) result.nextCursor = nextCursor;
+    return result;
+  }
+
+  SuggestFriendsRequest._();
+
+  factory SuggestFriendsRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SuggestFriendsRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SuggestFriendsRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
+      createEmptyInstance: create)
+    ..aI(1, _omitFieldNames ? '' : 'limit')
+    ..aOS(2, _omitFieldNames ? '' : 'nextCursor')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SuggestFriendsRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SuggestFriendsRequest copyWith(
+          void Function(SuggestFriendsRequest) updates) =>
+      super.copyWith((message) => updates(message as SuggestFriendsRequest))
+          as SuggestFriendsRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SuggestFriendsRequest create() => SuggestFriendsRequest._();
+  @$core.override
+  SuggestFriendsRequest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static SuggestFriendsRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SuggestFriendsRequest>(create);
+  static SuggestFriendsRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.int get limit => $_getIZ(0);
+  @$pb.TagNumber(1)
+  set limit($core.int value) => $_setSignedInt32(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasLimit() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearLimit() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get nextCursor => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set nextCursor($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasNextCursor() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearNextCursor() => $_clearField(2);
+}
+
+class SuggestFriendsResponse extends $pb.GeneratedMessage {
+  factory SuggestFriendsResponse({
+    $core.Iterable<UserSummary>? users,
+    $core.String? nextCursor,
+    $core.bool? hasMore,
+  }) {
+    final result = create();
+    if (users != null) result.users.addAll(users);
+    if (nextCursor != null) result.nextCursor = nextCursor;
+    if (hasMore != null) result.hasMore = hasMore;
+    return result;
+  }
+
+  SuggestFriendsResponse._();
+
+  factory SuggestFriendsResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory SuggestFriendsResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'SuggestFriendsResponse',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'users'),
+      createEmptyInstance: create)
+    ..pPM<UserSummary>(1, _omitFieldNames ? '' : 'users',
+        subBuilder: UserSummary.create)
+    ..aOS(2, _omitFieldNames ? '' : 'nextCursor')
+    ..aOB(3, _omitFieldNames ? '' : 'hasMore')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SuggestFriendsResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  SuggestFriendsResponse copyWith(
+          void Function(SuggestFriendsResponse) updates) =>
+      super.copyWith((message) => updates(message as SuggestFriendsResponse))
+          as SuggestFriendsResponse;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static SuggestFriendsResponse create() => SuggestFriendsResponse._();
+  @$core.override
+  SuggestFriendsResponse createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static SuggestFriendsResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<SuggestFriendsResponse>(create);
+  static SuggestFriendsResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $pb.PbList<UserSummary> get users => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.String get nextCursor => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set nextCursor($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasNextCursor() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearNextCursor() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.bool get hasMore => $_getBF(2);
+  @$pb.TagNumber(3)
+  set hasMore($core.bool value) => $_setBool(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasHasMore() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearHasMore() => $_clearField(3);
+}
+
 const $core.bool _omitFieldNames =
     $core.bool.fromEnvironment('protobuf.omit_field_names');
 const $core.bool _omitMessageNames =

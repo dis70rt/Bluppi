@@ -11,8 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
-// TODO: outertune check
-
 class TrackTile extends ConsumerWidget {
   final SearchTrackModel track;
   const TrackTile({super.key, required this.track});

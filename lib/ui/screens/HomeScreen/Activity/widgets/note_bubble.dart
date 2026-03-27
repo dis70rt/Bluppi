@@ -17,7 +17,7 @@ class _TailDot extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withAlpha(52),
             blurRadius: 3,
             offset: const Offset(0, 2),
           ),
@@ -60,7 +60,7 @@ class NoteBubble extends StatelessWidget {
             borderRadius: NoteStyle.bubbleRadius,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withAlpha(102),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
