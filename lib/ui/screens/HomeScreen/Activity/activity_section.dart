@@ -1,14 +1,15 @@
 import 'package:bluppi/application/providers/activity/activity_provider.dart';
-import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/activity_item_widget.dart';
+import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/activity_item_skeleton.dart';
+import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/activity_item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:bluppi/domain/models/activity_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'activity_dummy_data.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class ActivityListWidget extends ConsumerWidget {
+class ActivitySection extends ConsumerWidget {
   final List<ActivityModel>? activities;
 
-  const ActivityListWidget({super.key, this.activities});
+  const ActivitySection({super.key, this.activities});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,9 +29,7 @@ class ActivityListWidget extends ConsumerWidget {
           }
           return _buildList(activitiesList);
         },
-        loading: () {
-          return Opacity(opacity: 0.4, child: _buildList(dummyActivities));
-        },
+        loading: () => ActivityListSkeleton(),
         error: (error, stack) {
           return Center(
             child: Column(
@@ -61,7 +60,7 @@ class ActivityListWidget extends ConsumerWidget {
       itemCount: items.length,
       // padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemBuilder: (context, index) {
-        return ActivityItemWidget(activity: items[index]);
+        return ActivityItemCard(activity: items[index]);
       },
     );
   }

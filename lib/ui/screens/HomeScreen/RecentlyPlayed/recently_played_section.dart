@@ -1,10 +1,10 @@
 import 'package:bluppi/application/providers/music/history_provider.dart';
-import 'package:bluppi/ui/screens/HomeScreen/widgets/recent_track_card.dart';
+import 'package:bluppi/ui/screens/HomeScreen/RecentlyPlayed/widgets/recent_track_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RecentlyPlayedWidget extends ConsumerWidget {
-  const RecentlyPlayedWidget({super.key});
+class RecentlyPlayedSection extends ConsumerWidget {
+  const RecentlyPlayedSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

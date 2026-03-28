@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/weekly_track_card.dart';
+import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/widgets/weekly_track_card.dart';
 
 class StackedTrackCards extends StatefulWidget {
   final List<dynamic> tracks;

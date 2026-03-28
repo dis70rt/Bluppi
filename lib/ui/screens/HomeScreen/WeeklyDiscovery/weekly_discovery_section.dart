@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/application/providers/music/weekly_discover_provider.dart';
-import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/stacked_track_cards.dart';
+import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/widgets/stacked_track_cards.dart';
 
 class WeeklyDiscovery extends ConsumerWidget {
   const WeeklyDiscovery({super.key});

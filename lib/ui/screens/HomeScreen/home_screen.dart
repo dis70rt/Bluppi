@@ -1,11 +1,12 @@
+import 'package:bluppi/application/controllers/home_controller.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
-import 'package:bluppi/ui/screens/HomeScreen/Activity/activity_list_widget.dart';
-import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/suggest_friends.dart';
-import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/weekly_discovery.dart';
-import 'package:bluppi/ui/screens/HomeScreen/widgets/app_bar.dart';
-import 'package:bluppi/ui/screens/HomeScreen/widgets/loading_home.dart';
-import 'package:bluppi/ui/screens/HomeScreen/widgets/recently_played_widget.dart';
+import 'package:bluppi/ui/screens/HomeScreen/Activity/activity_section.dart';
+import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/suggest_friends_section.dart';
+import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/weekly_discovery_section.dart';
+import 'package:bluppi/ui/screens/HomeScreen/shared/app_bar.dart';
+import 'package:bluppi/ui/screens/HomeScreen/home_loading_screen.dart';
+import 'package:bluppi/ui/screens/HomeScreen/RecentlyPlayed/recently_played_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,9 +16,9 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(userProvider);
-
-    return userAsync.when(
+    final homeAsync = ref.watch(homeInitController);
+    
+    return homeAsync.when(
       data: (user) {
         if (user == null) {
           context.go('/auth');
@@ -35,10 +36,10 @@ class HomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 16,
                   children: [
-                    ActivityListWidget(),
+                    ActivitySection(),
                     WeeklyDiscovery(),
-                    RecentlyPlayedWidget(),
-                    SuggestFriends(),
+                    RecentlyPlayedSection(),
+                    SuggestFriendSection(),
                     const SizedBox(height:80),
                   ],
                 ),

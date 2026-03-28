@@ -1,10 +1,9 @@
-import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/domain/models/user_summary_model.dart';
-import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/suggest_friends_card.dart';
+import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/widgets/suggest_friends_card.dart';
 import 'package:flutter/material.dart';
 
-class SuggestFriends extends StatelessWidget {
-  const SuggestFriends({super.key});
+class SuggestFriendSection extends StatelessWidget {
+  const SuggestFriendSection({super.key});
 
   @override
   Widget build(BuildContext context) {

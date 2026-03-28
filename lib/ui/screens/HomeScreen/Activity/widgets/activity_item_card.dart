@@ -3,10 +3,10 @@ import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/avatar_ring.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/note_bubble.dart';
 import 'package:flutter/material.dart';
 
-class ActivityItemWidget extends StatelessWidget {
+class ActivityItemCard extends StatelessWidget {
   final ActivityModel activity;
 
-  const ActivityItemWidget({super.key, required this.activity});
+  const ActivityItemCard({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context) {
