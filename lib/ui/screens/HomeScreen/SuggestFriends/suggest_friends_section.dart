@@ -1,68 +1,84 @@
-import 'package:bluppi/domain/models/user_summary_model.dart';
-import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/widgets/suggest_friends_card.dart';
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-class SuggestFriendSection extends StatelessWidget {
+import 'package:bluppi/application/providers/user/suggested_friends_provider.dart';
+import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/widgets/suggest_friends_card.dart';
+import 'package:bluppi/ui/screens/HomeScreen/SuggestFriends/widgets/suggest_friends_skeleton.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class SuggestFriendSection extends ConsumerWidget {
   const SuggestFriendSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Top-tier mock data to render the UI before hooking up actual DB provider
-    final List<UserSummaryModel> suggestedUsers = [
-      UserSummaryModel(
-        id: '1',
-        username: 'silver_shades_420',
-        name: 'Devansh Gupta',
-        profilePic: 'https://i.pravatar.cc/150?u=silver_shades_420',
-        suggestionReason: 'Based on your music taste',
-      ),
-      UserSummaryModel(
-        id: '2',
-        username: 'sanchitkumar_____',
-        name: 'Sanchit Kumar',
-        profilePic: 'https://i.pravatar.cc/150?u=sanchitkumar_____',
-      ),
-      UserSummaryModel(
-        id: '3',
-        username: 'aniisingh69',
-        name: 'Anirudh Singh',
-        profilePic: 'https://i.pravatar.cc/150?u=aniisingh69',
-      ),
-      UserSummaryModel(
-        id: '3',
-        username: 'nikk_goyal',
-        name: 'Nikshey Goyal',
-        profilePic: 'https://i.pravatar.cc/150?u=nikk_goyal',
-      ),
-      UserSummaryModel(
-        id: '3',
-        username: 'pride_guy_67',
-        name: 'Bhavesh Manhani',
-        profilePic: 'https://i.pravatar.cc/150?u=pride_guy_67',
-      ),
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    final suggestedAsync = ref.watch(suggestedUsersProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        const Text(
           'Suggest Friends',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 200,
-          child: ListView.separated(
-            // padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            itemCount: suggestedUsers.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              return SuggestFriendsCard(user: suggestedUsers[index]);
-            },
-          ),
+
+        suggestedAsync.when(
+          skipLoadingOnReload: true,
+          data: (state) {
+            if (state.suggestedFriends.isEmpty) {
+              return const SizedBox(
+                height: 200,
+                child: Center(child: Text("No suggestions right now.")),
+              );
+            }
+
+            return SizedBox(
+              height: 200,
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (scrollInfo.metrics.pixels >=
+                      scrollInfo.metrics.maxScrollExtent - 150) {
+                    ref.read(suggestedUsersProvider.notifier).loadMore();
+                  }
+                  return false;
+                },
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+
+                  itemCount:
+                      state.suggestedFriends.length +
+                      (suggestedAsync.isLoading ? 1 : 0),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    if (index == state.suggestedFriends.length) {
+                      return const SuggestFriendsCardSkeleton();
+                    }
+
+                    return SuggestFriendsCard(
+                      user: state.suggestedFriends[index],
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+          loading: () => const SuggestFriendsListSkeleton(itemCount: 3),
+
+          error: (error, stackTrace) {
+            log("Error loading suggested friends: $error", error: error, stackTrace: stackTrace);
+            return SizedBox(
+            height: 200,
+            child: Center(
+              child: Text(
+                "Error loading suggestions",
+                style: TextStyle(color: Colors.red.shade300),
+              ),
+            ),
+          );
+          }
         ),
       ],
     );

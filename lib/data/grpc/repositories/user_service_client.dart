@@ -82,9 +82,11 @@ class UserServiceClientRepository implements UserRepository {
   }
 
   @override
-  Future<List<UserSummaryModel>> getSuggestedFriends(String nextCursor, {int limit = 10}) async {
+  Future<(List<UserSummaryModel>,String)> getSuggestedFriends(String nextCursor, {int limit = 10}) async {
     final request = proto.SuggestFriendsRequest(limit: limit, nextCursor: nextCursor);
     final response = await _client.getSuggestedFriends(request);
-    return response.users.map((proto.UserSummary p) => UserSummaryModel.fromProto(p)).toList();
+    final users = response.users.map((proto.UserSummary p) => UserSummaryModel.fromProto(p)).toList();
+
+    return (users, response.nextCursor);
   }
 }

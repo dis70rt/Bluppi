@@ -42,7 +42,7 @@ class HomeScreen extends ConsumerWidget {
                     SuggestFriendSection(),
                     const SizedBox(height:80),
                     MaterialButton(onPressed: () {
-                      context.go('/u/openai');
+                      context.go('/u/shikha');
                     }, child: Text("Shikha Das"),)
                   ],
                 ),

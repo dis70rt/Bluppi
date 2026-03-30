@@ -11,5 +11,5 @@ abstract class UserRepository {
   Future<void> followUser(String userId);
   Future<void> unfollowUser(String userId);
   Future<bool> isFollowing(String followeeId);
-  Future<List<UserSummaryModel>> getSuggestedFriends(String nextCursor, {int limit = 10});
+  Future<(List<UserSummaryModel>, String)> getSuggestedFriends(String nextCursor, {int limit = 10});
 }

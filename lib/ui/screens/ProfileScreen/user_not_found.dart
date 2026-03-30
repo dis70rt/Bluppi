@@ -72,7 +72,7 @@ class UserNotFoundScreen extends StatelessWidget {
                   color: activeColor,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: const Text(
-                    "Go Back",
+                    "Go Home",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                 ),
