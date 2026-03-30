@@ -1,9 +1,14 @@
+import 'dart:developer';
+
 import 'package:bluppi/application/providers/user/profile_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/profile_screen_skeleton.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/user_not_found.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_app_bar.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grpc/grpc.dart';
 
 class ProfileScreen extends ConsumerWidget {
   final String? username;
@@ -16,7 +21,7 @@ class ProfileScreen extends ConsumerWidget {
     return profileAsync.when(
       data: (profile) {
         if (profile.user == null) {
-          return const Scaffold(body: Center(child: Text('User not found')));
+          return const UserNotFoundScreen();
         }
         final user = profile.user!;
         return Scaffold(
@@ -31,11 +36,17 @@ class ProfileScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => ScaffoldError(
-        message: "Error loading profile: $error",
-        onRetry: () => ref.refresh(profileProvider(username)),
-      ),
+      loading: () => const ProfileScreenSkeleton(),
+      error: (error, stackTrace) {
+        if (error is GrpcError && error.code == StatusCode.notFound) {
+          log("User not found: ${error.codeName}");
+          return const UserNotFoundScreen();
+        }
+        return ScaffoldError(
+          message: "Error loading profile: $error",
+          onRetry: () => ref.refresh(profileProvider(username)),
+        );
+      },
     );
   }
 }
