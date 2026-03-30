@@ -24,7 +24,9 @@ class SuggestedFriendsNotifier extends AsyncNotifier<SuggestedFriendsState> {
     final repo = ref.read(userServiceClientRepositoryProvider);
     final (friends, newNextCursor) = await repo.getSuggestedFriends(nextCursor);
 
-    final currentUsers = state.value?.suggestedFriends ?? [];
+    final currentUsers = nextCursor.isEmpty 
+        ? <UserSummaryModel>[] 
+        : (state.value?.suggestedFriends ?? []);
 
     return SuggestedFriendsState(
       suggestedFriends: [...currentUsers, ...friends],

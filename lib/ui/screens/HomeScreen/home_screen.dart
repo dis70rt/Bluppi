@@ -1,4 +1,8 @@
 import 'package:bluppi/application/controllers/home_controller.dart';
+import 'package:bluppi/application/providers/activity/activity_provider.dart';
+import 'package:bluppi/application/providers/music/history_provider.dart';
+import 'package:bluppi/application/providers/music/weekly_discover_provider.dart';
+import 'package:bluppi/application/providers/user/suggested_friends_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/core/utils/error_scaffold.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/activity_section.dart';
@@ -30,21 +34,26 @@ class HomeScreen extends ConsumerWidget {
             appBar: HomeAppBar(user: user),
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 16,
-                  children: [
-                    ActivitySection(),
-                    WeeklyDiscovery(),
-                    RecentlyPlayedSection(),
-                    SuggestFriendSection(),
-                    const SizedBox(height:80),
-                    MaterialButton(onPressed: () {
-                      context.go('/u/shikha');
-                    }, child: Text("Shikha Das"),)
-                  ],
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(activityProvider);
+                  ref.invalidate(weeklyDiscoverProvider);
+                  ref.invalidate(historyProvider);
+                  ref.invalidate(suggestedUsersProvider);
+                },
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 16,
+                    children: [
+                      ActivitySection(),
+                      WeeklyDiscovery(),
+                      RecentlyPlayedSection(),
+                      SuggestFriendSection(),
+                      const SizedBox(height:80),
+                    ],
+                  ),
                 ),
               ),
             ),
