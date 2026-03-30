@@ -41,6 +41,9 @@ class HomeScreen extends ConsumerWidget {
                     RecentlyPlayedSection(),
                     SuggestFriendSection(),
                     const SizedBox(height:80),
+                    MaterialButton(onPressed: () {
+                      context.go('/u/shikha');
+                    }, child: Text("Shikha Das"),)
                   ],
                 ),
               ),

@@ -1,124 +1,66 @@
-// follow_button.dart
 import 'package:bluppi/application/providers/user/follow_provider.dart';
+import 'package:bluppi/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class FollowButton extends StatelessWidget {
-  final FollowStats followState;
-  final bool isOwnProfile;
-  final VoidCallback onFollowTap;
-
-  const FollowButton({
-    super.key,
-    required this.followState,
-    required this.isOwnProfile,
-    required this.onFollowTap,
-  });
+class FollowButton extends ConsumerWidget {
+  final FollowArg args;
+  const FollowButton({super.key, required this.args});
 
   @override
-  Widget build(BuildContext context) {
-    final glassColor = Colors.white.withAlpha(20);
+  Widget build(BuildContext context, WidgetRef ref) {
+    
+    final followState = ref.watch(followStatsProvider(args));
+    final followNotifier = ref.read(followStatsProvider(args).notifier);
+
+    final glassColor = BluppiColors.surfaceRaised;
     final activeColor = const Color(0xFF2D3BFF);
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (isOwnProfile) ...[
-          Expanded(
-            child: _buildActionButton(
-              label: "Edit Profile",
+    if (followState.isFollowing == null) {
+      return Skeletonizer(
+        enabled: true,
+        child: SizedBox(
+          height: 44,
+          width: 100,
+          child: ElevatedButton(
+            onPressed: null,
+            style: ElevatedButton.styleFrom(
               backgroundColor: glassColor,
-              textColor: Colors.white,
-              onTap: () {}, // TODO: Navigate to Edit Profile
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
+            child: const Text("Follow", style: TextStyle(fontSize: 15)), 
           ),
-          const SizedBox(width: 8),
-          _buildCircularIconButton(
-            icon: Icons.settings_outlined,
-            backgroundColor: glassColor,
-            onTap: () {}, // Open Settings
-          ),
-        ] else ...[
-          
-          // 1. Loading State (Background fetch is happening)
-          if (followState.isFollowing == null)
-            const SizedBox(
-              height: 44,
-              child: Center(
-                child: SizedBox(
-                  width: 16, height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                ),
-              ),
-            )
-            
-          // 2. Data State (We know if they are following or not)
-          else 
-            Expanded(
-              child: _buildActionButton(
-                label: followState.isFollowing! ? "Following" : "Follow",
-                backgroundColor: followState.isFollowing! ? glassColor : activeColor,
-                textColor: Colors.white,
-                fontWeight: followState.isFollowing! ? FontWeight.w600 : FontWeight.bold,
-                // Disable button to prevent spam while a network request is loading
-                onTap: followState.isLoading ? null : onFollowTap,
-              ),
-            ),
-            
-          const SizedBox(width: 8),
-          _buildCircularIconButton(
-            icon: Icons.mail_outline_rounded,
-            backgroundColor: glassColor,
-            onTap: () {}, // TODO: Open Chat
-          ),
-        ],
-      ],
-    );
-  }
+        ),
+      );
+    }
 
-  Widget _buildActionButton({
-    required String label,
-    required Color backgroundColor,
-    required Color textColor,
-    required VoidCallback? onTap,
-    FontWeight fontWeight = FontWeight.w600,
-  }) {
+    final isFollowing = followState.isFollowing!;
+
     return SizedBox(
       height: 44,
       child: ElevatedButton(
-        onPressed: onTap,
+        onPressed: followState.isLoading ? null : () => followNotifier.toggleFollow(),
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
-          foregroundColor: textColor,
-          disabledBackgroundColor: backgroundColor.withAlpha(128),
-          disabledForegroundColor: textColor.withAlpha(128),
+          backgroundColor: isFollowing ? glassColor : activeColor,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: (isFollowing ? glassColor : activeColor).withAlpha(128),
+          disabledForegroundColor: Colors.white.withAlpha(128),
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: Text(
-          label,
+          isFollowing ? "Following" : "Follow",
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 15, fontWeight: fontWeight),
+          style: TextStyle(
+            fontSize: 15, 
+            fontWeight: isFollowing ? FontWeight.w600 : FontWeight.bold,
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCircularIconButton({
-    required IconData icon,
-    required Color backgroundColor,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      width: 44, height: 44,
-      decoration: BoxDecoration(color: backgroundColor, borderRadius: BorderRadius.circular(12)),
-      child: IconButton(
-        onPressed: onTap,
-        icon: Icon(icon, color: Colors.white, size: 22),
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(),
-        style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
       ),
     );
   }

@@ -1,5 +1,7 @@
+import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/domain/models/user_summary_model.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +13,7 @@ class SuggestFriendsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 140, // Fixed width for horizontal scrolling cards
+      width: 140,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: BluppiColors.surface,
@@ -58,29 +60,34 @@ class SuggestFriendsCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // TODO: Implement follow trigger using Riverpod
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: BluppiColors.primary,
-                foregroundColor: BluppiColors.background,
-                elevation: 0,
-                minimumSize: const Size(double.infinity, 32), // thinner height
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: const VisualDensity(vertical: -2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                'Follow',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              ),
-            ),
+            width: 110,
+            height: 30,
+            child: FollowButton(args: FollowArg(userId: user.id)),
           ),
+          // SizedBox(
+          //   width: double.infinity,
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       // TODO: Implement follow trigger using Riverpod
+          //     },
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: BluppiColors.primary,
+          //       foregroundColor: BluppiColors.background,
+          //       elevation: 0,
+          //       minimumSize: const Size(double.infinity, 32),
+          //       padding: const EdgeInsets.symmetric(vertical: 4),
+          //       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          //       visualDensity: const VisualDensity(vertical: -2),
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(10),
+          //       ),
+          //     ),
+          //     child: const Text(
+          //       'Follow',
+          //       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

@@ -4,7 +4,6 @@ import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/activity_item_card
 import 'package:flutter/material.dart';
 import 'package:bluppi/domain/models/activity_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class ActivitySection extends ConsumerWidget {
   final List<ActivityModel>? activities;

@@ -1,6 +1,6 @@
 import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:bluppi/application/providers/user/profile_provider.dart';
-import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_button.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/widgets/user_interation_button.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_stats.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_header.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +16,13 @@ class ProfileContent extends ConsumerWidget {
     final user = profile.user!;
     final isOwnProfile = profile.isOwnProfile;
 
-    final initialFollowStats = FollowStats(
+    final followArgs = FollowArg(
       userId: user.id,
-      followers: user.followerCount,
-      following: user.followingCount,
+      initialFollowers: user.followerCount,
+      initialFollowing: user.followingCount,
     );
 
-    final followState = ref.watch(followStatsProvider(initialFollowStats));
-    final followNotifier = ref.read(followStatsProvider(initialFollowStats).notifier);
+    final followState = ref.watch(followStatsProvider(followArgs));
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -41,14 +40,13 @@ class ProfileContent extends ConsumerWidget {
             children: [
               ProfileHeader(profile: profile),
               FollowingStatsWidget(
-                followers: followState.followers,
-                following: followState.following,
+                followers: followState.followers ?? user.followerCount,
+                following: followState.following ?? user.followingCount,
               ),
               const SizedBox(height: 16),
-              FollowButton(
-                followState: followState,
+              UserInteractionButton(
+                followArgs: followArgs,
                 isOwnProfile: isOwnProfile,
-                onFollowTap: () => followNotifier.toggleFollow(),
               ),
               
               const Padding(

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'package:bluppi/ui/screens/CreateProfileScreen/create_profile_screen.dart';
-import 'package:bluppi/ui/screens/HomeScreen/home_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/NetworkDiagnostics/network_diagnostics_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/rooms_screen.dart';
 import 'package:bluppi/ui/screens/SearchScreen/search_screen.dart';
-import 'package:bluppi/ui/screens/auth_screen.dart';
+import 'package:bluppi/ui/screens/auth_wrapper.dart';
 import 'package:bluppi/ui/screens/main_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,11 +28,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'login',
         builder: (context, state) => const LoginScreen(),
       ),
-      GoRoute(
-        path: '/auth',
-        name: 'auth',
-        builder: (context, state) => const AuthScreen(),
-      ),
+      // GoRoute(
+      //   path: '/auth',
+      //   name: 'auth',
+      //   builder: (context, state) => const AuthScreen(),
+      // ),
       GoRoute(
         path: '/create-profile',
         name: 'create_profile',
@@ -46,7 +45,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/',
             name: 'home',
-            builder: (context, state) => const HomeScreen(),
+            builder: (context, state) => const AuthWrapper(),
           ),
           GoRoute(
             path: '/profile',
@@ -92,14 +91,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final String location = state.uri.path;
       final bool isLogin = location == '/login';
-      final bool isAuthGate = location == '/auth';
+      // final bool isAuthGate = location == '/auth';
 
       if (!isAuthenticated) {
         return isLogin ? null : '/login';
       }
 
-      if (isLogin) return '/auth';
-      if (isAuthGate) return null;
+      if (isLogin) return '/';
+      // if (isAuthGate) return null;
 
       return null;
     },

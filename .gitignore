@@ -48,3 +48,4 @@ firebase_options.dart
 /generated/
 /screenshots/
 /.vscode/
+.env

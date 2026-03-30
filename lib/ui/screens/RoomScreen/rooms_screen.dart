@@ -1,11 +1,9 @@
-import 'dart:developer';
-
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
 import 'package:bluppi/application/providers/room/search_room_provider.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/create_room_sheet.dart';
 import 'package:bluppi/ui/screens/RoomScreen/Room/room_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/room_tile.dart';
-import 'package:bluppi/domain/models/room_summary_model.dart';
+import 'package:bluppi/ui/screens/RoomScreen/room_tile_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -26,11 +24,7 @@ class RoomMainScreen extends ConsumerWidget {
 
     // 2. Determine loading state and data payload
     final isInitialLoading = roomsState.isLoading && roomsState.rooms.isEmpty;
-    final displayRooms = isInitialLoading 
-        ? List.generate(6, (index) => _getDummyRoom()) 
-        : roomsState.rooms;
 
-    // 3. Construct the body based on the state
     Widget body;
 
     if (roomsState.errorMessage != null && roomsState.rooms.isEmpty) {
@@ -48,7 +42,7 @@ class RoomMainScreen extends ConsumerWidget {
           ],
         ),
       );
-    } else if (!isInitialLoading && displayRooms.isEmpty) {
+    } else if (!isInitialLoading && roomsState.rooms.isEmpty) {
       // STATE: Empty
       body = RefreshIndicator(
         onRefresh: roomsNotifier.refresh,
@@ -73,7 +67,6 @@ class RoomMainScreen extends ConsumerWidget {
           onNotification: (ScrollNotification scrollInfo) {
             final isNearBottom = scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 200;
             if (!roomsState.isLoading && roomsState.nextPageToken.isNotEmpty && isNearBottom) {
-              log('Triggering next page fetch...');
               roomsNotifier.fetchNextPage();
             }
             return false;
@@ -82,10 +75,16 @@ class RoomMainScreen extends ConsumerWidget {
             enabled: isInitialLoading,
             child: ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: displayRooms.length + (roomsState.nextPageToken.isNotEmpty && !isInitialLoading ? 1 : 0),
+              itemCount: isInitialLoading
+                ? 6
+                : roomsState.rooms.length + (roomsState.nextPageToken.isNotEmpty && !isInitialLoading ? 1 : 0),
               itemBuilder: (context, index) {
+                if (isInitialLoading) {
+                  return const RoomTileSkeleton();
+                }
+                
                 // Bottom loading spinner
-                if (index == displayRooms.length) {
+                if (index == roomsState.rooms.length) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 32.0),
                     child: Center(child: CircularProgressIndicator()),
@@ -94,11 +93,11 @@ class RoomMainScreen extends ConsumerWidget {
 
                 // Room Tile
                 return RoomTile(
-                  room: displayRooms[index],
+                  room: roomsState.rooms[index],
                   onTap: () {
                     if (isInitialLoading) return; // Prevent tapping dummy skeleton tiles
                     // TODO: Implement your join logic here
-                    ref.read(currentRoomProvider.notifier).joinRoom(displayRooms[index].id);
+                    ref.read(currentRoomProvider.notifier).joinRoom(roomsState.rooms[index].id);
                   },
                 );
               },
@@ -123,22 +122,5 @@ class RoomMainScreen extends ConsumerWidget {
         body: body,
       ),
     );
-  }
-
-  // Helper to generate a dummy room for Skeletonizer to draw over
-  RoomSummaryModel _getDummyRoom() {
-    return RoomSummaryModel(
-      id: 'dummy_id',
-      name: 'Loading Room Name...',
-      hostUserId: 'dummy_host',
-      hostUsername: 'Loading Host...',
-      trackId: '',
-      trackTitle: 'Loading Track Title...',
-      trackArtist: 'Loading Artist...',
-      artworkUrl: '', 
-      listenerCount: 0,
-      isLive: true,
-      isPublic: true,
-    );
-  }
+  }  
 }
