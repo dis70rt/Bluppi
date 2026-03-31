@@ -22,6 +22,11 @@ final gatewayGrpcChannelProvider = Provider<ClientChannel>((ref) {
     port: AppConfig.gatewayServerPort,
     options: const ChannelOptions(
       credentials: ChannelCredentials.secure(),
+      keepAlive: ClientKeepAliveOptions(
+        pingInterval: Duration(seconds: 45),
+        timeout: Duration(seconds: 15),
+        permitWithoutCalls: true
+      )
     ),
   );
 

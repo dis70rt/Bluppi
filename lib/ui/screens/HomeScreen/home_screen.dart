@@ -1,4 +1,3 @@
-import 'package:bluppi/application/controllers/home_controller.dart';
 import 'package:bluppi/application/providers/activity/activity_provider.dart';
 import 'package:bluppi/application/providers/music/history_provider.dart';
 import 'package:bluppi/application/providers/music/weekly_discover_provider.dart';
@@ -20,12 +19,15 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final homeAsync = ref.watch(homeInitController);
+    // final homeAsync = ref.watch(homeInitController);
+    final userAsync = ref.watch(userProvider);
     
-    return homeAsync.when(
+    return userAsync.when(
       data: (user) {
         if (user == null) {
-          context.go('/auth');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go('/auth');
+          });
           return const SizedBox.shrink();
         }
 
@@ -40,8 +42,18 @@ class HomeScreen extends ConsumerWidget {
                   ref.invalidate(weeklyDiscoverProvider);
                   ref.invalidate(historyProvider);
                   ref.invalidate(suggestedUsersProvider);
+
+                  try {
+                    await Future.wait([
+                      ref.read(activityProvider.future),
+                      ref.read(weeklyDiscoverProvider.future),
+                      ref.read(historyProvider.future),
+                      ref.read(suggestedUsersProvider.future),
+                    ]);
+                  } catch (_) {}
                 },
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,

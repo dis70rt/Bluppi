@@ -1,5 +1,6 @@
 import 'package:bluppi/application/providers/music/history_provider.dart';
 import 'package:bluppi/ui/screens/HomeScreen/RecentlyPlayed/widgets/recent_track_card.dart';
+import 'package:bluppi/ui/screens/HomeScreen/RecentlyPlayed/widgets/recently_track_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,17 +14,15 @@ class RecentlyPlayedSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      spacing: 12,
       children: [
         const Text(
           'Recently Played',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        const SizedBox(height: 8),
+
         historyAsync.when(
-          loading: () => const SizedBox(
-            height: 100,
-            child: Center(child: CircularProgressIndicator()),
-          ),
+          loading: () => const RecentlyPlayedListSkeleton(),
           error: (e, _) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text(
@@ -34,7 +33,7 @@ class RecentlyPlayedSection extends ConsumerWidget {
           data: (tracks) {
             if (tracks.isEmpty) {
               return const SizedBox(
-                height: 100,
+                height: 120,
                 child: Center(child: Text('No recently played tracks')),
               );
             }

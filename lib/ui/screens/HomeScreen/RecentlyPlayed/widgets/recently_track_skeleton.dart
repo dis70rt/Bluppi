@@ -13,8 +13,40 @@ class RecentTrackCardSkeleton extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 4,
-        // FIX: Replaced the empty Container with a Bone
-        child: const Bone(), 
+        child: Stack(
+          children: [
+            const Positioned.fill(child: Bone()),
+
+            Positioned(
+              bottom: 8,
+              left: 12,
+              right: 12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Bone.text(
+                    words: 2,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Expanded(
+                        child: Bone.text(
+                          words: 1,
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      // const SizedBox(width: 16),
+                      const Bone.text(words: 1, style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -28,7 +60,6 @@ class RecentlyPlayedListSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Skeletonizer(
-      enabled: true,
       child: SizedBox(
         height: 120,
         child: ListView.builder(

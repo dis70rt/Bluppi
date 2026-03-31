@@ -1,5 +1,6 @@
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class AvatarRing extends StatelessWidget {
@@ -24,7 +25,7 @@ class AvatarRing extends StatelessWidget {
       ),
       child: CircleAvatar(
         radius: 30,
-        backgroundImage: NetworkImage(avatarUrl),
+        backgroundImage: CachedNetworkImageProvider(avatarUrl),
         backgroundColor: BluppiColors.surface,
       ),
     );

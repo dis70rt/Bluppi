@@ -27,24 +27,53 @@ class LoadingHome extends StatelessWidget {
               spacing: 16,
               children: [
                 ActivityListSkeleton(),
-                Bone.text(
-                  words: 2,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Bone.text(
+                      words: 2,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    StackedTrackCardsSkeleton(),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 12,
+                  children: [
+                    Bone.text(
+                      words: 2,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    RecentlyPlayedListSkeleton(),
+                  ],
                 ),
 
-                StackedTrackCardsSkeleton(),
-                Bone.text(
-                  words: 2,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 12,
+                  children: [
+                    Bone.text(
+                      words: 2,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
 
-                RecentlyPlayedListSkeleton(),
-                Bone.text(
-                  words: 2,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    SuggestFriendsListSkeleton(),
+                  ],
                 ),
-
-                SuggestFriendsListSkeleton(),
                 SizedBox(height: 80),
               ],
             ),

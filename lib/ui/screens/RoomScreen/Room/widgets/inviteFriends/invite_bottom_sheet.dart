@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:bluppi/core/constants/colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -350,7 +351,7 @@ class _SuggestedFriendTile extends StatelessWidget {
       leading: CircleAvatar(
         radius: 22,
         backgroundColor: BluppiColors.divider,
-        backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+        backgroundImage: imageUrl.isNotEmpty ? CachedNetworkImageProvider(imageUrl) : null,
         child: imageUrl.isEmpty
             ? Text(
                 name.substring(0, 1).toUpperCase(),

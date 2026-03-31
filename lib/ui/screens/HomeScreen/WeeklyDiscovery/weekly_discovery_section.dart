@@ -1,7 +1,9 @@
+import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/widgets/stacked_track_cards_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluppi/application/providers/music/weekly_discover_provider.dart';
 import 'package:bluppi/ui/screens/HomeScreen/WeeklyDiscovery/widgets/stacked_track_cards.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class WeeklyDiscovery extends ConsumerWidget {
   const WeeklyDiscovery({super.key});
@@ -13,6 +15,7 @@ class WeeklyDiscovery extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      // spacing: 16,
       children: [
         Text(
           'Weekly Discovery',
@@ -26,7 +29,10 @@ class WeeklyDiscovery extends ConsumerWidget {
 
             return StackedTrackCards(tracks: tracks);
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => Skeletonizer(
+            enabled: true,
+            child: const StackedTrackCardsSkeleton(),
+          ),
           error: (error, stackTrace) => Text(
             'Error: ${error.toString()}',
             style: const TextStyle(color: Colors.red),

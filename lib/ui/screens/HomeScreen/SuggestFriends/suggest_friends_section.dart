@@ -16,12 +16,12 @@ class SuggestFriendSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      spacing: 12,
       children: [
         const Text(
           'Suggest Friends',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        const SizedBox(height: 12),
 
         suggestedAsync.when(
           skipLoadingOnReload: true,
