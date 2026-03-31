@@ -4,6 +4,7 @@ import 'package:protobuf/well_known_types/google/protobuf/timestamp.pb.dart';
 class ActivityModel {
   final String friendId;
   final String friendName;
+  final String friendUsername;
   final String friendAvatarUrl;
   final String status;
   final String? trackId;
@@ -16,6 +17,7 @@ class ActivityModel {
   const ActivityModel({
     required this.friendId,
     required this.friendName,
+    required this.friendUsername,
     required this.friendAvatarUrl,
     required this.status,
     this.trackId,
@@ -29,6 +31,7 @@ class ActivityModel {
   ActivityModel copyWith({
     String? friendId,
     String? friendName,
+    String? friendUsername,
     String? friendAvatarUrl,
     String? status,
     String? trackId,
@@ -41,6 +44,7 @@ class ActivityModel {
     return ActivityModel(
       friendId: friendId ?? this.friendId,
       friendName: friendName ?? this.friendName,
+      friendUsername: friendUsername ?? this.friendUsername,
       friendAvatarUrl: friendAvatarUrl ?? this.friendAvatarUrl,
       status: status ?? this.status,
       trackId: trackId ?? this.trackId,
@@ -56,6 +60,7 @@ class ActivityModel {
     return ActivityModel(
       friendId: protoActivity.friendId,
       friendName: protoActivity.friendName,
+      friendUsername: protoActivity.friendUsername,
       friendAvatarUrl: protoActivity.friendAvatarUrl,
       status: protoActivity.status,
       trackId: protoActivity.hasTrackId() ? protoActivity.trackId : null,

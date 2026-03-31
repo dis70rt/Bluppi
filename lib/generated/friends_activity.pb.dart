@@ -30,6 +30,7 @@ class FriendActivity extends $pb.GeneratedMessage {
     $core.String? trackCoverUrl,
     $core.String? trackPreviewUrl,
     $1.Timestamp? lastSeen,
+    $core.String? friendUsername,
   }) {
     final result = create();
     if (friendId != null) result.friendId = friendId;
@@ -42,6 +43,7 @@ class FriendActivity extends $pb.GeneratedMessage {
     if (trackCoverUrl != null) result.trackCoverUrl = trackCoverUrl;
     if (trackPreviewUrl != null) result.trackPreviewUrl = trackPreviewUrl;
     if (lastSeen != null) result.lastSeen = lastSeen;
+    if (friendUsername != null) result.friendUsername = friendUsername;
     return result;
   }
 
@@ -70,6 +72,7 @@ class FriendActivity extends $pb.GeneratedMessage {
     ..aOS(9, _omitFieldNames ? '' : 'trackPreviewUrl')
     ..aOM<$1.Timestamp>(10, _omitFieldNames ? '' : 'lastSeen',
         subBuilder: $1.Timestamp.create)
+    ..aOS(11, _omitFieldNames ? '' : 'friendUsername')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -183,6 +186,15 @@ class FriendActivity extends $pb.GeneratedMessage {
   void clearLastSeen() => $_clearField(10);
   @$pb.TagNumber(10)
   $1.Timestamp ensureLastSeen() => $_ensure(9);
+
+  @$pb.TagNumber(11)
+  $core.String get friendUsername => $_getSZ(10);
+  @$pb.TagNumber(11)
+  set friendUsername($core.String value) => $_setString(10, value);
+  @$pb.TagNumber(11)
+  $core.bool hasFriendUsername() => $_has(10);
+  @$pb.TagNumber(11)
+  void clearFriendUsername() => $_clearField(11);
 }
 
 class GetFriendsFeedRequest extends $pb.GeneratedMessage {

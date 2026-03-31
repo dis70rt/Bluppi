@@ -23,6 +23,7 @@ const FriendActivity$json = {
     {'1': 'friend_name', '3': 2, '4': 1, '5': 9, '10': 'friendName'},
     {'1': 'friend_avatar_url', '3': 3, '4': 1, '5': 9, '10': 'friendAvatarUrl'},
     {'1': 'status', '3': 4, '4': 1, '5': 9, '10': 'status'},
+    {'1': 'friend_username', '3': 11, '4': 1, '5': 9, '10': 'friendUsername'},
     {
       '1': 'track_id',
       '3': 5,
@@ -90,13 +91,14 @@ const FriendActivity$json = {
 final $typed_data.Uint8List friendActivityDescriptor = $convert.base64Decode(
     'Cg5GcmllbmRBY3Rpdml0eRIbCglmcmllbmRfaWQYASABKAlSCGZyaWVuZElkEh8KC2ZyaWVuZF'
     '9uYW1lGAIgASgJUgpmcmllbmROYW1lEioKEWZyaWVuZF9hdmF0YXJfdXJsGAMgASgJUg9mcmll'
-    'bmRBdmF0YXJVcmwSFgoGc3RhdHVzGAQgASgJUgZzdGF0dXMSHgoIdHJhY2tfaWQYBSABKAlIAF'
-    'IHdHJhY2tJZIgBARIkCgt0cmFja190aXRsZRgGIAEoCUgBUgp0cmFja1RpdGxliAEBEiYKDHRy'
-    'YWNrX2FydGlzdBgHIAEoCUgCUgt0cmFja0FydGlzdIgBARIrCg90cmFja19jb3Zlcl91cmwYCC'
-    'ABKAlIA1INdHJhY2tDb3ZlclVybIgBARIvChF0cmFja19wcmV2aWV3X3VybBgJIAEoCUgEUg90'
-    'cmFja1ByZXZpZXdVcmyIAQESNwoJbGFzdF9zZWVuGAogASgLMhouZ29vZ2xlLnByb3RvYnVmLl'
-    'RpbWVzdGFtcFIIbGFzdFNlZW5CCwoJX3RyYWNrX2lkQg4KDF90cmFja190aXRsZUIPCg1fdHJh'
-    'Y2tfYXJ0aXN0QhIKEF90cmFja19jb3Zlcl91cmxCFAoSX3RyYWNrX3ByZXZpZXdfdXJs');
+    'bmRBdmF0YXJVcmwSFgoGc3RhdHVzGAQgASgJUgZzdGF0dXMSJwoPZnJpZW5kX3VzZXJuYW1lGA'
+    'sgASgJUg5mcmllbmRVc2VybmFtZRIeCgh0cmFja19pZBgFIAEoCUgAUgd0cmFja0lkiAEBEiQK'
+    'C3RyYWNrX3RpdGxlGAYgASgJSAFSCnRyYWNrVGl0bGWIAQESJgoMdHJhY2tfYXJ0aXN0GAcgAS'
+    'gJSAJSC3RyYWNrQXJ0aXN0iAEBEisKD3RyYWNrX2NvdmVyX3VybBgIIAEoCUgDUg10cmFja0Nv'
+    'dmVyVXJsiAEBEi8KEXRyYWNrX3ByZXZpZXdfdXJsGAkgASgJSARSD3RyYWNrUHJldmlld1VybI'
+    'gBARI3CglsYXN0X3NlZW4YCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wUghsYXN0'
+    'U2VlbkILCglfdHJhY2tfaWRCDgoMX3RyYWNrX3RpdGxlQg8KDV90cmFja19hcnRpc3RCEgoQX3'
+    'RyYWNrX2NvdmVyX3VybEIUChJfdHJhY2tfcHJldmlld191cmw=');
 
 @$core.Deprecated('Use getFriendsFeedRequestDescriptor instead')
 const GetFriendsFeedRequest$json = {
