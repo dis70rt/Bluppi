@@ -6,6 +6,7 @@ import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_following_tab_vie
 import 'package:bluppi/ui/screens/RoomScreen/NetworkDiagnostics/network_diagnostics_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/rooms_screen.dart';
 import 'package:bluppi/ui/screens/SearchScreen/search_screen.dart';
+import 'package:bluppi/ui/screens/SettingScreen/settings_screen.dart';
 import 'package:bluppi/ui/screens/auth_wrapper.dart';
 import 'package:bluppi/ui/screens/main_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -99,6 +100,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             },
           ),
           
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
         ],
       ),
     ],

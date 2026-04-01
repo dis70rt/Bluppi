@@ -2,6 +2,7 @@
 import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UserInteractionButton extends StatelessWidget {
   final FollowArg followArgs;
@@ -33,7 +34,7 @@ class UserInteractionButton extends StatelessWidget {
           _buildCircularIconButton(
             icon: Icons.settings_outlined,
             backgroundColor: glassColor,
-            onTap: () {}, // Open Settings
+            onTap: () => context.push('/settings'), // Open Settings
           ),
         ] else ...[
           
