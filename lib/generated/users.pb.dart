@@ -1812,12 +1812,12 @@ class GetFollowersRequest extends $pb.GeneratedMessage {
   factory GetFollowersRequest({
     $core.String? userId,
     $core.int? limit,
-    $core.int? offset,
+    $core.String? cursor,
   }) {
     final result = create();
     if (userId != null) result.userId = userId;
     if (limit != null) result.limit = limit;
-    if (offset != null) result.offset = offset;
+    if (cursor != null) result.cursor = cursor;
     return result;
   }
 
@@ -1836,7 +1836,7 @@ class GetFollowersRequest extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aI(2, _omitFieldNames ? '' : 'limit')
-    ..aI(3, _omitFieldNames ? '' : 'offset')
+    ..aOS(3, _omitFieldNames ? '' : 'cursor')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1877,25 +1877,25 @@ class GetFollowersRequest extends $pb.GeneratedMessage {
   void clearLimit() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get offset => $_getIZ(2);
+  $core.String get cursor => $_getSZ(2);
   @$pb.TagNumber(3)
-  set offset($core.int value) => $_setSignedInt32(2, value);
+  set cursor($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasOffset() => $_has(2);
+  $core.bool hasCursor() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOffset() => $_clearField(3);
+  void clearCursor() => $_clearField(3);
 }
 
 class GetFollowingRequest extends $pb.GeneratedMessage {
   factory GetFollowingRequest({
     $core.String? userId,
     $core.int? limit,
-    $core.int? offset,
+    $core.String? cursor,
   }) {
     final result = create();
     if (userId != null) result.userId = userId;
     if (limit != null) result.limit = limit;
-    if (offset != null) result.offset = offset;
+    if (cursor != null) result.cursor = cursor;
     return result;
   }
 
@@ -1914,7 +1914,7 @@ class GetFollowingRequest extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'userId')
     ..aI(2, _omitFieldNames ? '' : 'limit')
-    ..aI(3, _omitFieldNames ? '' : 'offset')
+    ..aOS(3, _omitFieldNames ? '' : 'cursor')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1955,13 +1955,13 @@ class GetFollowingRequest extends $pb.GeneratedMessage {
   void clearLimit() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get offset => $_getIZ(2);
+  $core.String get cursor => $_getSZ(2);
   @$pb.TagNumber(3)
-  set offset($core.int value) => $_setSignedInt32(2, value);
+  set cursor($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasOffset() => $_has(2);
+  $core.bool hasCursor() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOffset() => $_clearField(3);
+  void clearCursor() => $_clearField(3);
 }
 
 class FollowUserEntry extends $pb.GeneratedMessage {
@@ -2072,11 +2072,13 @@ class FollowUserEntry extends $pb.GeneratedMessage {
 class GetFollowersResponse extends $pb.GeneratedMessage {
   factory GetFollowersResponse({
     $core.Iterable<FollowUserEntry>? followers,
-    $fixnum.Int64? total,
+    $core.String? nextCursor,
+    $core.bool? hasMore,
   }) {
     final result = create();
     if (followers != null) result.followers.addAll(followers);
-    if (total != null) result.total = total;
+    if (nextCursor != null) result.nextCursor = nextCursor;
+    if (hasMore != null) result.hasMore = hasMore;
     return result;
   }
 
@@ -2095,7 +2097,8 @@ class GetFollowersResponse extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..pPM<FollowUserEntry>(1, _omitFieldNames ? '' : 'followers',
         subBuilder: FollowUserEntry.create)
-    ..aInt64(2, _omitFieldNames ? '' : 'total')
+    ..aOS(2, _omitFieldNames ? '' : 'nextCursor')
+    ..aOB(3, _omitFieldNames ? '' : 'hasMore')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -2121,23 +2124,34 @@ class GetFollowersResponse extends $pb.GeneratedMessage {
   $pb.PbList<FollowUserEntry> get followers => $_getList(0);
 
   @$pb.TagNumber(2)
-  $fixnum.Int64 get total => $_getI64(1);
+  $core.String get nextCursor => $_getSZ(1);
   @$pb.TagNumber(2)
-  set total($fixnum.Int64 value) => $_setInt64(1, value);
+  set nextCursor($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
-  $core.bool hasTotal() => $_has(1);
+  $core.bool hasNextCursor() => $_has(1);
   @$pb.TagNumber(2)
-  void clearTotal() => $_clearField(2);
+  void clearNextCursor() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.bool get hasMore => $_getBF(2);
+  @$pb.TagNumber(3)
+  set hasMore($core.bool value) => $_setBool(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasHasMore() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearHasMore() => $_clearField(3);
 }
 
 class GetFollowingResponse extends $pb.GeneratedMessage {
   factory GetFollowingResponse({
     $core.Iterable<FollowUserEntry>? following,
-    $fixnum.Int64? total,
+    $core.String? nextCursor,
+    $core.bool? hasMore,
   }) {
     final result = create();
     if (following != null) result.following.addAll(following);
-    if (total != null) result.total = total;
+    if (nextCursor != null) result.nextCursor = nextCursor;
+    if (hasMore != null) result.hasMore = hasMore;
     return result;
   }
 
@@ -2156,7 +2170,8 @@ class GetFollowingResponse extends $pb.GeneratedMessage {
       createEmptyInstance: create)
     ..pPM<FollowUserEntry>(1, _omitFieldNames ? '' : 'following',
         subBuilder: FollowUserEntry.create)
-    ..aInt64(2, _omitFieldNames ? '' : 'total')
+    ..aOS(2, _omitFieldNames ? '' : 'nextCursor')
+    ..aOB(3, _omitFieldNames ? '' : 'hasMore')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -2182,13 +2197,22 @@ class GetFollowingResponse extends $pb.GeneratedMessage {
   $pb.PbList<FollowUserEntry> get following => $_getList(0);
 
   @$pb.TagNumber(2)
-  $fixnum.Int64 get total => $_getI64(1);
+  $core.String get nextCursor => $_getSZ(1);
   @$pb.TagNumber(2)
-  set total($fixnum.Int64 value) => $_setInt64(1, value);
+  set nextCursor($core.String value) => $_setString(1, value);
   @$pb.TagNumber(2)
-  $core.bool hasTotal() => $_has(1);
+  $core.bool hasNextCursor() => $_has(1);
   @$pb.TagNumber(2)
-  void clearTotal() => $_clearField(2);
+  void clearNextCursor() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.bool get hasMore => $_getBF(2);
+  @$pb.TagNumber(3)
+  set hasMore($core.bool value) => $_setBool(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasHasMore() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearHasMore() => $_clearField(3);
 }
 
 class UserSummary extends $pb.GeneratedMessage {

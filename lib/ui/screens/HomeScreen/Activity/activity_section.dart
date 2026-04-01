@@ -1,5 +1,4 @@
 import 'package:bluppi/application/providers/activity/activity_provider.dart';
-import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/activity_bottom_sheet.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/activity_item_skeleton.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Activity/widgets/activity_item_card.dart';

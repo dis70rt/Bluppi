@@ -234,15 +234,16 @@ final $typed_data.Uint8List statusResponseDescriptor = $convert.base64Decode(
 const GetLikedTracksRequest$json = {
   '1': 'GetLikedTracksRequest',
   '2': [
+    {'1': 'target_user_id', '3': 1, '4': 1, '5': 9, '10': 'targetUserId'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
-    {'1': 'offset', '3': 3, '4': 1, '5': 5, '10': 'offset'},
+    {'1': 'cursor', '3': 3, '4': 1, '5': 9, '10': 'cursor'},
   ],
 };
 
 /// Descriptor for `GetLikedTracksRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getLikedTracksRequestDescriptor = $convert.base64Decode(
-    'ChVHZXRMaWtlZFRyYWNrc1JlcXVlc3QSFAoFbGltaXQYAiABKAVSBWxpbWl0EhYKBm9mZnNldB'
-    'gDIAEoBVIGb2Zmc2V0');
+    'ChVHZXRMaWtlZFRyYWNrc1JlcXVlc3QSJAoOdGFyZ2V0X3VzZXJfaWQYASABKAlSDHRhcmdldF'
+    'VzZXJJZBIUCgVsaW1pdBgCIAEoBVIFbGltaXQSFgoGY3Vyc29yGAMgASgJUgZjdXJzb3I=');
 
 @$core.Deprecated('Use likedTrackEntryDescriptor instead')
 const LikedTrackEntry$json = {
@@ -283,14 +284,16 @@ const GetLikedTracksResponse$json = {
       '10': 'tracks'
     },
     {'1': 'total', '3': 2, '4': 1, '5': 3, '10': 'total'},
+    {'1': 'next_cursor', '3': 3, '4': 1, '5': 9, '10': 'nextCursor'},
+    {'1': 'has_more', '3': 4, '4': 1, '5': 8, '10': 'hasMore'},
   ],
 };
 
 /// Descriptor for `GetLikedTracksResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List getLikedTracksResponseDescriptor =
-    $convert.base64Decode(
-        'ChZHZXRMaWtlZFRyYWNrc1Jlc3BvbnNlEi8KBnRyYWNrcxgBIAMoCzIXLnRyYWNrcy5MaWtlZF'
-        'RyYWNrRW50cnlSBnRyYWNrcxIUCgV0b3RhbBgCIAEoA1IFdG90YWw=');
+final $typed_data.Uint8List getLikedTracksResponseDescriptor = $convert.base64Decode(
+    'ChZHZXRMaWtlZFRyYWNrc1Jlc3BvbnNlEi8KBnRyYWNrcxgBIAMoCzIXLnRyYWNrcy5MaWtlZF'
+    'RyYWNrRW50cnlSBnRyYWNrcxIUCgV0b3RhbBgCIAEoA1IFdG90YWwSHwoLbmV4dF9jdXJzb3IY'
+    'AyABKAlSCm5leHRDdXJzb3ISGQoIaGFzX21vcmUYBCABKAhSB2hhc01vcmU=');
 
 @$core.Deprecated('Use isTrackLikedRequestDescriptor instead')
 const IsTrackLikedRequest$json = {

@@ -38,14 +38,13 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: RefreshIndicator(
                 onRefresh: () async {
-                  ref.invalidate(activityProvider);
+                  ref.read(activityProvider.notifier).refresh();
                   ref.invalidate(weeklyDiscoverProvider);
                   ref.invalidate(historyProvider);
                   ref.invalidate(suggestedUsersProvider);
 
                   try {
                     await Future.wait([
-                      ref.read(activityProvider.future),
                       ref.read(weeklyDiscoverProvider.future),
                       ref.read(historyProvider.future),
                       ref.read(suggestedUsersProvider.future),

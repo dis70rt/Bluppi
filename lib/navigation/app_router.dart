@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bluppi/ui/screens/CreateProfileScreen/create_profile_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_following_tab_view.dart';
 import 'package:bluppi/ui/screens/RoomScreen/NetworkDiagnostics/network_diagnostics_screen.dart';
 import 'package:bluppi/ui/screens/RoomScreen/rooms_screen.dart';
 import 'package:bluppi/ui/screens/SearchScreen/search_screen.dart';
@@ -77,6 +78,24 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               final username = state.pathParameters['username'];
               return ProfileScreen(username: username);
+            },
+          ),
+
+          GoRoute(
+            path: '/network/:userId',
+            name: 'network',
+            builder: (context, state) {
+
+              final extras = state.extra as Map<String, dynamic>? ?? {};
+              final initialTabIndex = extras['initialTabIndex'] as int? ?? 0;
+              
+              return FollowNetworkScreen(
+                userId: state.pathParameters['userId']!,
+                username: extras['username'] ?? 'User',
+                initialFollowersCount: extras['followersCount'] ?? 0,
+                initialFollowingCount: extras['followingCount'] ?? 0,
+                initialTabIndex: initialTabIndex,
+              );
             },
           ),
           

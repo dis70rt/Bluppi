@@ -40,6 +40,8 @@ class ProfileContent extends ConsumerWidget {
             children: [
               ProfileHeader(profile: profile),
               FollowingStatsWidget(
+                userId: user.id,
+                username: user.username,
                 followers: followState.followers ?? user.followerCount,
                 following: followState.following ?? user.followingCount,
               ),

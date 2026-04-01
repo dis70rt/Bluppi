@@ -960,12 +960,14 @@ class StatusResponse extends $pb.GeneratedMessage {
 
 class GetLikedTracksRequest extends $pb.GeneratedMessage {
   factory GetLikedTracksRequest({
+    $core.String? targetUserId,
     $core.int? limit,
-    $core.int? offset,
+    $core.String? cursor,
   }) {
     final result = create();
+    if (targetUserId != null) result.targetUserId = targetUserId;
     if (limit != null) result.limit = limit;
-    if (offset != null) result.offset = offset;
+    if (cursor != null) result.cursor = cursor;
     return result;
   }
 
@@ -982,8 +984,9 @@ class GetLikedTracksRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'GetLikedTracksRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
       createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'targetUserId')
     ..aI(2, _omitFieldNames ? '' : 'limit')
-    ..aI(3, _omitFieldNames ? '' : 'offset')
+    ..aOS(3, _omitFieldNames ? '' : 'cursor')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1006,24 +1009,32 @@ class GetLikedTracksRequest extends $pb.GeneratedMessage {
       $pb.GeneratedMessage.$_defaultFor<GetLikedTracksRequest>(create);
   static GetLikedTracksRequest? _defaultInstance;
 
-  /// string user_id = 1;
+  @$pb.TagNumber(1)
+  $core.String get targetUserId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set targetUserId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasTargetUserId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTargetUserId() => $_clearField(1);
+
   @$pb.TagNumber(2)
-  $core.int get limit => $_getIZ(0);
+  $core.int get limit => $_getIZ(1);
   @$pb.TagNumber(2)
-  set limit($core.int value) => $_setSignedInt32(0, value);
+  set limit($core.int value) => $_setSignedInt32(1, value);
   @$pb.TagNumber(2)
-  $core.bool hasLimit() => $_has(0);
+  $core.bool hasLimit() => $_has(1);
   @$pb.TagNumber(2)
   void clearLimit() => $_clearField(2);
 
   @$pb.TagNumber(3)
-  $core.int get offset => $_getIZ(1);
+  $core.String get cursor => $_getSZ(2);
   @$pb.TagNumber(3)
-  set offset($core.int value) => $_setSignedInt32(1, value);
+  set cursor($core.String value) => $_setString(2, value);
   @$pb.TagNumber(3)
-  $core.bool hasOffset() => $_has(1);
+  $core.bool hasCursor() => $_has(2);
   @$pb.TagNumber(3)
-  void clearOffset() => $_clearField(3);
+  void clearCursor() => $_clearField(3);
 }
 
 class LikedTrackEntry extends $pb.GeneratedMessage {
@@ -1135,10 +1146,14 @@ class GetLikedTracksResponse extends $pb.GeneratedMessage {
   factory GetLikedTracksResponse({
     $core.Iterable<LikedTrackEntry>? tracks,
     $fixnum.Int64? total,
+    $core.String? nextCursor,
+    $core.bool? hasMore,
   }) {
     final result = create();
     if (tracks != null) result.tracks.addAll(tracks);
     if (total != null) result.total = total;
+    if (nextCursor != null) result.nextCursor = nextCursor;
+    if (hasMore != null) result.hasMore = hasMore;
     return result;
   }
 
@@ -1158,6 +1173,8 @@ class GetLikedTracksResponse extends $pb.GeneratedMessage {
     ..pPM<LikedTrackEntry>(1, _omitFieldNames ? '' : 'tracks',
         subBuilder: LikedTrackEntry.create)
     ..aInt64(2, _omitFieldNames ? '' : 'total')
+    ..aOS(3, _omitFieldNames ? '' : 'nextCursor')
+    ..aOB(4, _omitFieldNames ? '' : 'hasMore')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -1191,6 +1208,24 @@ class GetLikedTracksResponse extends $pb.GeneratedMessage {
   $core.bool hasTotal() => $_has(1);
   @$pb.TagNumber(2)
   void clearTotal() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get nextCursor => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set nextCursor($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasNextCursor() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearNextCursor() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.bool get hasMore => $_getBF(3);
+  @$pb.TagNumber(4)
+  set hasMore($core.bool value) => $_setBool(3, value);
+  @$pb.TagNumber(4)
+  $core.bool hasHasMore() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearHasMore() => $_clearField(4);
 }
 
 class IsTrackLikedRequest extends $pb.GeneratedMessage {

@@ -1,5 +1,6 @@
 import 'package:bluppi/data/auth/auth_interceptor.dart';
 import 'package:bluppi/domain/models/create_user_model.dart';
+import 'package:bluppi/domain/models/follow_user_entry_model.dart';
 import 'package:bluppi/domain/models/user_summary_model.dart';
 import 'package:bluppi/domain/repositories/user_repository.dart';
 import 'package:bluppi/generated/users.pbgrpc.dart' as proto;
@@ -88,5 +89,21 @@ class UserServiceClientRepository implements UserRepository {
     final users = response.users.map((proto.UserSummary p) => UserSummaryModel.fromProto(p)).toList();
 
     return (users, response.nextCursor);
+  }
+
+  @override
+  Future<(List<FollowUserEntryModel>, String, bool)> getFollowers(String userId, String nextCursor, {int limit = 20}) async {
+    final request = proto.GetFollowersRequest(userId: userId, limit: limit, cursor: nextCursor);
+    final response = await _client.getFollowers(request);
+    final followers = response.followers.map((proto.FollowUserEntry p) => FollowUserEntryModel.fromProto(p)).toList();
+    return (followers, response.nextCursor, response.hasMore);
+  }
+
+  @override
+  Future<(List<FollowUserEntryModel>, String, bool)> getFollowings(String userId, String nextCursor, {int limit = 20}) async {
+    final request = proto.GetFollowingRequest(userId: userId, limit: limit, cursor: nextCursor);
+    final response = await _client.getFollowing(request);
+    final followings = response.following.map((proto.FollowUserEntry p) => FollowUserEntryModel.fromProto(p)).toList();
+    return (followings, response.nextCursor, response.hasMore);
   }
 }

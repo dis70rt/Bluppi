@@ -471,14 +471,14 @@ const GetFollowersRequest$json = {
   '2': [
     {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
-    {'1': 'offset', '3': 3, '4': 1, '5': 5, '10': 'offset'},
+    {'1': 'cursor', '3': 3, '4': 1, '5': 9, '10': 'cursor'},
   ],
 };
 
 /// Descriptor for `GetFollowersRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getFollowersRequestDescriptor = $convert.base64Decode(
     'ChNHZXRGb2xsb3dlcnNSZXF1ZXN0EhcKB3VzZXJfaWQYASABKAlSBnVzZXJJZBIUCgVsaW1pdB'
-    'gCIAEoBVIFbGltaXQSFgoGb2Zmc2V0GAMgASgFUgZvZmZzZXQ=');
+    'gCIAEoBVIFbGltaXQSFgoGY3Vyc29yGAMgASgJUgZjdXJzb3I=');
 
 @$core.Deprecated('Use getFollowingRequestDescriptor instead')
 const GetFollowingRequest$json = {
@@ -486,14 +486,14 @@ const GetFollowingRequest$json = {
   '2': [
     {'1': 'user_id', '3': 1, '4': 1, '5': 9, '10': 'userId'},
     {'1': 'limit', '3': 2, '4': 1, '5': 5, '10': 'limit'},
-    {'1': 'offset', '3': 3, '4': 1, '5': 5, '10': 'offset'},
+    {'1': 'cursor', '3': 3, '4': 1, '5': 9, '10': 'cursor'},
   ],
 };
 
 /// Descriptor for `GetFollowingRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getFollowingRequestDescriptor = $convert.base64Decode(
     'ChNHZXRGb2xsb3dpbmdSZXF1ZXN0EhcKB3VzZXJfaWQYASABKAlSBnVzZXJJZBIUCgVsaW1pdB'
-    'gCIAEoBVIFbGltaXQSFgoGb2Zmc2V0GAMgASgFUgZvZmZzZXQ=');
+    'gCIAEoBVIFbGltaXQSFgoGY3Vyc29yGAMgASgJUgZjdXJzb3I=');
 
 @$core.Deprecated('Use followUserEntryDescriptor instead')
 const FollowUserEntry$json = {
@@ -533,14 +533,16 @@ const GetFollowersResponse$json = {
       '6': '.users.FollowUserEntry',
       '10': 'followers'
     },
-    {'1': 'total', '3': 2, '4': 1, '5': 3, '10': 'total'},
+    {'1': 'next_cursor', '3': 2, '4': 1, '5': 9, '10': 'nextCursor'},
+    {'1': 'has_more', '3': 3, '4': 1, '5': 8, '10': 'hasMore'},
   ],
 };
 
 /// Descriptor for `GetFollowersResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getFollowersResponseDescriptor = $convert.base64Decode(
     'ChRHZXRGb2xsb3dlcnNSZXNwb25zZRI0Cglmb2xsb3dlcnMYASADKAsyFi51c2Vycy5Gb2xsb3'
-    'dVc2VyRW50cnlSCWZvbGxvd2VycxIUCgV0b3RhbBgCIAEoA1IFdG90YWw=');
+    'dVc2VyRW50cnlSCWZvbGxvd2VycxIfCgtuZXh0X2N1cnNvchgCIAEoCVIKbmV4dEN1cnNvchIZ'
+    'CghoYXNfbW9yZRgDIAEoCFIHaGFzTW9yZQ==');
 
 @$core.Deprecated('Use getFollowingResponseDescriptor instead')
 const GetFollowingResponse$json = {
@@ -554,14 +556,16 @@ const GetFollowingResponse$json = {
       '6': '.users.FollowUserEntry',
       '10': 'following'
     },
-    {'1': 'total', '3': 2, '4': 1, '5': 3, '10': 'total'},
+    {'1': 'next_cursor', '3': 2, '4': 1, '5': 9, '10': 'nextCursor'},
+    {'1': 'has_more', '3': 3, '4': 1, '5': 8, '10': 'hasMore'},
   ],
 };
 
 /// Descriptor for `GetFollowingResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getFollowingResponseDescriptor = $convert.base64Decode(
     'ChRHZXRGb2xsb3dpbmdSZXNwb25zZRI0Cglmb2xsb3dpbmcYASADKAsyFi51c2Vycy5Gb2xsb3'
-    'dVc2VyRW50cnlSCWZvbGxvd2luZxIUCgV0b3RhbBgCIAEoA1IFdG90YWw=');
+    'dVc2VyRW50cnlSCWZvbGxvd2luZxIfCgtuZXh0X2N1cnNvchgCIAEoCVIKbmV4dEN1cnNvchIZ'
+    'CghoYXNfbW9yZRgDIAEoCFIHaGFzTW9yZQ==');
 
 @$core.Deprecated('Use userSummaryDescriptor instead')
 const UserSummary$json = {
