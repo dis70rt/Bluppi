@@ -28,7 +28,7 @@ class MainScreen extends ConsumerWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 70,
+            bottom: 90,
             child: FloatingMusicPlayer())
         ],
       ),

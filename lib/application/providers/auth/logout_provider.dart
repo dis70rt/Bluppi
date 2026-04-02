@@ -11,7 +11,7 @@ import 'package:bluppi/application/providers/room/current_room_provider.dart';
 import 'package:bluppi/application/providers/room/search_room_provider.dart';
 import 'package:bluppi/application/providers/user/suggested_friends_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
-import 'package:bluppi/main.dart'; // for audioHandler
+import 'package:bluppi/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final logoutProvider = Provider<Future<void> Function()>((ref) {
@@ -26,7 +26,7 @@ final logoutProvider = Provider<Future<void> Function()>((ref) {
     ref.invalidate(historyProvider);
     ref.invalidate(weeklyDiscoverProvider);
     ref.invalidate(recentlySearchProvider);
-    ref.invalidate(suggestedFriendsProvider);
+    ref.invalidate(suggestedUsersProvider);
     ref.invalidate(queueProvider);
     ref.invalidate(playerProvider);
     ref.invalidate(currentRoomProvider);
