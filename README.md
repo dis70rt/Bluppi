@@ -43,30 +43,13 @@ Bluppi is a real-time synchronized music platform where users create rooms, list
 
 ## ✨ Features
 
-### 🎵 Music
-- Stream tracks with background audio playback (`just_audio` + `audio_service`)
-- Queue management — play next, add to back, reorder
-- Floating mini player with swipe-to-minimize gestures
-- Recently played history & weekly discovery feed
-- Top tracks per user with play count stats
-- Cursor-paginated track search with debounced queries
+- 🎵 **Music**: Real-time synchronized playback with `just_audio`. Includes queue management, swipe-to-minimize floating player, and weekly discovery feeds.
 
-### 👥 Social
-- Create or join real-time rooms to listen together
-- Live chat with optimistic UI updates
-- Follow / unfollow system with follower & following tabs
-- Suggested friends discovery
-- User profiles with genre tags, bio, and stats
+- 👥 **Social**: Create/join rooms with live chat. Follow system, user profiles with genre tags, and suggested friends.
 
-### 🔍 Discovery
-- Full-text track search powered by Solr (via gRPC)
-- Liked tracks library with infinite scroll
-- Play history with timestamps
+- 🔍 **Discovery**: Full-text track search (Solr-backed) with cursor-paginated infinite scroll and liked tracks library.
 
-### 🔐 Auth & Onboarding
-- Firebase Authentication with Google Sign-In
-- Profile creation flow — name, avatar, bio, genres, gender
-- Edit profile with PATCH-style gRPC updates
+- 🔐 **Auth**: Firebase Google Sign-In with a comprehensive onboarding flow and profile customization.
 
 ### ⚡ UX Details
 - Skeleton loading screens for seamless transitions
