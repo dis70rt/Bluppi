@@ -3,7 +3,6 @@ import 'package:bluppi/application/providers/user/profile_provider.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/user_interation_button.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_stats.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_header.dart';
-import 'package:bluppi/ui/screens/ProfileScreen/widgets/top_tracks_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -25,42 +24,30 @@ class ProfileContent extends ConsumerWidget {
 
     final followState = ref.watch(followStatsProvider(followArgs));
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        // ignore: unused_result
-        await ref.refresh(profileProvider(user.username).future);
-      },
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ProfileHeader(profile: profile),
-              FollowingStatsWidget(
-                userId: user.id,
-                username: user.username,
-                followers: followState.followers ?? user.followerCount,
-                following: followState.following ?? user.followingCount,
-              ),
-              const SizedBox(height: 16),
-              UserInteractionButton(
-                followArgs: followArgs,
-                isOwnProfile: isOwnProfile,
-              ),
-              
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Divider(color: Colors.white10),
-              ),
-              TopTracksSection(userId: user.id),
-              const SizedBox(height: 24),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ProfileHeader(profile: profile),
+          FollowingStatsWidget(
+            userId: user.id,
+            username: user.username,
+            followers: followState.followers ?? user.followerCount,
+            following: followState.following ?? user.followingCount,
           ),
-        ),
+          const SizedBox(height: 16),
+          UserInteractionButton(
+            followArgs: followArgs,
+            isOwnProfile: isOwnProfile,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Divider(color: Colors.white10),
+          ),
+        ],
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:bluppi/ui/screens/ProfileScreen/profile_screen_skeleton.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/user_not_found.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_app_bar.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/profile_content.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/widgets/top_tracks_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grpc/grpc.dart';
@@ -24,15 +25,24 @@ class ProfileScreen extends ConsumerWidget {
           return const UserNotFoundScreen();
         }
         final user = profile.user!;
-        return Scaffold(
-          body: Stack(
-            children: [
-              ProfileAppBar(profilePic: user.profilePic),
-              Padding(
-                padding: const EdgeInsets.only(top: 85),
-                child: ProfileContent(profile: profile),
-              ),
-            ],
+        return SafeArea(
+          child: Scaffold(
+            body: Column(
+              children: [
+                Stack(
+                  children: [
+                    ProfileAppBar(profilePic: user.profilePic),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 85),
+                      child: ProfileContent(profile: profile),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: TopTracksSection(userId: user.id),
+                ),
+              ],
+            ),
           ),
         );
       },

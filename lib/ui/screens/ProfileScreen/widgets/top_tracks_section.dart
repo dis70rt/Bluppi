@@ -21,21 +21,31 @@ class TopTracksSection extends ConsumerWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Top Tracks",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: BluppiColors.textPrimary,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                "Top Tracks",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: BluppiColors.textPrimary,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            ...List.generate(tracks.length, (index) {
-              return TopTrackTile(
-                track: tracks[index],
-                rank: index + 1,
-              );
-            }),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                physics: const BouncingScrollPhysics(),
+                itemCount: tracks.length,
+                itemBuilder: (context, index) {
+                  return TopTrackTile(
+                    track: tracks[index],
+                    rank: index + 1,
+                  );
+                },
+              ),
+            ),
           ],
         );
       },

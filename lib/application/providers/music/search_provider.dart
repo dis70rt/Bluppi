@@ -57,6 +57,8 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
     state = const AsyncLoading();
 
     _debounce = Timer(const Duration(milliseconds: 400), () async {
+      if (!ref.mounted) return;
+
       try {
         final repo = ref.read(trackServiceProvider);
         final response = await repo.searchTrack(query);
@@ -68,7 +70,7 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
             query: query,
             results: response.results,
             nextCursor: response.nextCursor,
-            hasMore: response.nextCursor != null,
+            hasMore: response.nextCursor != null && response.nextCursor!.isNotEmpty,
           ),
         );
       } catch (e, st) {
@@ -82,10 +84,10 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
     final before = state.value;
     if (before == null) return;
     if (!before.hasMore || before.isLoadingMore) return;
-    if (before.nextCursor == null) return;
+    if (before.nextCursor == null || before.nextCursor!.isEmpty) return;
 
     final requestedQuery = before.query;
-    final requestedCursor = before.nextCursor;
+    final requestedCursor = before.nextCursor!;
 
     state = AsyncData(before.copyWith(isLoadingMore: true));
 
@@ -108,12 +110,17 @@ class SearchTrackNotifier extends AsyncNotifier<SearchTrackState> {
           isLoadingMore: false,
           results: mergedResults,
           nextCursor: response.nextCursor,
-          hasMore: response.nextCursor != null,
+          hasMore: response.nextCursor != null && response.nextCursor!.isNotEmpty,
         ),
       );
-    } catch (e, st) {
+    } catch (e) {
       if (!ref.mounted) return;
-      state = AsyncError(e, st);
+
+      // Keep existing results, just stop the loading indicator
+      final current = state.value;
+      if (current != null) {
+        state = AsyncData(current.copyWith(isLoadingMore: false));
+      }
     }
   }
 }
