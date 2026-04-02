@@ -128,6 +128,14 @@ class TrackServiceClient extends $grpc.Client {
     return $createUnaryCall(_$weeklyDiscoverTracks, request, options: options);
   }
 
+  /// --- Top Tracks (Profile) ---
+  $grpc.ResponseFuture<$0.GetUserTopTracksResponse> getUserTopTracks(
+    $0.GetUserTopTracksRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$getUserTopTracks, request, options: options);
+  }
+
   // method descriptors
 
   static final _$getTrack =
@@ -195,6 +203,11 @@ class TrackServiceClient extends $grpc.Client {
           '/tracks.TrackService/WeeklyDiscoverTracks',
           ($0.DiscoverTracksRequest value) => value.writeToBuffer(),
           $0.DiscoverTracksResponse.fromBuffer);
+  static final _$getUserTopTracks = $grpc.ClientMethod<
+          $0.GetUserTopTracksRequest, $0.GetUserTopTracksResponse>(
+      '/tracks.TrackService/GetUserTopTracks',
+      ($0.GetUserTopTracksRequest value) => value.writeToBuffer(),
+      $0.GetUserTopTracksResponse.fromBuffer);
 }
 
 @$pb.GrpcServiceName('tracks.TrackService')
@@ -314,6 +327,15 @@ abstract class TrackServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.DiscoverTracksRequest.fromBuffer(value),
         ($0.DiscoverTracksResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.GetUserTopTracksRequest,
+            $0.GetUserTopTracksResponse>(
+        'GetUserTopTracks',
+        getUserTopTracks_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.GetUserTopTracksRequest.fromBuffer(value),
+        ($0.GetUserTopTracksResponse value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.TrackResponse> getTrack_Pre($grpc.ServiceCall $call,
@@ -429,4 +451,13 @@ abstract class TrackServiceBase extends $grpc.Service {
 
   $async.Future<$0.DiscoverTracksResponse> weeklyDiscoverTracks(
       $grpc.ServiceCall call, $0.DiscoverTracksRequest request);
+
+  $async.Future<$0.GetUserTopTracksResponse> getUserTopTracks_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$0.GetUserTopTracksRequest> $request) async {
+    return getUserTopTracks($call, await $request);
+  }
+
+  $async.Future<$0.GetUserTopTracksResponse> getUserTopTracks(
+      $grpc.ServiceCall call, $0.GetUserTopTracksRequest request);
 }

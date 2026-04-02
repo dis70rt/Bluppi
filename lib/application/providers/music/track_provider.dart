@@ -7,3 +7,14 @@ final trackProvider =
   final repo = ref.watch(trackServiceProvider);
   return repo.getTrack(trackId);
 });
+
+class TrackNotifier extends AsyncNotifier<TrackModel> {
+  final String trackId;
+  TrackNotifier(this.trackId);
+
+  @override
+  Future<TrackModel> build() async {
+    final repo = ref.watch(trackServiceProvider);
+    return repo.getTrack(trackId);
+  }
+}

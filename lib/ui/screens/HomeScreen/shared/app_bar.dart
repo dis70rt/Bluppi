@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final UserModel user;
@@ -66,7 +67,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: _iconButton(onPressed: () => {}, icon: FontAwesomeIcons.users),
+          child: _iconButton(onPressed: () => context.push('/favorites/${user.id}'), icon: FontAwesomeIcons.heartCirclePlus),
         ),
       ],
     );

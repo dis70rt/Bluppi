@@ -3,6 +3,7 @@ import 'package:bluppi/application/providers/music/queue_provider.dart';
 import 'package:bluppi/application/providers/room/current_room_provider.dart';
 import 'package:bluppi/application/providers/user/user_provider.dart';
 import 'package:bluppi/ui/widgets/queue_bottomsheet.dart';
+import 'package:bluppi/ui/widgets/track_like_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -138,7 +139,8 @@ class _FloatingMusicPlayerState extends ConsumerState<FloatingMusicPlayer> {
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
+                                TrackLikeButton(trackId: track.id),
+                                const SizedBox(width: 4),
                                 AnimatedOpacity(
                                   duration: const Duration(milliseconds: 200),
                                   opacity: isExpanded ? 0.0 : 1.0,

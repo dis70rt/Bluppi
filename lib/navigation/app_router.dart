@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bluppi/ui/screens/CreateProfileScreen/create_profile_screen.dart';
+import 'package:bluppi/ui/screens/HomeScreen/Favourites/favourites_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_following_tab_view.dart';
@@ -86,10 +87,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: '/network/:userId',
             name: 'network',
             builder: (context, state) {
-
               final extras = state.extra as Map<String, dynamic>? ?? {};
               final initialTabIndex = extras['initialTabIndex'] as int? ?? 0;
-              
+
               return FollowNetworkScreen(
                 userId: state.pathParameters['userId']!,
                 username: extras['username'] ?? 'User',
@@ -99,11 +99,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               );
             },
           ),
-          
+
           GoRoute(
             path: '/settings',
             name: 'settings',
             builder: (context, state) => const SettingsScreen(),
+          ),
+
+          GoRoute(
+            path: '/favorites/:userId',
+            name: 'favorites',
+            builder: (context, state) =>
+                FavoritesScreen(userId: state.pathParameters['userId']!),
           ),
         ],
       ),

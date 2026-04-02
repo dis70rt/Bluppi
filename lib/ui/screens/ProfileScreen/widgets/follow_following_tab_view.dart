@@ -1,6 +1,8 @@
 import 'package:bluppi/application/providers/user/get_follows_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
+import 'package:bluppi/domain/models/follow_user_entry_model.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/user_tile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -79,6 +81,21 @@ class _FollowNetworkScreenState extends ConsumerState<FollowNetworkScreen> {
   }
 }
 
+/// Sorts the list so that the current user (owner) appears first.
+List<FollowUserEntryModel> _sortOwnerFirst(
+  List<FollowUserEntryModel> users,
+  String? currentUserId,
+) {
+  if (currentUserId == null) return users;
+  final sorted = List<FollowUserEntryModel>.from(users);
+  final ownerIndex = sorted.indexWhere((u) => u.id == currentUserId);
+  if (ownerIndex > 0) {
+    final owner = sorted.removeAt(ownerIndex);
+    sorted.insert(0, owner);
+  }
+  return sorted;
+}
+
 // --- Followers List View ---
 class _FollowersListView extends ConsumerWidget {
   final String userId;
@@ -87,6 +104,7 @@ class _FollowersListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(followersProvider(userId));
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     return state.when(
       data: (data) {
@@ -99,31 +117,43 @@ class _FollowersListView extends ConsumerWidget {
           );
         }
 
-        return NotificationListener<ScrollEndNotification>(
-          onNotification: (scrollInfo) {
-            if (scrollInfo.metrics.pixels >=
-                scrollInfo.metrics.maxScrollExtent - 50) {
-              ref.read(followersProvider(userId).notifier).loadMore();
-            }
-            return true;
+        final sortedUsers = _sortOwnerFirst(data.users, currentUserId);
+
+        return RefreshIndicator(
+          color: BluppiColors.primary,
+          onRefresh: () async {
+            ref.invalidate(followersProvider(userId));
           },
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: data.users.length + (data.hasMore ? 1 : 0),
-            itemBuilder: (context, index) {
-              // return const SkeletonUserList();
-              if (index == data.users.length) {
-                return const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: BluppiColors.primary,
-                    ),
-                  ),
-                );
+          child: NotificationListener<ScrollEndNotification>(
+            onNotification: (scrollInfo) {
+              if (scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 50) {
+                ref.read(followersProvider(userId).notifier).loadMore();
               }
-              return UserListTile(user: data.users[index]);
+              return true;
             },
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              itemCount: sortedUsers.length + (data.hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == sortedUsers.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: BluppiColors.primary,
+                      ),
+                    ),
+                  );
+                }
+                final user = sortedUsers[index];
+                return UserListTile(
+                  user: user,
+                  isOwner: user.id == currentUserId,
+                );
+              },
+            ),
           ),
         );
       },
@@ -141,6 +171,7 @@ class _FollowingListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(followingsProvider(userId));
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
     return state.when(
       data: (data) {
@@ -153,30 +184,43 @@ class _FollowingListView extends ConsumerWidget {
           );
         }
 
-        return NotificationListener<ScrollEndNotification>(
-          onNotification: (scrollInfo) {
-            if (scrollInfo.metrics.pixels >=
-                scrollInfo.metrics.maxScrollExtent - 50) {
-              ref.read(followingsProvider(userId).notifier).loadMore();
-            }
-            return true;
+        final sortedUsers = _sortOwnerFirst(data.users, currentUserId);
+
+        return RefreshIndicator(
+          color: BluppiColors.primary,
+          onRefresh: () async {
+            ref.invalidate(followingsProvider(userId));
           },
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: data.users.length + (data.hasMore ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == data.users.length) {
-                return const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: BluppiColors.primary,
-                    ),
-                  ),
-                );
+          child: NotificationListener<ScrollEndNotification>(
+            onNotification: (scrollInfo) {
+              if (scrollInfo.metrics.pixels >=
+                  scrollInfo.metrics.maxScrollExtent - 50) {
+                ref.read(followingsProvider(userId).notifier).loadMore();
               }
-              return UserListTile(user: data.users[index]);
+              return true;
             },
+            child: ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              itemCount: sortedUsers.length + (data.hasMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == sortedUsers.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: BluppiColors.primary,
+                      ),
+                    ),
+                  );
+                }
+                final user = sortedUsers[index];
+                return UserListTile(
+                  user: user,
+                  isOwner: user.id == currentUserId,
+                );
+              },
+            ),
           ),
         );
       },

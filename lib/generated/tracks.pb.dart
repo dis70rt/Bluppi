@@ -17,7 +17,11 @@ import 'package:protobuf/protobuf.dart' as $pb;
 import 'package:protobuf/well_known_types/google/protobuf/timestamp.pb.dart'
     as $1;
 
+import 'tracks.pbenum.dart';
+
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
+
+export 'tracks.pbenum.dart';
 
 class Track extends $pb.GeneratedMessage {
   factory Track({
@@ -2061,6 +2065,238 @@ class DiscoverTracksResponse extends $pb.GeneratedMessage {
   $core.bool hasHasMore() => $_has(2);
   @$pb.TagNumber(3)
   void clearHasMore() => $_clearField(3);
+}
+
+class TopTrackEntry extends $pb.GeneratedMessage {
+  factory TopTrackEntry({
+    $core.String? trackId,
+    $core.String? title,
+    $core.String? artist,
+    $core.String? imageSmall,
+    $core.int? playCount,
+  }) {
+    final result = create();
+    if (trackId != null) result.trackId = trackId;
+    if (title != null) result.title = title;
+    if (artist != null) result.artist = artist;
+    if (imageSmall != null) result.imageSmall = imageSmall;
+    if (playCount != null) result.playCount = playCount;
+    return result;
+  }
+
+  TopTrackEntry._();
+
+  factory TopTrackEntry.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory TopTrackEntry.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'TopTrackEntry',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'trackId')
+    ..aOS(2, _omitFieldNames ? '' : 'title')
+    ..aOS(3, _omitFieldNames ? '' : 'artist')
+    ..aOS(4, _omitFieldNames ? '' : 'imageSmall')
+    ..aI(5, _omitFieldNames ? '' : 'playCount')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  TopTrackEntry clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  TopTrackEntry copyWith(void Function(TopTrackEntry) updates) =>
+      super.copyWith((message) => updates(message as TopTrackEntry))
+          as TopTrackEntry;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static TopTrackEntry create() => TopTrackEntry._();
+  @$core.override
+  TopTrackEntry createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static TopTrackEntry getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<TopTrackEntry>(create);
+  static TopTrackEntry? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get trackId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set trackId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasTrackId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTrackId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.String get title => $_getSZ(1);
+  @$pb.TagNumber(2)
+  set title($core.String value) => $_setString(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasTitle() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearTitle() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.String get artist => $_getSZ(2);
+  @$pb.TagNumber(3)
+  set artist($core.String value) => $_setString(2, value);
+  @$pb.TagNumber(3)
+  $core.bool hasArtist() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearArtist() => $_clearField(3);
+
+  @$pb.TagNumber(4)
+  $core.String get imageSmall => $_getSZ(3);
+  @$pb.TagNumber(4)
+  set imageSmall($core.String value) => $_setString(3, value);
+  @$pb.TagNumber(4)
+  $core.bool hasImageSmall() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearImageSmall() => $_clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.int get playCount => $_getIZ(4);
+  @$pb.TagNumber(5)
+  set playCount($core.int value) => $_setSignedInt32(4, value);
+  @$pb.TagNumber(5)
+  $core.bool hasPlayCount() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearPlayCount() => $_clearField(5);
+}
+
+class GetUserTopTracksRequest extends $pb.GeneratedMessage {
+  factory GetUserTopTracksRequest({
+    $core.String? targetUserId,
+    $core.int? limit,
+    TimeRange? timeRange,
+  }) {
+    final result = create();
+    if (targetUserId != null) result.targetUserId = targetUserId;
+    if (limit != null) result.limit = limit;
+    if (timeRange != null) result.timeRange = timeRange;
+    return result;
+  }
+
+  GetUserTopTracksRequest._();
+
+  factory GetUserTopTracksRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory GetUserTopTracksRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'GetUserTopTracksRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
+      createEmptyInstance: create)
+    ..aOS(1, _omitFieldNames ? '' : 'targetUserId')
+    ..aI(2, _omitFieldNames ? '' : 'limit')
+    ..aE<TimeRange>(3, _omitFieldNames ? '' : 'timeRange',
+        enumValues: TimeRange.values)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetUserTopTracksRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetUserTopTracksRequest copyWith(
+          void Function(GetUserTopTracksRequest) updates) =>
+      super.copyWith((message) => updates(message as GetUserTopTracksRequest))
+          as GetUserTopTracksRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static GetUserTopTracksRequest create() => GetUserTopTracksRequest._();
+  @$core.override
+  GetUserTopTracksRequest createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static GetUserTopTracksRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetUserTopTracksRequest>(create);
+  static GetUserTopTracksRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.String get targetUserId => $_getSZ(0);
+  @$pb.TagNumber(1)
+  set targetUserId($core.String value) => $_setString(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasTargetUserId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearTargetUserId() => $_clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.int get limit => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set limit($core.int value) => $_setSignedInt32(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasLimit() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearLimit() => $_clearField(2);
+
+  @$pb.TagNumber(3)
+  TimeRange get timeRange => $_getN(2);
+  @$pb.TagNumber(3)
+  set timeRange(TimeRange value) => $_setField(3, value);
+  @$pb.TagNumber(3)
+  $core.bool hasTimeRange() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearTimeRange() => $_clearField(3);
+}
+
+class GetUserTopTracksResponse extends $pb.GeneratedMessage {
+  factory GetUserTopTracksResponse({
+    $core.Iterable<TopTrackEntry>? tracks,
+  }) {
+    final result = create();
+    if (tracks != null) result.tracks.addAll(tracks);
+    return result;
+  }
+
+  GetUserTopTracksResponse._();
+
+  factory GetUserTopTracksResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromBuffer(data, registry);
+  factory GetUserTopTracksResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      create()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'GetUserTopTracksResponse',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'tracks'),
+      createEmptyInstance: create)
+    ..pPM<TopTrackEntry>(1, _omitFieldNames ? '' : 'tracks',
+        subBuilder: TopTrackEntry.create)
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetUserTopTracksResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetUserTopTracksResponse copyWith(
+          void Function(GetUserTopTracksResponse) updates) =>
+      super.copyWith((message) => updates(message as GetUserTopTracksResponse))
+          as GetUserTopTracksResponse;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static GetUserTopTracksResponse create() => GetUserTopTracksResponse._();
+  @$core.override
+  GetUserTopTracksResponse createEmptyInstance() => create();
+  @$core.pragma('dart2js:noInline')
+  static GetUserTopTracksResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetUserTopTracksResponse>(create);
+  static GetUserTopTracksResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $pb.PbList<TopTrackEntry> get tracks => $_getList(0);
 }
 
 const $core.bool _omitFieldNames =

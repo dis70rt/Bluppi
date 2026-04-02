@@ -8,8 +8,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class UserListTile extends StatelessWidget {
   final FollowUserEntryModel user;
+  final bool isOwner;
 
-  const UserListTile({super.key, required this.user});
+  const UserListTile({
+    super.key,
+    required this.user,
+    this.isOwner = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,6 @@ class UserListTile extends StatelessWidget {
         radius: 24,
         backgroundColor: BluppiColors.surfaceRaised,
         backgroundImage: CachedNetworkImageProvider(user.profilePic),
-        // child: null,
       ),
       title: Text(
         user.username,
@@ -32,15 +36,9 @@ class UserListTile extends StatelessWidget {
         user.name,
         style: const TextStyle(color: BluppiColors.textSecondary),
       ),
-      trailing: ElevatedButton(
-        //TODO: Change UI for the user's own profile
-        onPressed: () => FollowButton(args: FollowArg(userId: user.id)),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          minimumSize: Size.zero,
-        ),
-        child: const Text("Follow"),
-      ),
+      trailing: isOwner
+          ? null
+          : FollowButton(args: FollowArg(userId: user.id)),
     );
   }
 }

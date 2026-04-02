@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:bluppi/ui/screens/ProfileScreen/widgets/top_tracks_skeleton.dart';
 
 class ProfileScreenSkeleton extends StatelessWidget {
   const ProfileScreenSkeleton({super.key});
@@ -41,6 +42,8 @@ class ProfileScreenSkeleton extends StatelessWidget {
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Divider(color: Colors.white10),
                       ),
+                      const TopTracksSectionSkeleton(),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
