@@ -1,12 +1,14 @@
+import 'package:bluppi/application/providers/auth/auth_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -87,7 +89,7 @@ class SettingsScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
                     child: ElevatedButton(
-                      onPressed: () => _showLogoutDialog(context),
+                      onPressed: () => _showLogoutDialog(context, ref),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: BluppiColors.primary,
                         foregroundColor: BluppiColors.error,
@@ -166,7 +168,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -192,10 +194,9 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 context.pop();
-                // TODO: Execute logout logic (clear tokens, reset providers)
-                // context.go('/login');
+                await ref.read(logoutProvider)();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: BluppiColors.error,

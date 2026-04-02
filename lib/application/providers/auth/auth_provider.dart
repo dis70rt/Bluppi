@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+export 'package:bluppi/application/providers/auth/logout_provider.dart';
 import 'package:bluppi/data/auth/firebase_auth_repository.dart';
 import 'package:bluppi/domain/repositories/auth_repository.dart';
 
