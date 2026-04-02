@@ -28,16 +28,51 @@ Bluppi is a real-time synchronized music platform where users create rooms, list
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="Screenshots/flutter_1.png" width="220" alt="Home Screen" />
-  &nbsp;&nbsp;
-  <img src="Screenshots/flutter_2.png" width="220" alt="Discovery & Friends" />
-  &nbsp;&nbsp;
-  <img src="Screenshots/flutter_4.png" width="220" alt="Profile" />
+  <img src="Screenshots/flutter_5.png" width="22%" />
+  &nbsp;
+  <img src="Screenshots/flutter_12.png" width="22%" />
+  &nbsp;
+  <img src="Screenshots/flutter_25.png" width="22%" />
+  &nbsp;
+  <img src="Screenshots/flutter_13.png" width="22%" />
 </p>
 
+<details>
+<summary><strong>📱 View Full Screenshot Gallery</strong></summary>
+
+<br/>
+
 <p align="center">
-  <sub>Home · Discovery · Profile</sub>
+  <img src="Screenshots/flutter_7.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_8.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_10.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_13.png" width="22%" />
 </p>
+<p align="center">
+  <img src="Screenshots/flutter_14.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_15.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_16.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_17.png" width="22%" />
+</p>
+<p align="center">
+  <img src="Screenshots/flutter_19.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_20.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_21.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_23.png" width="22%" />
+</p>
+<p align="center">
+  <img src="Screenshots/flutter_26.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_27.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_28.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_29.png" width="22%" />
+</p>
+<p align="center">
+  <img src="Screenshots/flutter_31.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_32.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_33.png" width="22%" /> &nbsp;
+  <img src="Screenshots/flutter_34.png" width="22%" />
+</p>
+</details>
 
 ---
 
