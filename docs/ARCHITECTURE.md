@@ -74,9 +74,9 @@ Data flows in a unidirectional manner. The UI dispatches an action, the Applicat
 
 ```mermaid
 flowchart TD
-    UI[UI Layer\n(Widgets, Screens)] -->|Triggers Action| APP[Application Layer\n(Riverpod Notifiers)]
-    APP -->|Calls Interface| DOMAIN[Domain Layer\n(Repository Interfaces)]
-    DOMAIN -.->|Implemented by| DATA[Data / Transport Layer\n(gRPC Clients)]
+    UI["UI Layer\n(Widgets, Screens)"] -->|Triggers Action| APP["Application Layer\n(Riverpod Notifiers)"]
+    APP -->|Calls Interface| DOMAIN["Domain Layer\n(Repository Interfaces)"]
+    DOMAIN -.->|Implemented by| DATA["Data / Transport Layer\n(gRPC Clients)"]
     DATA -->|Returns Domain Models| APP
     APP -->|Updates State| UI
 ```
@@ -98,10 +98,10 @@ Bluppi uses `just_audio` for playback and `audio_service` for OS-level backgroun
 
 ```mermaid
 flowchart LR
-    UI[Floating Player UI] <-->|watches / calls| PROV[PlaybackNotifier\nQueueNotifier]
-    PROV <-->|commands / listens| HANDLER[AudioHandler\n(audio_service)]
+    UI[Floating Player UI] <-->|watches / calls| PROV["PlaybackNotifier\nQueueNotifier"]
+    PROV <-->|commands / listens| HANDLER["AudioHandler\n(audio_service)"]
     HANDLER <-->|controls| JA[just_audio player]
-    JA -.-> OS[Android/iOS Background\nMedia Session]
+    JA -.-> OS["Android/iOS Background\nMedia Session"]
 ```
 
 - **AudioHandler**: Runs in an isolate to keep music playing when the app is in the background. It listens to commands (play, pause, skip) and broadcasts the current playback state and position.
