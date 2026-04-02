@@ -1,415 +1,234 @@
-# 🎵 Bluppi (Mobile Client)
+<p align="center">
+  <img src="assets/icons/launcher.png" width="120" alt="Bluppi Logo" />
+</p>
 
-A real-time synchronized music and chat platform built with Flutter. Users can create parties, listen to music together, and communicate via live chat—all synchronized across devices through gRPC and Firestore.
+<h1 align="center">Bluppi</h1>
 
-> **🔗 Backend Repository**: [Backend Link Placeholder](#) — See the Go backend implementation for this project.
+<p align="center">
+  <em>Listen together. Vibe together.</em>
+</p>
+
+<p align="center">
+  <img alt="Flutter" src="https://img.shields.io/badge/Flutter-3.10.7+-02569B?style=flat-square&logo=flutter&logoColor=white" />
+  <img alt="Dart" src="https://img.shields.io/badge/Dart-3.x-0175C2?style=flat-square&logo=dart&logoColor=white" />
+  <img alt="Platform" src="https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white" />
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-yellow?style=flat-square" />
+  <img alt="Version" src="https://img.shields.io/badge/Version-1.0.0--alpha-FF4D8D?style=flat-square" />
+  <img alt="gRPC" src="https://img.shields.io/badge/gRPC-Realtime-244c5a?style=flat-square&logo=grpc" />
+</p>
 
 ---
 
-## 📋 Overview
+Bluppi is a real-time synchronized music platform where users create rooms, listen to tracks together, and chat live — all synced across devices through gRPC streaming. Built with Flutter + Riverpod on the client and a distributed Go backend.
 
-Bluppi is a collaborative music experience where users can:
-- **Create or join rooms** to listen to music together in real-time
-- **Synchronized playback** across all participants—music stays in sync across devices
-- **Live chat** with room members with optimized state management
-- **User profiles** and follow mechanics
-- **Search & discovery** for tracks and rooms
-- **Firebase authentication** with Google Sign-In for seamless onboarding
+> **🔗 Backend**: [bluppi-backend](https://github.com/dis70rt/bluppi-backend) — Go microservices powering UserService, TrackService, and RoomService via gRPC.
 
-This is the **mobile client** that connects to the backend via gRPC for real-time, bidirectional communication.
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="Screenshots/flutter_1.png" width="220" alt="Home Screen" />
+  &nbsp;&nbsp;
+  <img src="Screenshots/flutter_2.png" width="220" alt="Discovery & Friends" />
+  &nbsp;&nbsp;
+  <img src="Screenshots/flutter_4.png" width="220" alt="Profile" />
+</p>
+
+<p align="center">
+  <sub>Home · Discovery · Profile</sub>
+</p>
+
+---
+
+## ✨ Features
+
+### 🎵 Music
+- Stream tracks with background audio playback (`just_audio` + `audio_service`)
+- Queue management — play next, add to back, reorder
+- Floating mini player with swipe-to-minimize gestures
+- Recently played history & weekly discovery feed
+- Top tracks per user with play count stats
+- Cursor-paginated track search with debounced queries
+
+### 👥 Social
+- Create or join real-time rooms to listen together
+- Live chat with optimistic UI updates
+- Follow / unfollow system with follower & following tabs
+- Suggested friends discovery
+- User profiles with genre tags, bio, and stats
+
+### 🔍 Discovery
+- Full-text track search powered by Solr (via gRPC)
+- Liked tracks library with infinite scroll
+- Play history with timestamps
+
+### 🔐 Auth & Onboarding
+- Firebase Authentication with Google Sign-In
+- Profile creation flow — name, avatar, bio, genres, gender
+- Edit profile with PATCH-style gRPC updates
+
+### ⚡ UX Details
+- Skeleton loading screens for seamless transitions
+- Lottie animations for playing indicators
+- Swipe-to-minimize floating player (snaps to left/right edge)
+- Pull-to-refresh on followers/following lists
+- Leak-free logout with full provider teardown
+
+---
+
+## 📦 Download
+
+> **Latest release**: [GitHub Releases](https://github.com/dis70rt/bluppi/releases)
+>
+> Download the APK directly from the Releases page. No Play Store needed.
+
+### Requirements
+
+| | Minimum |
+|---|---|
+| **Android** | API 21 (Lollipop 5.0) |
+| **Storage** | ~50 MB |
+| **Network** | Required (streaming app) |
 
 ---
 
 ## 🛠 Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| **Framework** | Flutter 3.10.7+ |
-| **State Management** | Riverpod 3.2.1 with `.autoDispose` |
-| **Real-Time Communication** | gRPC & HTTP/2 |
-| **Authentication** | Firebase Auth + Google Sign-In |
-| **Audio Playback** | audio_service + just_audio |
-| **Local Storage** | SQLite (sqflite) + Secure Storage |
-| **UI & Navigation** | GoRouter + Material Design |
-| **Networking** | gRPC (Dart), Protocol Buffers |
-
-**Key Dependencies**:
-```yaml
-flutter_riverpod: ^3.2.1
-grpc: ^5.1.0
-protobuf: ^6.0.0
-go_router: ^17.1.0
-firebase_core: ^4.4.0
-firebase_auth: ^6.1.4
-audio_service: (audio playback in background)
-cached_network_image: ^3.4.1
-```
+|---|---|
+| **Framework** | Flutter 3.10.7+ / Dart 3.x |
+| **State Management** | Riverpod 3.2 (`AsyncNotifier`, `.autoDispose`, `.family`) |
+| **Networking** | gRPC + Protocol Buffers (HTTP/2) |
+| **Auth** | Firebase Auth + Google Sign-In |
+| **Audio** | `just_audio` + `audio_service` (background playback) |
+| **Navigation** | GoRouter with `refreshListenable` auth redirects |
+| **Caching** | `cached_network_image`, `shared_preferences` |
+| **UI Polish** | Lottie, Skeletonizer, `fl_chart` |
 
 ---
 
-## 🏗 Client Architecture
+## 🚀 Build from Source
 
-### State Management with Riverpod
+### Prerequisites
 
-**Problem**: Managing state across 1,000+ room members with efficient memory usage.
-
-**Solution**: 
-- **`.autoDispose` providers** for transient room states (chat, member lists) that are garbage-collected when unused
-- **TTL-based caching** for user profiles to prevent duplicate network requests
-- **Provider family** for scoped states (e.g., `liveChatProvider(roomId)` for room-specific chat)
-
-**Example**:
-```dart
-final liveChatProvider = NotifierProvider.family.autoDispose<LiveChatNotifier, List<LiveChatBubble>, String>(
-  (ref, roomId) => LiveChatNotifier(roomId),
-);
-```
-When a user leaves the room, this provider is automatically disposed, freeing memory.
-
----
-
-### Real-Time Chat with Optimistic UI
-
-**Challenge**: Chat messages must appear instant while waiting for server confirmation.
-
-**Implementation**:
-1. User types a message and taps send
-2. UI immediately displays the message locally (optimistic update)
-3. `sendMessage()` calls the backend gRPC endpoint
-4. Backend broadcasts the event to all subscribers via `SubscribeToRoomEvents` stream
-5. When the event returns through the stream, the UI updates with the confirmed message
-
-This prevents flickering and provides a native-app feel.
-
----
-
-### gRPC Stream Handling
-
-The app uses **server-streaming RPC** via `SubscribeToRoomEvents` to listen for real-time updates:
-
-```dart
-Stream<RoomEventModel> subscribeToRoomEvents(String roomId, String userId);
-```
-
-**Handled Events**:
-- `userJoined` — New member in the room
-- `userLeft` — Member disconnected
-- `liveChatMessage` — New chat message
-- `roomEnded` — Room closed
-
-All streams are properly disposed in `RoomEventsNotifier` using `ref.onDispose()` to prevent memory leaks.
-
----
-
-### Memory Leak Prevention
-
-✅ **Patterns Used**:
-- Stream subscriptions cancelled in `ref.onDispose()`
-- Timers cancelled on provider disposal
-- Widget controllers disposed in `dispose()` methods
-- No listener retention after widget unmount
-
----
-
-## 📸 Screenshots
-
-Coming soon! Place your app screenshots here:
-
-- **splash & onboarding**
-- **home screen & room list**
-- **music party playback**
-- **live chat in room**
-
-> Placeholder directory: `/screenshots/`
-
----
-
-## 📦 Prerequisites
-
-Ensure you have installed:
-
-- **Flutter SDK** (3.10.7 or later)
-  ```bash
-  flutter --version
-  ```
-- **Dart SDK** (included with Flutter)
-- **Protocol Buffers Compiler** (`protoc`)
-  ```bash
-  protoc --version
-  ```
-- **gRPC Dart Plugin**
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) `>= 3.10.7`
+- [Protocol Buffers Compiler](https://grpc.io/docs/protoc-installation/) (`protoc`)
+- gRPC Dart plugin:
   ```bash
   dart pub global activate protoc_plugin
   ```
-- **Android SDK** (for Android development) or **Xcode** (for iOS)
+- [Firebase CLI](https://firebase.google.com/docs/cli) (for `google-services.json`)
+- Android SDK (via Android Studio or standalone)
 
----
-
-## 🚀 Local Setup
-
-### 1. Clone the Repository
+### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/bluppi-frontend.git
-cd bluppi-frontend
-```
-
-### 2. Install Dependencies
-
-```bash
+git clone https://github.com/dis70rt/bluppi.git
+cd bluppi
 flutter pub get
 ```
 
-### 3. Configure Backend Connection
+### 2. Firebase Setup
 
-Update `lib/config.dart` with your backend server address:
-
-```dart
-class AppConfig {
-  static const String grpcServerAddress = 'YOUR_BACKEND_IP';
-  static const int grpcServerPort = 50051;
-}
+Place your `google-services.json` in:
+```
+android/app/google-services.json
 ```
 
-Or pass at runtime:
-```bash
-flutter run --dart-define=GRPC_SERVER_ADDRESS=192.168.1.100 \
-            --dart-define=GRPC_SERVER_PORT=50051
+> You need a Firebase project with **Authentication** (Google Sign-In) enabled.
+
+### 3. Environment Configuration
+
+Create a `.env` file in the project root:
+
+```env
+GRPC_SERVER_ADDRESS=your-server.example.com
+GRPC_SERVER_PORT=443
+GATEWAY_SERVER_ADDRESS=your-server.example.com
+GATEWAY_SERVER_PORT=443
+AUDIO_SERVER_URL=https://your-server.example.com/api/rest
 ```
 
-### 4. Set Up Port Forwarding (Android Only)
-
-For connecting to a local backend on your development machine:
+### 4. Generate Protobuf Code
 
 ```bash
-adb devices | awk 'NR>1 && $2=="device" {print $1}' | xargs -I {} sh -c 'adb -s {} reverse tcp:50051 tcp:50051 && adb -s {} reverse tcp:8001 tcp:8001'
+chmod +x protobuf.sh
+./protobuf.sh
 ```
 
-### 5. Generate Code (Protocol Buffers & Riverpod)
-
+Or manually:
 ```bash
-# Generate gRPC stubs from .proto files
 protoc --dart_out=grpc:lib/generated \
-       -Ilib/protobufs \
-       lib/protobufs/*.proto
-
-# Generate Riverpod providers (if using @riverpod annotation)
-dart run build_runner build --delete-conflicting-outputs
+    -Ilib/protobufs \
+    -I/usr/include \
+    lib/protobufs/*.proto \
+    google/protobuf/timestamp.proto
 ```
 
-### 6. Run the App
+### 5. Run
 
 ```bash
 flutter run
 ```
 
----
+### ADB Port Forwarding (local backend dev)
 
-## 📁 Project Structure
-
-```
-lib/
-├── main.dart                     # Entry point, Audio Service initialization
-├── app.dart                      # Root MaterialApp with theme & router
-├── config.dart                   # Environment config (gRPC address, port)
-│
-├── application/
-│   └── providers/                # Riverpod providers (state management)
-│       ├── auth/                 # Authentication & onboarding
-│       ├── room/                 # Room management & live chat
-│       ├── music/                # Music playback & queue
-│       ├── party/                # Party sync & history
-│       ├── user/                 # User profiles & follow
-│       └── theme_provider.dart   # Dark/light theme
-│
-├── ui/
-│   ├── screens/                  # Full page widgets
-│   │   ├── LoginScreen/
-│   │   ├── CreateProfileScreen/
-│   │   ├── HomeScreen/
-│   │   ├── RoomScreen/           # Main chat & music room
-│   │   ├── ProfileScreen/
-│   │   └── SearchScreen/
-│   └── widgets/                  # Reusable UI components
-│       └── chats/                # Chat UI (input, feed, bubbles)
-│
-├── core/
-│   ├── constants/                # Colors, themes, app constants
-│   └── utils/                    # Helpers, leak observer, formatters
-│
-├── domain/
-│   ├── models/                   # Business logic models
-│   │   ├── room_model.dart
-│   │   ├── track_model.dart
-│   │   ├── user_model.dart
-│   │   ├── live_chat_bubble.dart
-│   │   ├── room_events_model.dart
-│   │   └── ...
-│   └── repositories/             # Abstract repository interfaces
-│
-├── data/
-│   ├── auth/                     # Authentication implementation
-│   ├── grpc/                     # gRPC service clients & repositories
-│   │   ├── channels/             # gRPC channel configuration
-│   │   └── repositories/         # RoomService, MusicService, etc.
-│   └── local/                    # Local DB (SQLite) & caching
-│
-├── navigation/
-│   └── app_router.dart           # GoRouter configuration & named routes
-│
-├── audio/
-│   └── player_handler.dart       # AudioService handler for background playback
-│
-├── generated/                    # Auto-generated code
-│   ├── *.pbgrpc.dart            # gRPC stubs from .proto
-│   ├── *.pb.dart                # Protobuf message classes
-│   └── ...
-│
-└── protobufs/
-    └── *.proto                   # Proto definitions (synced with backend)
-
-android/ & ios/                    # Platform-specific code
-```
-
----
-
-## 🔧 Environment Variables
-
-The app reads gRPC server configuration from `lib/config.dart` using Dart's `String.fromEnvironment()`:
-
-```dart
-class AppConfig {
-  static const String grpcServerAddress = String.fromEnvironment(
-    'GRPC_SERVER_ADDRESS',
-    defaultValue: 'localhost',
-  );
-  
-  static const int grpcServerPort = int.fromEnvironment(
-    'GRPC_SERVER_PORT',
-    defaultValue: 50051,
-  );
-}
-```
-
-**Pass at build time**:
+If running the backend locally, forward gRPC ports to your Android device:
 ```bash
-flutter run --dart-define=GRPC_SERVER_ADDRESS=10.0.2.2 \
-            --dart-define=GRPC_SERVER_PORT=50051
-```
-
-**For Firebase**: Credentials are automatically configured via `firebase.json` and `google-services.json`.
-
----
-
-## 🎯 Key Features & Architecture Highlights
-
-### 1. **Optimistic Chat Updates**
-Messages appear instantly in the UI while confirmation comes from the server stream. No flickering or delay perception.
-
-### 2. **Synchronized Music Playback**
-Users join a "party" and music automatically syncs across all devices. The gRPC `PlaybackStreamProvider` broadcasts playback state (play/pause/seek) in real-time.
-
-### 3. **Event-Driven Architecture**
-All room changes (new members, chat, music sync) flow through Riverpod providers, triggered by the gRPC event stream. Single source of truth.
-
-### 4. **Memory-Safe State Management**
-- `.autoDispose` cancels unused providers automatically
-- Stream subscriptions cleaned up with `ref.onDispose()`
-- No retained listeners after widget unmount
-- Tested for 1,000+ member rooms without leaks
-
-### 5. **Segregated Layers** (Clean Architecture)
-- **Presentation** (`ui/`) — UI only
-- **Application** (`application/`) — State & business logic
-- **Domain** (`domain/`) — Models & interfaces
-- **Data** (`data/`) — API calls & local storage
-
----
-
-## 🔄 Workflow: Sending a Chat Message
-
-```
-User types "Hey!" → [LiveChatInput]
-                ↓
-            _handleSend()
-                ↓
-    ref.read(liveChatProvider(roomId).notifier)
-           .sendMessage("Hey!")
-                ↓
-    async repo.sendLiveChatMessage(roomId, userId, text)
-                ↓
-         gRPC server processes
-                ↓
-    Backend broadcasts RoomEvent to all subscribers
-                ↓
-    Client receives via SubscribeToRoomEvents stream
-                ↓
-    RoomEventsNotifier._listenToEvents() handles it
-                ↓
-    LiveChatNotifier.addUserMessage() updates state
-                ↓
-         UI re-renders with new chat
+adb reverse tcp:50051 tcp:50051
+adb reverse tcp:8001 tcp:8001
 ```
 
 ---
 
-## ⚙️ Development Notes
+## 🔗 Backend
 
-### Generating Code
+Bluppi requires the **bluppi-backend** to function. The backend exposes three gRPC services:
 
-After updating `.proto` files:
-```bash
-protoc --dart_out=grpc:lib/generated -Ilib/protobufs lib/protobufs/*.proto
-```
+| Service | Responsibilities |
+|---|---|
+| **UserService** | Auth, profiles, follow system, suggested friends, search |
+| **TrackService** | Track metadata, search (Solr), history, likes, top tracks |
+| **RoomService** | Room CRUD, member management, live chat, playback sync |
 
-After changing Riverpod providers with `@riverpod` annotation:
-```bash
-dart run build_runner build --delete-conflicting-outputs
-```
-
-### Debugging gRPC Calls
-
-Enable gRPC logs in `main.dart`:
-```dart
-import 'dart:developer' as developer;
-
-developer.log('Event received', name: 'gRPC');
-```
-
-### Testing with Mock Backend
-
-See the backend repository for running a local test server with sample data.
+> 🔗 **[bluppi-backend](https://github.com/dis70rt/bluppi-backend)** — See the backend repo for server setup, database schema, and gRPC service definitions.
 
 ---
 
-## 📝 Future Improvements
+## 📋 Changelog
 
-- [ ] Offline mode with local message queue
-- [ ] Message reactions & threading
-- [ ] Voice chat integration
-- [ ] End-to-end encryption for messages
-- [ ] Push notifications for room invites
+| Version | Date | Highlights |
+|---|---|---|
+| `v1.0.0-alpha` | 2026-04 | Core music streaming, rooms, live chat, profiles, follow system, search, floating player, edit profile, logout teardown |
 
 ---
 
-## 🚧 Status
+## 📚 Documentation
 
-**Development** — Active development. APIs and structures may change.
+For deeper dives into the project internals, see:
+
+- **[Architecture & Flow](docs/ARCHITECTURE.md)** — Flutter architecture, state management patterns, and data flow
+- **[Production Engineering](docs/PRODUCTION.md)** — Production-grade techniques, optimizations, and infrastructure decisions
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow the issue-first workflow:
+
+1. **Open an issue** describing the bug or feature
+2. **Fork** the repo and create a branch from `main`
+3. **Submit a PR** referencing the issue
 
 ---
 
 ## 📄 License
 
-[Add your license here]
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👨‍💻 Contributing
-
-Contributions welcome! For major changes, please open an issue first to discuss.
-
----
-
-## 📞 Questions?
-
-Refer to the [Backend Repository](#) for server setup and gRPC service definitions, or open an issue on GitHub.
+<p align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/dis70rt">dis70rt</a></sub>
+</p>
