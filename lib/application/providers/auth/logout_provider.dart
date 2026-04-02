@@ -1,5 +1,6 @@
 import 'package:bluppi/application/providers/activity/activity_provider.dart';
 import 'package:bluppi/application/providers/auth/auth_provider.dart';
+import 'package:bluppi/application/providers/user/edit_profile_provider.dart';
 import 'package:bluppi/application/providers/music/history_provider.dart';
 import 'package:bluppi/application/providers/music/playback_provider.dart';
 import 'package:bluppi/application/providers/music/queue_provider.dart';
@@ -32,6 +33,7 @@ final logoutProvider = Provider<Future<void> Function()>((ref) {
     ref.invalidate(currentRoomProvider);
     ref.invalidate(presenceProvider);
     ref.invalidate(listRoomsProvider);
+    ref.invalidate(editProfileProvider);
 
     // 3. Initiate the Firebase/Google sign out
     final authRepo = ref.read(authRepositoryProvider);

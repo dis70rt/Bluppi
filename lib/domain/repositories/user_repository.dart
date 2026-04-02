@@ -15,4 +15,5 @@ abstract class UserRepository {
   Future<(List<UserSummaryModel>, String)> getSuggestedFriends(String nextCursor, {int limit = 10});
   Future<(List<FollowUserEntryModel>, String, bool)> getFollowers(String userId, String nextCursor, {int limit = 20});
   Future<(List<FollowUserEntryModel>, String, bool)> getFollowings(String userId, String nextCursor, {int limit = 20});
+  Future<UserModel> updateUser({String? name, String? bio, String? country, String? phone, String? profilePic, List<String>? favoriteGenres, String? gender});
 }

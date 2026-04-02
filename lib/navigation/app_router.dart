@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bluppi/ui/screens/CreateProfileScreen/create_profile_screen.dart';
+import 'package:bluppi/ui/screens/EditProfileScreen/edit_profile_screen.dart';
 import 'package:bluppi/ui/screens/HomeScreen/Favourites/favourites_screen.dart';
 import 'package:bluppi/ui/screens/LoginScreen/login_screen.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/profile_screen.dart';
@@ -111,6 +112,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             name: 'favorites',
             builder: (context, state) =>
                 FavoritesScreen(userId: state.pathParameters['userId']!),
+          ),
+
+          GoRoute(
+            path: '/edit-profile',
+            name: 'edit_profile',
+            builder: (context, state) => const EditProfileScreen(),
           ),
         ],
       ),

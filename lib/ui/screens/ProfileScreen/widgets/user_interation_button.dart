@@ -27,7 +27,7 @@ class UserInteractionButton extends StatelessWidget {
               label: "Edit Profile",
               backgroundColor: glassColor,
               textColor: Colors.white,
-              onTap: () {}, // TODO: Navigate to Edit Profile
+              onTap: () => context.push('/edit-profile'),
             ),
           ),
           const SizedBox(width: 8),

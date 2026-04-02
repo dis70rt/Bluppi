@@ -31,7 +31,7 @@ class SettingsScreen extends ConsumerWidget {
                     icon: Icons.person_outline,
                     title: 'Edit Profile',
                     onTap: () {
-                      // TODO: Navigate to Edit Profile
+                      context.push('/edit-profile');
                     },
                   ),
                   _buildSettingsTile(

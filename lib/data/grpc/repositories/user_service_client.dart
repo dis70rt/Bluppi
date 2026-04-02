@@ -106,4 +106,26 @@ class UserServiceClientRepository implements UserRepository {
     final followings = response.following.map((proto.FollowUserEntry p) => FollowUserEntryModel.fromProto(p)).toList();
     return (followings, response.nextCursor, response.hasMore);
   }
+
+  @override
+  Future<UserModel> updateUser({
+    String? name,
+    String? bio,
+    String? country,
+    String? phone,
+    String? profilePic,
+    List<String>? favoriteGenres,
+    String? gender,
+  }) async {
+    final request = proto.UpdateUserRequest();
+    if (name != null) request.name = name;
+    if (bio != null) request.bio = bio;
+    if (country != null) request.country = country;
+    if (phone != null) request.phone = phone;
+    if (profilePic != null) request.profilePic = profilePic;
+    if (favoriteGenres != null) request.favoriteGenres.addAll(favoriteGenres);
+    if (gender != null) request.gender = gender;
+    final response = await _client.updateUser(request);
+    return UserModel.fromProto(response.user);
+  }
 }
