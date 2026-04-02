@@ -4,9 +4,9 @@ import 'package:bluppi/ui/screens/SearchScreen/widgets/recently_search.dart';
 import 'package:bluppi/ui/screens/SearchScreen/widgets/search_bar.dart';
 import 'package:bluppi/ui/screens/SearchScreen/widgets/track_tile.dart';
 import 'package:bluppi/ui/screens/SearchScreen/widgets/track_tile_loading.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -74,8 +74,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             userAsync.when(
               data: (user) => CircleAvatar(
                 radius: 18,
-                backgroundImage:
-                    CachedNetworkImageProvider(user!.profilePic),
+                backgroundImage: getAvatarProvider(user!.profilePic),
               ),
               loading: () =>
                   const CircleAvatar(radius: 18, backgroundColor: Colors.grey),

@@ -2,6 +2,7 @@ import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/core/utils/date_format.dart';
 import 'package:bluppi/domain/models/activity_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -138,7 +139,7 @@ class _ActivityBottomSheetState extends ConsumerState<ActivityBottomSheet> {
                               child: CircleAvatar(
                                 radius: 30,
                                 backgroundColor: BluppiColors.surfaceRaised,
-                                backgroundImage: CachedNetworkImageProvider(
+                                backgroundImage: getAvatarProvider(
                                   widget.activity.friendAvatarUrl,
                                 ),
                               ),

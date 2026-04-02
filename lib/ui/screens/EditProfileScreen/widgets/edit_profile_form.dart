@@ -1,7 +1,7 @@
 import 'package:bluppi/application/providers/user/edit_profile_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/domain/models/user_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -57,10 +57,7 @@ class _EditProfileFormState extends ConsumerState<EditProfileForm> {
                       width: 3,
                     ),
                     image: DecorationImage(
-                      image: widget.user.profilePic.isNotEmpty
-                          ? CachedNetworkImageProvider(widget.user.profilePic)
-                          : const AssetImage('assets/images/default_profile.jpg')
-                              as ImageProvider,
+                      image: getAvatarProvider(widget.user.profilePic),
                       fit: BoxFit.cover,
                     ),
                   ),

@@ -1,7 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:bluppi/application/providers/user/user_service_provider.dart';
@@ -33,7 +33,7 @@ class RoomHeader extends ConsumerWidget {
                 children: [
                   CircleAvatar(
                     radius: 12,
-                    backgroundImage: CachedNetworkImageProvider(host.profilePic),
+                    backgroundImage: getAvatarProvider(host.profilePic),
                   ),
                   const SizedBox(width: 8),
                   const Text(

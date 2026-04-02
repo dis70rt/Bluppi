@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 
 class ProfileAppBar extends ConsumerWidget {
   final String? profilePic;
@@ -21,12 +22,7 @@ class ProfileAppBar extends ConsumerWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          profilePic != null && profilePic!.isNotEmpty
-              ? CachedNetworkImage(
-                  imageUrl: profilePic!,
-                  fit: BoxFit.cover,
-                )
-              : Container(color: Colors.grey.shade900),
+          buildAvatarImage(profilePic),
           ClipRect(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),

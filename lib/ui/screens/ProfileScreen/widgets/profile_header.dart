@@ -1,5 +1,5 @@
 import 'package:bluppi/application/providers/user/profile_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 import 'package:flutter/material.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -34,12 +34,7 @@ class ProfileHeader extends StatelessWidget {
                         strokeAlign: BorderSide.strokeAlignOutside,
                       ),
                       image: DecorationImage(
-                        image: user.profilePic.isNotEmpty
-                            ? CachedNetworkImageProvider(user.profilePic)
-                            : const AssetImage(
-                                    'assets/images/default_profile.jpg',
-                                  )
-                                  as ImageProvider,
+                        image: getAvatarProvider(user.profilePic),
                         fit: BoxFit.cover,
                       ),
                     ),

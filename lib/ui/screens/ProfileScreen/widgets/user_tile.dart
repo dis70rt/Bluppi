@@ -2,7 +2,7 @@ import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/domain/models/follow_user_entry_model.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_button.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -23,7 +23,7 @@ class UserListTile extends StatelessWidget {
       leading: CircleAvatar(
         radius: 24,
         backgroundColor: BluppiColors.surfaceRaised,
-        backgroundImage: CachedNetworkImageProvider(user.profilePic),
+        backgroundImage: getAvatarProvider(user.profilePic),
       ),
       title: Text(
         user.username,

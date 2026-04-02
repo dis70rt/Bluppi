@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bluppi/application/providers/activity/activity_provider.dart';
 import 'package:bluppi/application/providers/auth/auth_provider.dart';
 import 'package:bluppi/application/providers/user/edit_profile_provider.dart';
@@ -17,8 +19,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final logoutProvider = Provider<Future<void> Function()>((ref) {
   return () async {
-    // 1. Immediately kill background playback
-    await audioHandler.stop();
+    final authRepo = ref.read(authRepositoryProvider);
+    await authRepo.logOut();
+
+    try {
+      await audioHandler.stop();
+    } catch (e) {
+      log('Audio handler stop ignored during logout: $e');
+    }
+
+    await Future.delayed(const Duration(milliseconds: 150));
 
     // 2. Clear all global provider states
     ref.invalidate(userProvider);
@@ -28,15 +38,13 @@ final logoutProvider = Provider<Future<void> Function()>((ref) {
     ref.invalidate(weeklyDiscoverProvider);
     ref.invalidate(recentlySearchProvider);
     ref.invalidate(suggestedUsersProvider);
+
     ref.invalidate(queueProvider);
     ref.invalidate(playerProvider);
+
     ref.invalidate(currentRoomProvider);
     ref.invalidate(presenceProvider);
     ref.invalidate(listRoomsProvider);
     ref.invalidate(editProfileProvider);
-
-    // 3. Initiate the Firebase/Google sign out
-    final authRepo = ref.read(authRepositoryProvider);
-    await authRepo.logOut();
   };
 });

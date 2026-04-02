@@ -1,7 +1,7 @@
 import 'package:bluppi/domain/models/user_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,10 +27,7 @@ class HomeAppBar extends ConsumerWidget implements PreferredSizeWidget {
         children: [
           CircleAvatar(
             radius: avatarRadius,
-            backgroundImage: user.profilePic.isNotEmpty
-                ? CachedNetworkImageProvider(user.profilePic)
-                : const AssetImage('assets/images/default_profile.jpg')
-                      as ImageProvider,
+            backgroundImage: getAvatarProvider(user.profilePic),
           ),
           const SizedBox(width: 12),
           Expanded(

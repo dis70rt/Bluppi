@@ -2,7 +2,7 @@ import 'package:bluppi/application/providers/user/follow_provider.dart';
 import 'package:bluppi/core/constants/colors.dart';
 import 'package:bluppi/domain/models/user_summary_model.dart';
 import 'package:bluppi/ui/screens/ProfileScreen/widgets/follow_button.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bluppi/core/utils/image_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -37,7 +37,7 @@ class SuggestFriendsCard extends StatelessWidget {
             CircleAvatar(
               radius: 36,
               backgroundColor: BluppiColors.surfaceRaised,
-              backgroundImage: CachedNetworkImageProvider(user.profilePic),
+              backgroundImage: getAvatarProvider(user.profilePic),
             ),
             const SizedBox(height: 12),
             Text(

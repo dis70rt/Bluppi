@@ -26,6 +26,7 @@ class MyApp extends ConsumerWidget {
         )
       ),
       child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
         routerConfig: router,
         title: 'Bluppi',
         theme: theme,
